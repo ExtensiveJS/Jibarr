@@ -2,18 +2,30 @@ import time
 from time import mktime
 from datetime import datetime
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template import loader
 import MediaFileSync.checkFolder
 from .models import Media
 
+
 def syncprocessor(request):
-    runSimulate = True
-    strPage = "...processing started @ " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "<br />"
-    lastRun = "Mar 29 1971 6:07PM"
-    strPage = MediaFileSync.checkFolder.checkFolder("d:/videos/","d:/temp/", datetime.fromtimestamp(mktime(time.strptime(lastRun, "%b %d %Y %I:%M%p"))), strPage, runSimulate)
-    
-    strPage += "...processing ended @ " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    return HttpResponse(strPage)
+    #runSimulate = True
+    #strPage = "...processing started @ " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "<br />"
+    #lastRun = "Mar 29 1971 6:07PM"
+    #strPage = MediaFileSync.checkFolder.checkFolder("d:/videos/","d:/temp/", datetime.fromtimestamp(mktime(time.strptime(lastRun, "%b %d %Y %I:%M%p"))), strPage, runSimulate)
+    #strPage += "...processing ended @ " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    #return HttpResponse(strPage)
+    context = {}
+    template = loader.get_template("MediaFileSync/index.html")
+    return HttpResponse(template.render(context, request))
+
+def simulated(request):
+    context = {}
+    template = loader.get_template("MediaFileSync/simulated.html")
+    return HttpResponse(template.render(context, request))
+
+def runsimulated(request):
+    return HttpResponseRedirect("http://google.com")
 
 def index(request):
     media_list = Media.objects.all() #.objects.order_by(id)
