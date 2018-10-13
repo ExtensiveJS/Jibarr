@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 import MediaFileSync.checkFolder
 from .models import Media
+from .models2 import Movies
 
 
 def syncprocessor(request):
@@ -29,6 +30,7 @@ def runsimulated(request):
 
 def index(request):
     media_list = Media.objects.all() #.objects.order_by(id)
+    radarr_list = Movies.objects.using("radarr").all()
    
     strPage = "<html><body style='background-color:black;'>"
     strPage += "<div style='position:relative;'>"
@@ -48,9 +50,22 @@ def index(request):
     for val in media_list:
     #    #strPage += val
     #    ms = Media.objects.get(id=1).media_source
-        strPage += "<tr><td>" + str(val.id) + "</td>"
+        strPage += "<tr><td>" + str(val.media_id) + "</td>"
         strPage += "<td>" + val.media_source + "</td>"
         strPage += "<td>" + val.media_lastUpd.strftime("%Y-%m-%d %H:%M:%S") + "</td></tr>"
+    strPage += "</tbody></table>"
+    strPage += "</div>"
+
+    strPage += "<div style='background-color:whitesmoke;margin:20px 150px auto 150px;color:black;padding:5px;'>"
+    strPage += "<table style='width:100%;'><thead><tr><th style='text-align:left;'>id</th>"
+    strPage += "<th style='text-align:left;'>title</th>"
+    strPage += "<th style='text-align:left;'>lastUpd</th></tr></thead><tbody>"
+    for val in radarr_list:
+    #    #strPage += val
+    #    ms = Media.objects.get(id=1).media_source
+        strPage += "<tr><td>" + str(val.id) + "</td>"
+        strPage += "<td>" + val.title + "</td>"
+        strPage += "<td>" + val.lastinfosync.strftime("%Y-%m-%d %H:%M:%S") + "</td></tr>"
     strPage += "</tbody></table>"
     strPage += "</div>"
 
