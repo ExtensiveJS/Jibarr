@@ -29,6 +29,16 @@ def runsimulated(request):
     return HttpResponseRedirect("http://google.com")
 
 def index(request):
+    media_list = Media.objects.all() 
+    radarr_list = Movies.objects.using("radarr").all()
+    context = {
+        'media_list': media_list,
+        'radarr_list': radarr_list
+    }
+    template = loader.get_template("MediaFileSync/index.html")
+    return HttpResponse(template.render(context, request))
+
+def index_old(request):
     media_list = Media.objects.all() #.objects.order_by(id)
     radarr_list = Movies.objects.using("radarr").all()
    

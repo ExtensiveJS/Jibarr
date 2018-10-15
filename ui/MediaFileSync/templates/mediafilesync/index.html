@@ -1,9 +1,41 @@
+{% extends "./base.html" %}
 {% load static %}
+{% block content %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'mediafilesync/styles.css' %}">
+<div style='background-color:whitesmoke;margin:20px 150px auto 150px;color:black;padding:5px;'>
+    <table style='width:100%;'>
+        <thead><tr><th style='text-align:left;'>id</th>
+            <th style='text-align:left;'>source</th>
+            <th style='text-align:left;'>lastUpd</th></tr>
+        </thead>
+        <tbody>
+            {% for val in media_list %}
+                <tr>
+                    <td>{{ val.media_id }}</td>
+                    <td>{{ val.media_source }}</td>
+                    <td>{{ val.media_lastUpd }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-<strong>This is from the template</strong><br />
-<ul>
-    Pages
-    <li><a href="./Simulated">Simulated Mode</a></li>
-</ul>
+<div style='background-color:whitesmoke;margin:20px 150px auto 150px;color:black;padding:5px;'>
+    <table style='width:100%;'>
+        <thead><tr><th style='text-align:left;'>id</th>
+            <th style='text-align:left;'>source</th>
+            <th style='text-align:left;'>lastUpd</th></tr>
+        </thead>
+        <tbody>
+            {% for val in radarr_list %}
+                <tr>
+                    <td>{{ val.id }}</td>
+                    <td>{{ val.title }}</td>
+                    <td>{{ val.lastinfosync }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
