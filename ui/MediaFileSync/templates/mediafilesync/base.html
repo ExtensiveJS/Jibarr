@@ -2,22 +2,21 @@
 <html lang="en">
     <head>
         <link rel="stylesheet" type="text/css" href="{% static 'mediafilesync/styles.css' %}">
-        <title>{% block title %}MediaFileSync{% endblock %}</title>
+        <title>{% block title %}{% endblock %} - MediaFileSync</title>
     </head>
-    <body style='background-color:black;'>"
-            
-                    
-<div style='position:relative;'>"
-    <!-- HEADER MENU -->
-    <div style='margin:50px 150px auto 150px;height:130px;color:white;'>
-        <div style='width:160px;text-align:center;float:left;'><a href="/mediafilesync/"><img src="{% static 'mediafilesync/images/MFS_logo.png' %}" class="mfs_logo"></a></div>
-        <div style='width:100px;text-align:center;float:left;'>LIST</div>
-        <div style='width:100px;text-align:center;float:left;'>PROFILES</div>
-        <div style='width:100px;text-align:center;float:left;'>SETTINGS</div>
-    </div>
-    <div id="content">
-        {% block content %}{% endblock %}
-    </div>
-</div>
-</body>
+    <body style='background-color:#1F1E1E;margin:0px;'>         
+        <div style='position:relative;'>"
+            <!-- HEADER MENU -->
+            <div style='margin:5px 110px auto 110px;height:160px;color:white;'>
+                <div style='width:160px;text-align:center;float:left;'><a href="/mediafilesync/"><img src="{% static 'mediafilesync/images/MFS_logo.png' %}" class="mfs_logo"></a></div>
+                <div style='width:100px;text-align:center;float:left;padding:20px;text-align:center;'>img<br />LIST</div>
+                <div style='width:100px;text-align:center;float:left;padding:20px;'>img<br />PROFILES</div>
+                <div style='width:100px;text-align:center;float:left;padding:20px;'>img<br />SETTINGS</div>
+                <div style='width:100px;text-align:center;float:left;padding:20px;'>img<br />DONATE</div>
+            </div>
+            <div id="content" style="background-color:yellow;">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </body>
 </html>

@@ -31,9 +31,18 @@ def runsimulated(request):
 def index(request):
     media_list = Media.objects.all() 
     radarr_list = Movies.objects.using("radarr").all()
+    filtered_list = []
+
+    for val in radarr_list:
+        for val2 in media_list:
+            if val.id == val2.media_id:
+                filtered_list.append(val)
+
+
     context = {
         'media_list': media_list,
-        'radarr_list': radarr_list
+        'radarr_list': radarr_list,
+        'filtered_list': filtered_list
     }
     template = loader.get_template("MediaFileSync/index.html")
     return HttpResponse(template.render(context, request))

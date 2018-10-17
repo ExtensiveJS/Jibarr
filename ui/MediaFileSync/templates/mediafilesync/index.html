@@ -1,41 +1,35 @@
 {% extends "./base.html" %}
 {% load static %}
+{% block title %}Movie List{% endblock title %}
 {% block content %}
-
-<div style='background-color:whitesmoke;margin:20px 150px auto 150px;color:black;padding:5px;'>
-    <table style='width:100%;'>
-        <thead><tr><th style='text-align:left;'>id</th>
-            <th style='text-align:left;'>source</th>
-            <th style='text-align:left;'>lastUpd</th></tr>
+<div style='background-color:whitesmoke;color:black;padding:5px;'>
+    <div style="margin:5px 5px 20px auto;float:right;border:1px dotted silver;height:20px;padding:3px;border-radius:5px;background-color:lightblue;">
+        <div style="float:left;margin:auto 5px;background-color:teal;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">monitored only</div>
+        <div style="float:left;margin:auto 5px;background-color:white;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">unmonitored only</div>
+        <div style="float:left;margin:auto 5px;background-color:white;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">All</div>
+        <div style="float:left;margin:auto 5px;background-color:white;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">Available</div>
+    </div>
+    <table style='width:100%;padding-left:20px;padding-right:20px;border-spacing:0px;'>
+        <thead>
+            <tr>
+                <th style='height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'><input type="checkbox" /></th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+            </tr>
         </thead>
         <tbody>
-            {% for val in media_list %}
+            {% for val in filtered_list %}
                 <tr>
-                    <td>{{ val.media_id }}</td>
-                    <td>{{ val.media_source }}</td>
-                    <td>{{ val.media_lastUpd }}</td>
+                    <td style="border-bottom:1px solid gray;display:none;">{{ val.id }}</td>
+                    <td style="height:30px;border-bottom:1px solid gray;"><input type="checkbox" /></td>
+                    <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
+                    <td style="border-bottom:1px solid gray;">{{ val.year }}</td>
+                    <td style="border-bottom:1px solid gray;">{{ val.lastinfosync }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
-<div style='background-color:whitesmoke;margin:20px 150px auto 150px;color:black;padding:5px;'>
-    <table style='width:100%;'>
-        <thead><tr><th style='text-align:left;'>id</th>
-            <th style='text-align:left;'>source</th>
-            <th style='text-align:left;'>lastUpd</th></tr>
-        </thead>
-        <tbody>
-            {% for val in radarr_list %}
-                <tr>
-                    <td>{{ val.id }}</td>
-                    <td>{{ val.title }}</td>
-                    <td>{{ val.lastinfosync }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
 {% endblock content %}
