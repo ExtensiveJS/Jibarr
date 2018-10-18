@@ -4,3 +4,6 @@ li a {
 .mfs_logo {}
 
 table {}
+
+a {text-decoration:none;color:blue;}
+a:hover {background-color:lightblue;}

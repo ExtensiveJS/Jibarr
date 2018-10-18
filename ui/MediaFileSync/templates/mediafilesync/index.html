@@ -12,11 +12,14 @@
     <table style='width:100%;padding-left:20px;padding-right:20px;border-spacing:0px;'>
         <thead>
             <tr>
-                <th style='height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'><input type="checkbox" /></th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+                <th colspan="5" style="background-color:lightblue;font-size:larger;border-bottom:1px dotted grey;">Movies</th>
+            </tr>
+            <tr>
+                <th style='background-color:lightblue;height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'><input type="checkbox" /></th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Title</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Released</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +33,36 @@
                 </tr>
             {% endfor %}
         </tbody>
+    </table>
+    <br />
+    <table style='width:100%;padding-left:20px;padding-right:20px;border-spacing:0px;display:none;'>
+        <thead>
+            <tr>
+                <th colspan="5" style="background-color:lightblue;font-size:larger;border-bottom:1px dotted grey;">TV Shows</th>
+            </tr>
+            <tr>
+                <th style='background-color:lightblue;height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'><input type="checkbox" /></th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Title</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Released</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+            </tr>
+        </thead>
+    </table>
+    <br />
+    <table style='width:100%;padding-left:20px;padding-right:20px;border-spacing:0px;display:none;'>
+        <thead>
+            <tr>
+                <th colspan="5" style="background-color:lightblue;font-size:larger;border-bottom:1px dotted grey;">Music</th>
+            </tr>
+            <tr>
+                <th style='background-color:lightblue;height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'><input type="checkbox" /></th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Title</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Released</th>
+                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+            </tr>
+        </thead>
     </table>
 </div>
 {% endblock content %}

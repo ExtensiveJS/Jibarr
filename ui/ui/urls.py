@@ -18,5 +18,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path('MediaFileSync/', include('MediaFileSync.urls')),
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
+    path('mediafilesync/', include('MediaFileSync.urls')),
 ]
