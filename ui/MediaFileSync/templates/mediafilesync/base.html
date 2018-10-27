@@ -2,21 +2,22 @@
 <html lang="en">
     <head>
         <link rel="stylesheet" type="text/css" href="{% static 'mediafilesync/styles.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'mediafilesync/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
         <title>{% block title %}{% endblock %} - MediaFileSync</title>
     </head>
     <body style='background-color:#1F1E1E;margin:0px;'>         
         <div style='position:relative;'>"
             <!-- HEADER MENU -->
-            <div style='margin:5px 110px auto 110px;height:155px;color:white;'>
+            <div style='margin:5px 110px auto 110px;height:155px;color:white;' class="HEADERMENU">
                 <div style='width:160px;text-align:center;float:left;'><a href="/mediafilesync/"><img src="{% static 'mediafilesync/images/MFS_logo.png' %}" class="mfs_logo"></a></div>
-                <div style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'>MOVIES</div>
-                <div style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'>TV</div>
-                <div style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'>MUSIC</div>
-                <div style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>PROFILES</div>
-                <div style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>SETTINGS</div>
-                <div style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>DONATE</div>
+                {% if system_settings.radarr_enabled == 1 %}<div class="HEADERITEM"><a href="">MOVIES</a></div>{% endif %}
+                {% if system_settings.sonarr_enabled == 1 %}<div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'><a href="">TV</a></div>{% endif %}
+                {% if system_settings.lidarr_enabled == 1 %}<div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'><a href="">MUSIC</a></div>{% endif %}
+                <div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'><a href="/MediaFileSync/profiles">PROFILES</a></div>
+                <div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'><a href="/MediaFileSync/settings">SETTINGS</a></div>
+                <div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'><a href="/MediaFileSync/donate">DONATE</a></div>
             </div>
-            <div id="content" style="background-color:yellow;">
+            <div id="content">
                 {% block content %}{% endblock %}
             </div>
         </div>

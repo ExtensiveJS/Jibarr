@@ -20,4 +20,5 @@ urlpatterns = [
     path('MediaFileSync/', include('MediaFileSync.urls')),
     #path('admin/', admin.site.urls),
     path('mediafilesync/', include('MediaFileSync.urls')),
+    
 ]

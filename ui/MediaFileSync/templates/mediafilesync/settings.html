@@ -1,5 +1,22 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block content %}
- SETTINGS
+
+<div class='CONTAINER' style="font-size:larger;">
+    <h2>Settings</h2><br />
+
+    <div style="margin-left:15px;padding-left:25px;background-color:lightblue;font-weight:bold;width:350px;">Movies</div>
+    <div style="float:left;width:200px;text-align:right;padding-right:5px;">RADARR Enabled:</div><div sty="float:left;width:auto;"><input type="checkbox" id="chkRadarrEnabled" {% if system_settings.radarr_enabled %} checked {% endif %} /></div>
+    <div style="float:left;width:200px;text-align:right;padding-right:5px;">RADARR Path:</div><div sty="float:left;width:auto;"><input type="text" id="txtRadarrPath" value="{{ system_settings.radarr_path }}" /></div>
+
+    <div style="margin-left:15px;padding-left:25px;background-color:lightblue;font-weight:bold;width:350px;">TV Shows</div>
+    <div style="float:left;width:200px;text-align:right;padding-right:5px;">SONARR Enabled:</div><div sty="float:left;width:auto;"><input type="checkbox" id="chkSonarrEnabled" {% if system_settings.sodarr_enabled %} checked {% endif %} /></div>
+    <div style="float:left;width:200px;text-align:right;padding-right:5px;">SONARR Path:</div><div sty="float:left;width:auto;"><input type="text" id="txtSonarrPath" value="{{ system_settings.sonarr_path }}" /></div>
+
+    <div style="margin-left:15px;padding-left:25px;background-color:lightblue;font-weight:bold;width:350px;">Music</div>
+    <div style="float:left;width:200px;text-align:right;padding-right:5px;">LIDARR Enabled:</div><div sty="float:left;width:auto;"><input type="checkbox" id="chkLidarrEnabled" {% if system_settings.lidarr_enabled %} checked {% endif %} /></div>
+    <div style="float:left;width:200px;text-align:right;padding-right:5px;">LIDARR Path:</div><div sty="float:left;width:auto;"><input type="text" id="txtLidarrPath" value="{{ system_settings.lidarr_path }}" /></div>
+    
+</div>
+<div style="text-align:right;" class='CONTAINER' >SAVE</div>
 {% endblock content %}

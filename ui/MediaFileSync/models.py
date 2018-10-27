@@ -23,3 +23,15 @@ class ProfileMedia(models.Model):
     profilemedia_id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     profile_id = models.IntegerField()
     media_id = models.IntegerField()
+
+class Settings(models.Model):
+    id = models.IntegerField(db_column='Id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    radarr_enabled = models.IntegerField(db_column='RADARR_Enabled', null=False)
+    radarr_path =  models.TextField(db_column='RADARR_Path')
+    sonarr_enabled = models.IntegerField(db_column='SONARR_Enabled', null=False)
+    sonarr_path =  models.TextField(db_column='SONARR_Path')
+    lidarr_enabled = models.IntegerField(db_column='LIDARR_Enabled', null=False)
+    lidarr_path =  models.TextField(db_column='LIDARR_Path')
+    class Meta:
+        managed = False
+        db_table = 'MediaFileSync_settings'
