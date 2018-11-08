@@ -1,5 +1,11 @@
 {% extends "./base.html" %}
 {% load static %}
+{% block title %}Settings{% endblock title %}
+{% block javascript%}
+<script>
+    
+</script>
+{% endblock javascript %}
 {% block content %}
 
 <div class='CONTAINER' style="font-size:larger;">
@@ -10,7 +16,7 @@
     <div style="float:left;width:200px;text-align:right;padding-right:5px;">RADARR Path:</div><div sty="float:left;width:auto;"><input type="text" id="txtRadarrPath" value="{{ system_settings.radarr_path }}" /></div>
 
     <div style="margin-left:15px;padding-left:25px;background-color:lightblue;font-weight:bold;width:350px;">TV Shows</div>
-    <div style="float:left;width:200px;text-align:right;padding-right:5px;">SONARR Enabled:</div><div sty="float:left;width:auto;"><input type="checkbox" id="chkSonarrEnabled" {% if system_settings.sodarr_enabled %} checked {% endif %} /></div>
+    <div style="float:left;width:200px;text-align:right;padding-right:5px;">SONARR Enabled:</div><div sty="float:left;width:auto;"><input type="checkbox" id="chkSonarrEnabled" {% if system_settings.sonarr_enabled %} checked {% endif %} /></div>
     <div style="float:left;width:200px;text-align:right;padding-right:5px;">SONARR Path:</div><div sty="float:left;width:auto;"><input type="text" id="txtSonarrPath" value="{{ system_settings.sonarr_path }}" /></div>
 
     <div style="margin-left:15px;padding-left:25px;background-color:lightblue;font-weight:bold;width:350px;">Music</div>
@@ -18,5 +24,37 @@
     <div style="float:left;width:200px;text-align:right;padding-right:5px;">LIDARR Path:</div><div sty="float:left;width:auto;"><input type="text" id="txtLidarrPath" value="{{ system_settings.lidarr_path }}" /></div>
     
 </div>
-<div style="text-align:right;" class='CONTAINER' >SAVE</div>
+<div style="text-align:right;" class='CONTAINER' >
+    <input type="button" class="button" value="Save" onclick="testThis();" />
+</div>
 {% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+    });
+    function testThis() {
+        var radChk = ($("#chkRadarrEnabled").is(':checked') === true) ? 1 : 0;
+        var sonChk = ($("#chkSonarrEnabled").is(':checked') === true) ? 1 : 0;
+        var lidChk = ($("#chkLidarrEnabled").is(':checked') === true) ? 1 : 0;
+        $.ajax({
+            url : '/api/settings/1/',
+            type : 'POST',
+            data: { id: 1, 
+                radarr_enabled: radChk, 
+                radarr_path: $("#txtRadarrPath").val(), 
+                sonarr_enabled: sonChk, 
+                sonarr_path: $("#txtSonarrPath").val(), 
+                lidarr_enabled: lidChk, 
+                lidarr_path: $("#txtLidarrPath").val()},
+            success: function(data)
+            {
+                //alert('success');
+                location.reload(true);
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+</script>
+{% endblock postbody %}

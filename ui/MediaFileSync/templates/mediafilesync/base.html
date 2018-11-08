@@ -4,6 +4,8 @@
         <link rel="stylesheet" type="text/css" href="{% static 'mediafilesync/styles.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'mediafilesync/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
         <title>{% block title %}{% endblock %} - MediaFileSync</title>
+        <script src="https://code.jquery.com/jquery-3.3.1.js" %}"></script>
+        {% block javascript %}{% endblock javascript %}
     </head>
     <body style='background-color:#1F1E1E;margin:0px;'>         
         <div style='position:relative;'>"
@@ -21,5 +23,6 @@
                 {% block content %}{% endblock %}
             </div>
         </div>
+        {% block postbody %}{% endblock postbody %}
     </body>
 </html>
