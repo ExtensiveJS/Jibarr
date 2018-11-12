@@ -10,7 +10,7 @@
         <div style="float:left;margin:auto 5px;background-color:white;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">Available</div>
     </div>
     {% if system_settings.radarr_enabled == 1 %}
-    <table style='width:100%;padding-left:20px;padding-right:20px;border-spacing:0px;' class="LISTTABLE">
+    <table id="tblMovies" style='width:100%;padding-left:20px;padding-right:20px;' class="">
         <thead>
             <tr>
                 <th colspan="5" style="background-color:lightblue;font-size:larger;border-bottom:1px dotted grey;">Movies</th>
@@ -70,7 +70,18 @@
         </thead>
     </table>
     <br />
+    sdfsdafsd
     {% endif %}
 
 </div>
 {% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+        $("#tblMovies").DataTable({
+        "order": [[ 1, "asc" ]]
+        }
+        );
+    });
+</script>
+{% endblock postbody %}

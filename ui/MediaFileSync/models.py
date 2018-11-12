@@ -1,6 +1,12 @@
 import datetime
 from django.db import models
 from django.utils import timezone
+from django.views.generic.detail import SingleObjectMixin
+from django.views import View
+import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from urllib.request import urlopen
 
 # Create your models here.
 
@@ -28,6 +34,7 @@ class Settings(models.Model):
     id = models.IntegerField(db_column='Id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     radarr_enabled = models.IntegerField(db_column='RADARR_Enabled', null=False)
     radarr_path =  models.TextField(db_column='RADARR_Path')
+    radarr_apikey = models.TextField(db_column='RADARR_APIKey')
     sonarr_enabled = models.IntegerField(db_column='SONARR_Enabled', null=False)
     sonarr_path =  models.TextField(db_column='SONARR_Path')
     lidarr_enabled = models.IntegerField(db_column='LIDARR_Enabled', null=False)
@@ -35,3 +42,61 @@ class Settings(models.Model):
     class Meta:
         managed = False
         db_table = 'MediaFileSync_settings'
+
+class mfsMovie(object):
+    media_id = 0
+    title = ""
+    tmdbid = ""
+    releaseDate = ""
+    lastUpdt = ""
+    isMonitored = False
+    isNewer = False
+    class Meta:
+        managed = False
+    def new(self):
+        self.media_id = 0
+        self.title = ""
+        self.tmdbid = ""
+        self.releaseDate = ""
+        self.lastUpdt = ""
+        self.isMonitored = False
+        self.isNewer = False
+        return(self)
+    def __init__(self):
+        self.media_id = 0
+        self.title = ""
+        self.tmdbid = ""
+        self.releaseDate = ""
+        self.lastUpdt = ""
+        self.isMonitored = False
+        self.isNewer = False    
+
+class radarrMovieList(list):
+    movielist = []
+    class Meta:
+        managed = False
+    def __init__(self):
+        #data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
+        #output = json.loads(data)
+        #for var in output:
+            rm = radarrMovie()
+            rm.title = "joe vs the volcano" # var['title']
+            self.movielist.append(rm)
+
+class radarrMovie(object):
+    # properties here
+    r_id = 0
+    title = "asd"
+    inCinemas = ""
+    dateAdded = ""
+    class Meta:
+        managed = False
+    def __init__(self):
+    #    data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
+    #    output = json.loads(data)
+    #    #self.r_id = output[1].id
+        self.title = "qwer" #output[1]['title']
+    #    #self.inCinemas = output[1].inCinemas
+    #    #self.dateAdded = output[1].movieFile.dateAdded
+        
+        

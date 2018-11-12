@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^profiles/', views.profiles, name='profiles'),
     url(r'^settings/', views.settings, name='settings'),
     url(r'^donate/', views.donate, name='donate'),
+    url(r'^movies/', views.movies, name='movies'),
     url(r'^', views.index, name='index'),
     
 ]

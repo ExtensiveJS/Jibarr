@@ -1,13 +1,13 @@
 import time
+import types
 from time import mktime
 from datetime import datetime
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 import MediaFileSync.checkFolder
-from .models import Media, Settings
+from .models import Media, Settings, mfsMovie, radarrMovie, radarrMovieList
 from .models2 import Movies
-
 
 def syncprocessor(request):
     #runSimulate = True
@@ -71,6 +71,33 @@ def donate(request):
         'system_settings': system_settings
     }
     template = loader.get_template("MediaFileSync/donate.html")
+    return HttpResponse(template.render(context, request))
+
+def movies(request):
+    system_settings = Settings.objects.all()[:1].get()
+
+    media_list = Media.objects.all()
+    radarr_list = Movies.objects.using("radarr").all()
+    json_list = radarrMovieList()
+    movie_list = []
+    for val in radarr_list:
+        mfsM = mfsMovie()
+        mfsM.title = val.title
+        mfsM.tmdbid = val.tmdbid
+        mfsM.releaseDate = val.incinemas
+        mfsM.lastUpdt = val.lastdisksync
+        for val2 in media_list:
+            if val.id == val2.media_source_id:
+                mfsM.media_id = val2.media_id
+                mfsM.isMonitored = True
+                #mfsM.isNewer = False
+        movie_list.append(mfsM)
+    context = {
+        'system_settings': system_settings,
+        'movie_list': movie_list,
+        'testitem': json_list
+    }
+    template = loader.get_template("MediaFileSync/movies.html")
     return HttpResponse(template.render(context, request))
 
 def index_old(request):

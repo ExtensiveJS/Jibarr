@@ -2,9 +2,7 @@
 {% load static %}
 {% block title %}Settings{% endblock title %}
 {% block javascript%}
-<script>
-    
-</script>
+
 {% endblock javascript %}
 {% block content %}
 
@@ -12,9 +10,18 @@
     <h2>Settings</h2><br />
 
     <div style="margin-left:15px;padding-left:25px;background-color:lightblue;font-weight:bold;width:350px;">Movies</div>
-    <div style="float:left;width:200px;text-align:right;padding-right:5px;">RADARR Enabled:</div><div sty="float:left;width:auto;"><input type="checkbox" id="chkRadarrEnabled" {% if system_settings.radarr_enabled %} checked {% endif %} /></div>
-    <div style="float:left;width:200px;text-align:right;padding-right:5px;">RADARR Path:</div><div sty="float:left;width:auto;"><input type="text" id="txtRadarrPath" value="{{ system_settings.radarr_path }}" /></div>
-
+    <div style="width:auto;height:30px;">
+        <div style="float:left;width:200px;text-align:right;padding-right:5px;">RADARR Enabled:</div>
+        <div sty="float:left;width:auto;"><input type="checkbox" id="chkRadarrEnabled" {% if system_settings.radarr_enabled %} checked {% endif %} /></div>
+    </div>
+    <div style="width:auto;height:30px;">
+        <div style="float:left;width:200px;text-align:right;padding-right:5px;">RADARR Path:</div>
+        <div sty="float:left;width:auto;"><input style="font-size:small;width:250px;" type="text" id="txtRadarrPath" value="{{ system_settings.radarr_path }}" /></div>
+    </div>
+    <div style="width:auto;height:30px;">
+        <div style="float:left;width:200px;text-align:right;padding-right:5px;">RADARR APIKey:</div>
+        <div sty="float:left;width:auto;"><input style="font-size:small;width:250px;" type="text" id="txtRadarrAPIKey" value="{{ system_settings.radarr_apikey }}" /></div>
+    </div>
     <div style="margin-left:15px;padding-left:25px;background-color:lightblue;font-weight:bold;width:350px;">TV Shows</div>
     <div style="float:left;width:200px;text-align:right;padding-right:5px;">SONARR Enabled:</div><div sty="float:left;width:auto;"><input type="checkbox" id="chkSonarrEnabled" {% if system_settings.sonarr_enabled %} checked {% endif %} /></div>
     <div style="float:left;width:200px;text-align:right;padding-right:5px;">SONARR Path:</div><div sty="float:left;width:auto;"><input type="text" id="txtSonarrPath" value="{{ system_settings.sonarr_path }}" /></div>
@@ -42,6 +49,7 @@
             data: { id: 1, 
                 radarr_enabled: radChk, 
                 radarr_path: $("#txtRadarrPath").val(), 
+                radarr_apikey: $("#txtRadarrAPIKey").val(),
                 sonarr_enabled: sonChk, 
                 sonarr_path: $("#txtSonarrPath").val(), 
                 lidarr_enabled: lidChk, 
