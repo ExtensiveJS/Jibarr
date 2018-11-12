@@ -76,19 +76,27 @@ class radarrMovieList(list):
     class Meta:
         managed = False
     def __init__(self):
-        #data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
-        #output = json.loads(data)
-        #for var in output:
+        data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
+        output = json.loads(data)
+        self.movielist = []
+        for var in output:
             rm = radarrMovie()
-            rm.title = "joe vs the volcano" # var['title']
+            rm.title = var['title']
+            rm.r_id = var['id']
+            rm.releaseDate = var['inCinemas']
+            rm.lastUpdt = var['movieFile']['dateAdded']
             self.movielist.append(rm)
 
 class radarrMovie(object):
     # properties here
     r_id = 0
-    title = "asd"
-    inCinemas = ""
-    dateAdded = ""
+    media_id = 0
+    title = ""
+    tmdbid = ""
+    releaseDate = ""
+    lastUpdt = ""
+    isMonitored = False
+    isNewer = False
     class Meta:
         managed = False
     def __init__(self):

@@ -15,20 +15,20 @@
         <i style="padding-right:3px;" class='glyphicon glyphicon-save' title='Sync Needed'></i>
         <i style="padding-right:3px;" class='glyphicon glyphicon-saved' title='Synced'></i>
     </div>
-    <table id="tblMovies" class="" style='width:100%;padding-left:20px;padding-right:20px;' class="">
+    <table id="tblMovies" class="" style='width:100%;' class="">
             <thead>
                 <tr>
-                    <th style='background-color:lightblue;height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
+                    <th style='display:none;'>id</th>
                     <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Title</th>
                     <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Released</th>
                     <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
-                    <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>={{ testitem.movielist }}=</th>
+                    <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
                 </tr>
             </thead>
             <tbody>
-                    {% for val in movie_list %}
+                    {% for val in testitem.movielist %}
                         <tr>
-                            <td style="border-bottom:1px solid gray;display:none;">{{ val.media_id }}</td>
+                            <td style="display:none;">{{ val.media_id }}</td>
                             <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
                             <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
                             <td style="border-bottom:1px solid gray;">{{ val.lastUpdt }}</td>
@@ -37,7 +37,6 @@
                     {% endfor %}
                 </tbody>
         </table>
-        
 </div>
 {% endblock content %}
 {% block postbody %}
