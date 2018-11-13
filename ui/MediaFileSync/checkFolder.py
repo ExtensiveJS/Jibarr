@@ -3,8 +3,9 @@
 # all NEWER files get synced
 
 import os
-import MediaFileSync.copyTheFile
+from MediaFileSync.copyTheFile import copyTheFile
 from datetime import datetime
+
 def checkFolder(homeDir, destDir, startDateTime, strPage, runSimulate):
     strPage += "Running Folder Checks.<br />"
     for x in os.listdir(homeDir):
@@ -30,7 +31,7 @@ def checkFolder(homeDir, destDir, startDateTime, strPage, runSimulate):
                     os.makedirs(destDir)
                 else:
                     strPage += "Creating Folder - " + destDir + x + "<br />"
-                MediaFileSync.copyTheFile.copyTheFile(homeDir + x,destDir + x, strPage, runSimulate)
+                copyTheFile(homeDir + x,destDir + x, strPage, runSimulate)
         else:
             strPage += "OTHER FOUND - " + x + "<br />"
     return strPage
