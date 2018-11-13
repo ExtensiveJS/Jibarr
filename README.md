@@ -17,8 +17,10 @@ Features that would be ideal to include:
 * ability to pull data from RADARR for a listing of entries to include
 
 To Run/Install
+* Using pip install -r requirements.txt OR
 * Install Python 3.7
 * Install DJango
+* Install djangorestframework
 * Run django (point it to the ui\manage.py )
     * PYTHON.EXE \path\to\ui\manage.py runserver 8125
 * Open a web browser to http://localhost:8125/MediaFileSync
