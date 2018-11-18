@@ -1,13 +1,14 @@
 from django.conf.urls import url, include
 #from django.urls import path
 from rest_framework import routers
+from django.urls import path
 
 from . import views
 # profiles
 # settings
 # dontate
 urlpatterns = [
-    #path('', views.index, name='index'),
+    path('', views.index, name='index'),
     #path('SyncProcessor', views.syncprocessor, name='syncprocessor'),
     #path('Simulated', views.simulated, name='simulated'),
     #path('runsimulated', views.runsimulated, name='runsimulated'),
@@ -22,6 +23,6 @@ urlpatterns = [
     url(r'^settings/', views.settings, name='settings'),
     url(r'^donate/', views.donate, name='donate'),
     url(r'^movies/', views.movies, name='movies'),
-    url(r'^', views.index, name='index'),
+    #url(r'^', views.index, name='index'),
     
 ]
