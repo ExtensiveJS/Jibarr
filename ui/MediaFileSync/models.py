@@ -21,10 +21,10 @@ class Media(models.Model):
         return self.media_lastUpd >= timezone.now() - datetime.timedelta(days=1)
 
 class Profile(models.Model):
-    profile_id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     profile_name = models.CharField(max_length=200)
-    profile_lastUpd = models.DateTimeField()
-    
+    profile_lastRun = models.CharField(max_length=200)
+
 class ProfileMedia(models.Model):
     profilemedia_id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     profile_id = models.IntegerField()

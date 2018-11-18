@@ -32,7 +32,18 @@
                             <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
                             <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
                             <td style="border-bottom:1px solid gray;">{{ val.lastUpdt }}</td>
-                            <td style="border-bottom:1px solid gray;">{{ val.isMonitored }}<br />{{ val.isNewer }}</td>
+                            <td style="border-bottom:1px solid gray;">
+                                {% if val.isMonitored %}
+                                <i class="glyphicon glyphicon-star" title="Monitored"></i>
+                                {% else %}
+                                <i class="glyphicon glyphicon-star-empty" title="Un-Monitored"></i>
+                                {% endif %}
+                                {% if val.isNewer %}
+                                <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+                                {% else %}
+                                <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

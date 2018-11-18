@@ -16,9 +16,9 @@ urlpatterns = [
     #path('settings', views.settings, name='settings'),
     #path('donate', views.donate, name='donate'),
 
-    url(r'^syncprocessor/', views.syncprocessor, name='syncprocessor'),
-    url(r'^simulated/', views.simulated, name='simulated'),
-    url(r'^runsimulated/', views.runsimulated, name='runsimulated'),
+    #url(r'^syncprocessor/', views.syncprocessor, name='syncprocessor'),
+    #url(r'^simulated/', views.simulated, name='simulated'),
+    #url(r'^runsimulated/', views.runsimulated, name='runsimulated'),
     url(r'^profiles/', views.profiles, name='profiles'),
     url(r'^settings/', views.settings, name='settings'),
     url(r'^donate/', views.donate, name='donate'),
