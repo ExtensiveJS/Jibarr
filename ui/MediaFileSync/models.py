@@ -77,7 +77,7 @@ class radarrMovieList(list):
     class Meta:
         managed = False
     def __init__(self):
-        data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
+        data = urlopen("http://192.168.1.100:7878/api/movie?apikey=d06b8e1d80f94e6e9ac4d4cc6716404a").read()
         output = json.loads(data)
         self.movielist = []
         cnt = 0
@@ -86,10 +86,17 @@ class radarrMovieList(list):
             rm = radarrMovie()
             rm.title = var['title']
             rm.r_id = var['id']
-            rm.releaseDate = var['inCinemas']
-            rm.lastUpdt = var['movieFile']['dateAdded']
-            rm.folderName = var["folderName"]
-            rm.fileName =  var["movieFile"]["relativePath"]
+
+            try:
+                rm.releaseDate = var['inCinemas']
+            except KeyError:
+                pass
+                     
+            if var['hasFile']:
+                rm.lastUpdt = var['movieFile']['dateAdded']
+                rm.folderName = var["folderName"]
+                rm.fileName =  var["movieFile"]["relativePath"]
+          
             #pm_list = ProfileMedia.objects.all()
             #for val2 in pm_list:
             #    if val2.profile_id == 1:
