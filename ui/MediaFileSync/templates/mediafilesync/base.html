@@ -14,12 +14,12 @@
             <!-- HEADER MENU -->
             <div style='margin:5px 110px auto 110px;height:155px;color:white;' class="HEADERMENU">
                 <div style='width:160px;text-align:center;float:left;'><a href="/mediafilesync/"><img src="{% static 'mediafilesync/images/MFS_logo.png' %}" class="mfs_logo"></a></div>
-                {% if system_settings.radarr_enabled == 1 %}<div class="HEADERITEM"><a href="/MediaFileSync/movies">MOVIES</a></div>{% endif %}
-                {% if system_settings.sonarr_enabled == 1 %}<div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'><a href="">TV</a></div>{% endif %}
-                {% if system_settings.lidarr_enabled == 1 %}<div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'><a href="">MUSIC</a></div>{% endif %}
-                <div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'><a href="/MediaFileSync/profiles">PROFILES</a></div>
-                <div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'><a href="/MediaFileSync/settings">SETTINGS</a></div>
-                <div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'><a href="/MediaFileSync/donate">DONATE</a></div>
+                {% if system_settings.radarr_enabled == 1 %}<a href="/MediaFileSync/movies"><div class="HEADERITEM">MOVIES</div></a>{% endif %}
+                {% if system_settings.sonarr_enabled == 1 %}<a href=""><div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'>TV</div></a>{% endif %}
+                {% if system_settings.lidarr_enabled == 1 %}<a href=""><div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;text-align:center;'>MUSIC</div></a>{% endif %}
+                <a href="/MediaFileSync/profiles"><div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>PROFILES</div></a>
+                <a href="/MediaFileSync/settings"><div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>SETTINGS</div></a>
+                <a href="/MediaFileSync/donate"><div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>DONATE</div></a>
             </div>
             <div id="content">
                 {% block content %}{% endblock %}
