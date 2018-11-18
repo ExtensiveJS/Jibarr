@@ -19,10 +19,10 @@
             <thead>
                 <tr>
                     <th style='display:none;'>id</th>
-                    <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Title</th>
-                    <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Released</th>
-                    <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
-                    <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
+                    <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
+                    <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
+                    <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+                    <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +37,12 @@
                     {% endfor %}
                 </tbody>
         </table>
+        <div style="margin-top:20px;margin-bottom:5px;border-top:1px dotted silver;padding-top:5px;">
+            <div style="float:left;width:24%;">total movies: {{ testitem.count }}</div>
+            <div style="float:left;width:24%;">total monitored: 0000</div>
+            <div style="float:left;width:24%;">total synced: 0000</div>
+            <div style="float:left;width:24%;">total not synced: 0000</div>
+        </div>
 </div>
 {% endblock content %}
 {% block postbody %}

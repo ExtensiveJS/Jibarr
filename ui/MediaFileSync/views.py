@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 import MediaFileSync.checkFolder
-from .models import Media, Settings, mfsMovie, radarrMovie, radarrMovieList
+from .models import Media, Settings, radarrMovie, radarrMovieList
 from .models2 import Movies
 
 def syncprocessor(request):
