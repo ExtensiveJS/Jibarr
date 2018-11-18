@@ -21,8 +21,10 @@ class SettingsViewSet(viewsets.ModelViewSet):
         sett.radarr_apikey = request.POST.get('radarr_apikey')
         sett.sonarr_enabled = request.POST.get('sonarr_enabled')
         sett.sonarr_path = request.POST.get('sonarr_path')
+        sett.sonarr_apikey = request.POST.get('sonarr_apikey')
         sett.lidarr_enabled = request.POST.get('lidarr_enabled')
         sett.lidarr_path = request.POST.get('lidarr_path')
+        sett.lidarr_apikey = request.POST.get('lidarr_apikey')
         sett.save()
         return Response("Ok")
 

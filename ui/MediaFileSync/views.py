@@ -10,7 +10,6 @@ from django.template import loader
 from urllib.request import urlopen
 import MediaFileSync.checkFolder
 from .models import Media, Settings, radarrMovie, radarrMovieList, Profile, ProfileMedia
-from .models2 import Movies
 
 #def syncprocessor(request):
 #    #runSimulate = True
@@ -33,19 +32,19 @@ from .models2 import Movies
 
 def index(request):
     media_list = Media.objects.all() 
-    radarr_list = Movies.objects.using("radarr").all()
+    #radarr_list = Movies.objects.using("radarr").all()
     system_settings = Settings.objects.all()[:1].get()
     filtered_list = []
 
-    for val in radarr_list:
-        for val2 in media_list:
-            if val.id == val2.media_id:
-                filtered_list.append(val)
+    #for val in radarr_list:
+    #    for val2 in media_list:
+    #        if val.id == val2.media_id:
+    #            filtered_list.append(val)
 
 
     context = {
         'media_list': media_list,
-        'radarr_list': radarr_list,
+        #'radarr_list': radarr_list,
         'filtered_list': filtered_list,
         'system_settings': system_settings
     }
@@ -82,9 +81,13 @@ def movies(request):
     rML = radarrMovieList()
     rML.movielist.clear
     mList = Media.objects.all()
-    data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
+    #data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
+    data = urlopen(system_settings.radarr_path + "/api/movie?apikey=" + system_settings.radarr_apikey).read()
     output = json.loads(data)
     cnt = 0
+    monCnt = 0
+    monSync = 0
+    monNotSync = 0
     for var in output:
         cnt = cnt + 1
         rm = radarrMovie()
@@ -100,12 +103,14 @@ def movies(request):
             rm.folderName = var["folderName"]
             rm.fileName =  var["movieFile"]["relativePath"]
 
+        rm.rating = var["ratings"]["value"]
         # find the media_id from the Media table
         for mD in mList:
             if mD.media_source_id == var["id"]:
                 rm.media_id = mD.media_id
         if rm.media_id > 0:
             rm.isMonitored = True
+            monCnt = monCnt + 1
         # use the Profile ID and the Media_ID to check the
         #       profile_media table for a entry.
         #if var['movieFile']['dateAdded'] > prof.profile_lastUpd:
@@ -120,10 +125,15 @@ def movies(request):
         #rm.isNewer = lu # lu[:10] + " " + lu[11:16]
         if lr < lu:
             rm.isNewer = True
+            monNotSync = monNotSync + 1
         else: 
             rm.isNewer = False
+            monSync = monSync + 1
         rML.movielist.append(rm)
     rML.count = cnt
+    rML.monitoredCount = monCnt
+    rML.syncCount = monSync
+    rML.notSyncCount = monNotSync
 
     context = {
         'system_settings': system_settings,

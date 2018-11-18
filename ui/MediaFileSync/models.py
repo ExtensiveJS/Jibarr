@@ -37,8 +37,10 @@ class Settings(models.Model):
     radarr_apikey = models.TextField(db_column='RADARR_APIKey')
     sonarr_enabled = models.IntegerField(db_column='SONARR_Enabled', null=False)
     sonarr_path =  models.TextField(db_column='SONARR_Path')
+    sonarr_apikey = models.TextField(db_column='SONARR_APIKey')
     lidarr_enabled = models.IntegerField(db_column='LIDARR_Enabled', null=False)
     lidarr_path =  models.TextField(db_column='LIDARR_Path')
+    lidarr_apikey = models.TextField(db_column='LIDARR_APIKey')
     class Meta:
         managed = False
         db_table = 'MediaFileSync_settings'
@@ -121,6 +123,7 @@ class radarrMovie(object):
     fileName = ""
     isMonitored = False
     isNewer = False
+    rating = 0
     class Meta:
         managed = False
     #def __init__(self):

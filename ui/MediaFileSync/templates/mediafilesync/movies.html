@@ -10,16 +10,17 @@
     <div style='float:left;width:30px;display:none;' id='divWaiting'>..waiting..</div>
     <div style="margin:5px 5px 20px auto;float:right;border:1px dotted silver;height:25px;padding:3px;border-radius:5px;background-color:lightblue;">
         <i style="padding-left:3px;padding-right:3px;" class='glyphicon glyphicon-record' title='Show All'></i>
-        <i style="padding-right:3px;" class='glyphicon glyphicon-star-empty' title='Unmonitored'></i>
-        <i style="padding-right:3px;" class='glyphicon glyphicon-star' title='Monitored'></i>
-        <i style="padding-right:3px;" class='glyphicon glyphicon-save' title='Sync Needed'></i>
-        <i style="padding-right:3px;" class='glyphicon glyphicon-saved' title='Synced'></i>
+        <i style="padding-right:3px;" class='glyphicon glyphicon-star-empty' title='Show Unmonitored'></i>
+        <i style="padding-right:3px;" class='glyphicon glyphicon-star' title='Show Monitored'></i>
+        <i style="padding-right:3px;" class='glyphicon glyphicon-save' title='Show Sync Needed'></i>
+        <i style="padding-right:3px;" class='glyphicon glyphicon-saved' title='Show Synced'></i>
     </div>
     <table id="tblMovies" class="" style='width:100%;' class="">
             <thead>
                 <tr>
                     <th style='display:none;'>id</th>
                     <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
+                    <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
                     <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
                     <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
                     <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
@@ -30,6 +31,7 @@
                         <tr>
                             <td style="display:none;">{{ val.media_id }}</td>
                             <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
+                            <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
                             <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
                             <td style="border-bottom:1px solid gray;">{{ val.lastUpdt }}</td>
                             <td style="border-bottom:1px solid gray;">
@@ -50,9 +52,9 @@
         </table>
         <div style="margin-top:20px;margin-bottom:5px;border-top:1px dotted silver;padding-top:5px;">
             <div style="float:left;width:24%;">total movies: {{ testitem.count }}</div>
-            <div style="float:left;width:24%;">total monitored: 0000</div>
-            <div style="float:left;width:24%;">total synced: 0000</div>
-            <div style="float:left;width:24%;">total not synced: 0000</div>
+            <div style="float:left;width:24%;">total monitored: {{ testitem.monitoredCount }}</div>
+            <div style="float:left;width:24%;">total synced: {{ testitem.syncCount }}</div>
+            <div style="float:left;width:24%;">total not synced: {{ testitem.notSyncCount }}</div>
         </div>
 </div>
 {% endblock content %}
