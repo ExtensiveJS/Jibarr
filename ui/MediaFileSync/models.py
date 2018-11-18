@@ -77,7 +77,7 @@ class radarrMovieList(list):
     class Meta:
         managed = False
     def __init__(self):
-        data = urlopen("http://192.168.1.100:7878/api/movie?apikey=d06b8e1d80f94e6e9ac4d4cc6716404a").read()
+        data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
         output = json.loads(data)
         self.movielist = []
         cnt = 0
