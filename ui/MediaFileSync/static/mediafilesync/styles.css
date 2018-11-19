@@ -10,3 +10,6 @@ li a {
 
 .LISTTABLE a {text-decoration:none;color:blue;}
 .LISTTABLE a:hover {background-color:lightslategray;}
+
+.DELBUTTON {padding:5px;border-radius:10px;}
+.DELBUTTON:hover {background-color:lightslategray;color:white;}

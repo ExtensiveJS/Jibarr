@@ -1,7 +1,52 @@
 {% extends "./base.html" %}
 {% load static %}
+{% block title %}Profiles{% endblock title %}
 {% block content %}
-<div class='CONTAINER'>
-    <h2>Profiles</h2><br />
+
+<div class='CONTAINER' style="font-size:larger;">
+    <h2>Profiles [ADD]</h2><br />
+    <table id="tblProfiles">
+        <thead>
+            <tr><th>id</th><th>Name</th><th style="width:150px;">Last Run</th><th style="width:10px;">&nbsp;</th></tr>
+        </thead>
+        <tbody>
+            {% for var in profile_list %}
+            <tr>
+                <td>{{ var.id }}</td>
+                <td>{{ var.profile_name }}</td>
+                <td>{{ var.profile_lastRun }}</td>
+                <td><i class="glyphicon glyphicon-remove-circle DELBUTTON" onclick="delData({{ var.id }});"></i></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
 </div>
 {% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+        $("#tblProfiles").DataTable({
+            "order": [[ 1, "asc" ]],
+            "columnDefs": [
+            {
+                "targets": [ 0 ],
+                "visible": false,
+                "searchable": false
+            },
+            {
+                "targets": [3],
+                "searchable": false,
+                "sortable": false
+            }
+            ]
+        }
+        );
+    });
+    function delData(id) {
+        if(confirm('are you sure?')){
+            alert('yes');
+        }
+    };
+</script>
+{% endblock postbody %}

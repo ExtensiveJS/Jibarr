@@ -53,8 +53,10 @@ def index(request):
 
 def profiles(request):
     system_settings = Settings.objects.all()[:1].get()
+    profile_list = Profile.objects.all()
     context = {
-        'system_settings': system_settings
+        'system_settings': system_settings,
+        'profile_list': profile_list
     }
     template = loader.get_template("MediaFileSync/profiles.html")
     return HttpResponse(template.render(context, request))
@@ -98,6 +100,9 @@ def movies(request):
         rm.folderName = var["folderName"]
         rm.fileName =  var["movieFile"]["relativePath"]
         rm.rating = var["ratings"]["value"]
+        rm.tmdbid = var["tmdbId"]
+        rm.imdbid = var["imdbId"]
+        rm.size = var["movieFile"]["size"]
         # find the media_id from the Media table
         for mD in mList:
             if mD.media_source_id == var["id"]:
