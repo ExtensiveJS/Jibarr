@@ -93,10 +93,16 @@ def movies(request):
         rm = radarrMovie()
         rm.title = var['title']
         rm.r_id = var['id']
-        rm.releaseDate = var['inCinemas']
-        rm.lastUpdt = var['movieFile']['dateAdded']
-        rm.folderName = var["folderName"]
-        rm.fileName =  var["movieFile"]["relativePath"]
+        try:
+            rm.releaseDate = var['inCinemas']
+        except KeyError:
+            pass
+                    
+        if var['hasFile']:
+            rm.lastUpdt = var['movieFile']['dateAdded']
+            rm.folderName = var["folderName"]
+            rm.fileName =  var["movieFile"]["relativePath"]
+
         rm.rating = var["ratings"]["value"]
         # find the media_id from the Media table
         for mD in mList:
@@ -113,7 +119,8 @@ def movies(request):
         lr = datetime.fromtimestamp(mktime(time.strptime(prof.profile_lastRun, "%b %d %Y %I:%M%p")))
         # 2018-10-03T14:39:11.9966581Z
         #lu = datetime.fromtimestamp(mktime(time.strptime(var['movieFile']['dateAdded'], "%Y-%m-%d")))
-        plu = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
+        if var['hasFile']:
+            plu = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
         lu = datetime.fromtimestamp(mktime(time.strptime(plu, "%Y-%m-%d %H:%M")))
         #rm.isNewer = lu # lu[:10] + " " + lu[11:16]
         if lr < lu:
