@@ -4,7 +4,7 @@
 {% block content %}
 
 <div class='CONTAINER' style="font-size:larger;">
-    <h2>Profiles [ADD]</h2><br />
+    <h2>Profiles <i class="glyphicon glyphicon-plus ADDBUTTON" onclick="showAdd();"></i></h2><br />
     <table id="tblProfiles">
         <thead>
             <tr><th>id</th><th>Name</th><th style="width:150px;">Last Run</th><th style="width:10px;">&nbsp;</th></tr>
@@ -20,7 +20,11 @@
             {% endfor %}
         </tbody>
     </table>
-    
+</div>
+<div id="divDialog" title="Create new profile" style="width:360px;">
+    <div style="float:left;width:100px;text-align:right;padding-right:5px;height:35px;">Profile Name:</div>
+    <div style="float:left;width:150px;height:35px;"><input type="text" id="txtNewProfileName" /></div>
+    <div style="margin-top:15px;"><input type="button" style="float:right;" value="Save" onclick="saveNew();"></div>
 </div>
 {% endblock content %}
 {% block postbody %}
@@ -42,10 +46,51 @@
             ]
         }
         );
+        $("#divDialog").dialog({
+            autoOpen: false,
+            modal: true
+        })
     });
+    function showAdd() {
+        $("#divDialog").dialog("open");
+    }
+    function saveNew() {
+        // call save service
+        $.ajax({
+            url : '/api/profile/add/',
+            type : 'POST',
+            data: { 
+                profile_name: $("#txtNewProfileName").val(),
+                profile_lastRun: 'Jan 01 1900 11:59PM'
+            },
+            success: function(data)
+            {
+                //alert('success');
+                location.reload(true);
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
     function delData(id) {
         if(confirm('are you sure?')){
-            alert('yes');
+            // call delete service
+            $.ajax({
+            url : '/api/profile/delete/',
+            type : 'POST',
+            data: { 
+                profile_id: id
+            },
+            success: function(data)
+            {
+                //alert('success');
+                location.reload(true);
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
         }
     };
 </script>

@@ -1,4 +1,4 @@
-from MediaFileSync.models import Settings, Media
+from MediaFileSync.models import Settings, Media, Profile
 from rest_framework import serializers
 
 class SettingsSerializer(serializers.HyperlinkedModelSerializer):
@@ -10,3 +10,8 @@ class MediaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Media
         fields = ('media_id', 'media_source', 'media_source_id', 'media_lastUpd')
+
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('id','profile_name','profile_lastRun')

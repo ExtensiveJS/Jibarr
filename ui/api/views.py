@@ -1,7 +1,7 @@
-from MediaFileSync.models import Settings, Media
+from MediaFileSync.models import Settings, Media, Profile
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import SettingsSerializer, MediaSerializer
+from .serializers import SettingsSerializer, MediaSerializer, ProfileSerializer
 
 
 #class SettingsViewSet(viewsets.ModelViewSet):
@@ -33,9 +33,25 @@ class MediaViewSet(viewsets.ModelViewSet):
     serializer_class = MediaSerializer
     def post(self, request, pk):
         mid = request.POST.get('media_id')
-        med = Media.objects.all()[:mid].get()
+        med = Media.objects.get(id=mid)
         med.media_source = request.POST.get('media_source')
         med.media_source_id = request.POST.get('media_source_id')
         med.media_lastUpd = request.POST.get('media_lastUpd')
         med.save()
+        return Response("Ok")
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    #def post(self, request, pk):
+    def post(self, request, pk):
+        if pk =='add':
+            p = Profile.objects.create()
+            p.profile_name = request.POST.get('profile_name')
+            p.profile_lastRun = request.POST.get('profile_lastRun')
+            p.save()
+        elif pk == 'delete':
+            pid = int(request.POST.get('profile_id'))
+            p = Profile.objects.get(id=pid)
+            p.delete()
         return Response("Ok")

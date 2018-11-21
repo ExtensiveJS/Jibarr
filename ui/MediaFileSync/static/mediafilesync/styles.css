@@ -13,3 +13,6 @@ li a {
 
 .DELBUTTON {padding:5px;border-radius:10px;}
 .DELBUTTON:hover {background-color:lightslategray;color:white;}
+
+.ADDBUTTON {font-size:small;vertical-align:super;cursor:pointer;padding:5px;border-radius:10px;}
+.ADDBUTTON:hover {background-color:lightslategray;color:white;}

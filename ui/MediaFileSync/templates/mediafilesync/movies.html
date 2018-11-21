@@ -16,53 +16,52 @@
         <i style="padding-right:3px;" class='glyphicon glyphicon-saved' title='Show Synced'></i>
     </div>
     <table id="tblMovies" class="" style='width:100%;' class="">
-            <thead>
-                <tr>
-                    <th style='display:none;'>id</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
-                </tr>
-            </thead>
-            <tbody>
-                    {% for val in testitem.movielist %}
-                        <tr>
-                            <td style="display:none;">{{ val.media_id }}</td>
-                            <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
-                            <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
-                            <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
-                            <td style="border-bottom:1px solid gray;">{{ val.lastUpdt }}</td>
-                            <td style="border-bottom:1px solid gray;">
-                                {% if val.isMonitored %}
-                                <i class="glyphicon glyphicon-star" title="Monitored"></i>
-                                {% else %}
-                                <i class="glyphicon glyphicon-star-empty" title="Un-Monitored"></i>
-                                {% endif %}
-                                {% if val.isNewer %}
-                                <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
-                                {% else %}
-                                <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-        </table>
-        <div style="margin-top:20px;margin-bottom:5px;border-top:1px dotted silver;padding-top:5px;">
-            <div style="float:left;width:24%;">total movies: {{ testitem.count }}</div>
-            <div style="float:left;width:24%;">total monitored: {{ testitem.monitoredCount }}</div>
-            <div style="float:left;width:24%;">total synced: {{ testitem.syncCount }}</div>
-            <div style="float:left;width:24%;">total not synced: {{ testitem.notSyncCount }}</div>
-        </div>
+        <thead>
+            <tr>
+                <th style='display:none;'>id</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for val in testitem.movielist %}
+            <tr>
+                <td style="display:none;">{{ val.media_id }}</td>
+                <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
+                <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
+                <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
+                <td style="border-bottom:1px solid gray;">{{ val.lastUpdt }}</td>
+                <td style="border-bottom:1px solid gray;">
+                    {% if val.isMonitored %}
+                    <i class="glyphicon glyphicon-star" title="Monitored"></i>
+                    {% else %}
+                    <i class="glyphicon glyphicon-star-empty" title="Un-Monitored"></i>
+                    {% endif %}
+                    {% if val.isNewer %}
+                    <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+                    {% else %}
+                    <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="margin-top:20px;margin-bottom:5px;border-top:1px dotted silver;padding-top:5px;">
+        <div style="float:left;width:24%;">total movies: {{ testitem.count }}</div>
+        <div style="float:left;width:24%;">total monitored: {{ testitem.monitoredCount }}</div>
+        <div style="float:left;width:24%;">total synced: {{ testitem.syncCount }}</div>
+        <div style="float:left;width:24%;">total not synced: {{ testitem.notSyncCount }}</div>
+    </div>
 </div>
 {% endblock content %}
 {% block postbody %}
 <script>
     $(function () {
         $("#divWaiting").show();
-        //getData();
         $("#tblMovies").DataTable({
             "order": [[ 1, "asc" ]],
             "columnDefs": [
@@ -76,34 +75,5 @@
         );
         $("#divWaiting").hide();
     });
-    function getData() {
-        $.ajax({
-            url : 'http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313',
-            //url: 'http://192.168.0.130:7878/api/movie?apikey=5964eabdc18b4a12aae87cc57d09fcdc',
-            type : 'GET',
-            dataType: "json",
-            success: function(data)
-            {
-                ///alert('success');
-                var t = $("#tblMovies").DataTable();
-                for(var i=0;i<data.length;i++){
-                    //alert(data[i].title);
-                    //$("#tdBody").append("<tr><td style='display:none;'>" + data[i].id + "</td><td><a href='http://themoviedb.org/movie/" + data[i].tmdbId + "' target='_new'>" + data[i].title + "</a></td><td>" + data[i].inCinemas + "</td><td>" + data[i].movieFile.dateAdded + "</td><td><i class='glyphicon glyphicon-star' title='Monitored'></i><i class='glyphicon glyphicon-star-empty' title='Unmonitored'></i><i class='glyphicon glyphicon-save' title='Save'></i><i class='glyphicon glyphicon-saved' title='Saved'></i></td></tr>");
-                    t.row.add( [
-                        data[i].id,
-                        data[i].title,
-                        '1',
-                        //data[i].inCinemas,
-                        '2', //data[i].movieFile.dateAdded,
-                        'icons'
-                    ] ).draw( false );
-                };
-                $("#divWaiting").hide();
-            },
-            fail: function(xhr, textStatus, errorThrown){
-                alert('request failed');
-            }
-        });
-    };
 </script>
 {% endblock postbody %}
