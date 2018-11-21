@@ -9,29 +9,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from urllib.request import urlopen
 import MediaFileSync.checkFolder
-from .models import Media, Settings, radarrMovie, radarrMovieList, Profile, ProfileMedia
-
-#def syncprocessor(request):
-#    #runSimulate = True
-#    #strPage = "...processing started @ " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "<br />"
-#    #lastRun = "Mar 29 1971 6:07PM"
-#    #strPage = MediaFileSync.checkFolder.checkFolder("d:/videos/","d:/temp/", datetime.fromtimestamp(mktime(time.strptime(lastRun, "%b %d %Y %I:%M%p"))), strPage, runSimulate)
-#    #strPage += "...processing ended @ " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-#    #return HttpResponse(strPage)
-#    context = {}
-#    template = loader.get_template("MediaFileSync/index.html")
-#    return HttpResponse(template.render(context, request))
-
-#def simulated(request):
-#    context = {}
-#    template = loader.get_template("MediaFileSync/simulated.html")
-#    return HttpResponse(template.render(context, request))
-
-#def runsimulated(request):
-#    return HttpResponseRedirect("http://google.com")
+from .models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr
 
 def index(request):
-    media_list = Media.objects.all() 
+    media_list = [] 
     #radarr_list = Movies.objects.using("radarr").all()
     system_settings = Settings.objects.all()[:1].get()
     filtered_list = []
@@ -79,11 +60,10 @@ def donate(request):
 
 def movies(request):
     system_settings = Settings.objects.all()[:1].get()
-    prof = Profile.objects.all()[:1].get()
+    prof = Profile.objects.get(id=1)
     rML = radarrMovieList()
     rML.movielist.clear
-    mList = Media.objects.all()
-    #data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
+    prList = ProfileRadarr.objects.filter(profile_id=prof.id)
     data = urlopen(system_settings.radarr_path + "/api/movie?apikey=" + system_settings.radarr_apikey).read()
     output = json.loads(data)
     cnt = 0
@@ -104,15 +84,24 @@ def movies(request):
             rm.lastUpdt = var['movieFile']['dateAdded']
             rm.folderName = var["folderName"]
             rm.fileName =  var["movieFile"]["relativePath"]
-
+            rm.size = var["movieFile"]["size"]
+        
         rm.rating = var["ratings"]["value"]
-        rm.tmdbid = var["tmdbId"]
-        rm.imdbid = var["imdbId"]
-        rm.size = var["movieFile"]["size"]
+
+        try:
+            rm.tmdbid = var["tmdbId"]
+        except KeyError:
+            pass
+        
+        try:
+            rm.imdbid = var["imdbId"]
+        except KeyError:
+            pass
+        
         # find the media_id from the Media table
-        for mD in mList:
-            if mD.media_source_id == var["id"]:
-                rm.media_id = mD.media_id
+        for pr in prList:
+            if pr.radarr_id == var["id"]:
+                rm.media_id = pr.id
         if rm.media_id > 0:
             rm.isMonitored = True
             monCnt = monCnt + 1
@@ -142,7 +131,8 @@ def movies(request):
 
     context = {
         'system_settings': system_settings,
-        'testitem': rML
+        'testitem': rML,
+        'system_profile': prof
     }
     template = loader.get_template("MediaFileSync/movies.html")
     return HttpResponse(template.render(context, request))

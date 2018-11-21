@@ -15,7 +15,7 @@
         <i style="padding-right:3px;" class='glyphicon glyphicon-save' title='Show Sync Needed'></i>
         <i style="padding-right:3px;" class='glyphicon glyphicon-saved' title='Show Synced'></i>
     </div>
-    <table id="tblMovies" class="" style='width:100%;' class="">
+    <table id="tblMovies" class="" style='width:100%;'>
         <thead>
             <tr>
                 <th style='display:none;'>id</th>
@@ -36,9 +36,9 @@
                 <td style="border-bottom:1px solid gray;">{{ val.lastUpdt }}</td>
                 <td style="border-bottom:1px solid gray;">
                     {% if val.isMonitored %}
-                    <i class="glyphicon glyphicon-star" title="Monitored"></i>
+                    <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Monitored" onclick='delMonitor({{ val.media_id }});' ></i>
                     {% else %}
-                    <i class="glyphicon glyphicon-star-empty" title="Un-Monitored"></i>
+                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.r_id }},{{ system_profile.id }});'></i>
                     {% endif %}
                     {% if val.isNewer %}
                     <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
@@ -75,5 +75,42 @@
         );
         $("#divWaiting").hide();
     });
+    function addMonitor(rid,pid) {
+        $.ajax({
+            url : '/api/profileradarr/add/',
+            type : 'POST',
+            data: { 
+                profile_id: pid,
+                radarr_id: rid
+            },
+            success: function(data)
+            {
+                //alert('success');
+                location.reload(true);
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+    function delMonitor(id) {
+        if(confirm('are you sure?')){
+            $.ajax({
+                url : '/api/profileradarr/delete/',
+                type : 'POST',
+                data: { 
+                    prid: id
+                },
+                success: function(data)
+                {
+                    //alert('success');
+                    location.reload(true);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+               }
+            });
+        }
+    }
 </script>
 {% endblock postbody %}

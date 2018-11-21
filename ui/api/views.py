@@ -1,7 +1,7 @@
-from MediaFileSync.models import Settings, Media, Profile
+from MediaFileSync.models import Settings, Profile, ProfileRadarr
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import SettingsSerializer, MediaSerializer, ProfileSerializer
+from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer
 
 
 #class SettingsViewSet(viewsets.ModelViewSet):
@@ -28,18 +28,6 @@ class SettingsViewSet(viewsets.ModelViewSet):
         sett.save()
         return Response("Ok")
 
-class MediaViewSet(viewsets.ModelViewSet):
-    queryset = Media.objects.all()
-    serializer_class = MediaSerializer
-    def post(self, request, pk):
-        mid = request.POST.get('media_id')
-        med = Media.objects.get(id=mid)
-        med.media_source = request.POST.get('media_source')
-        med.media_source_id = request.POST.get('media_source_id')
-        med.media_lastUpd = request.POST.get('media_lastUpd')
-        med.save()
-        return Response("Ok")
-
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
@@ -54,4 +42,19 @@ class ProfileViewSet(viewsets.ModelViewSet):
             pid = int(request.POST.get('profile_id'))
             p = Profile.objects.get(id=pid)
             p.delete()
+        return Response("Ok")
+
+class ProfileRadarrViewSet(viewsets.ModelViewSet):
+    queryset = ProfileRadarr.objects.all()
+    serializer_class = ProfileRadarrSerializer
+    def post(self, request, pk):
+        if pk == 'add':
+            pr = ProfileRadarr.objects.create()
+            pr.profile_id = request.POST.get('profile_id')
+            pr.radarr_id = request.POST.get('radarr_id')
+            pr.save()
+        if pk == 'delete':
+            prid = int(request.POST.get('prid'))
+            pr = ProfileRadarr.objects.get(id=prid)
+            pr.delete()
         return Response("Ok")

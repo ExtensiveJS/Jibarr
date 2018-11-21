@@ -10,25 +10,18 @@ from urllib.request import urlopen
 
 # Create your models here.
 
-class Media(models.Model):
-    media_id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
-    media_source = models.CharField(max_length=200)
-    media_source_id = models.IntegerField()
-    media_lastUpd = models.DateTimeField()
-    #def __str__(self):
-    #    return self.question_text
-    def was_updated_recently(self):
-        return self.media_lastUpd >= timezone.now() - datetime.timedelta(days=1)
+#class Media(models.Model):
+#    media_id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+#    media_source = models.CharField(max_length=200)
+#    media_source_id = models.IntegerField()
+#    media_lastUpd = models.DateTimeField()
+#    #def was_updated_recently(self):
+#    #    return self.media_lastUpd >= timezone.now() - datetime.timedelta(days=1)
 
 class Profile(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     profile_name = models.CharField(max_length=200)
     profile_lastRun = models.CharField(max_length=200)
-
-class ProfileMedia(models.Model):
-    profilemedia_id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
-    profile_id = models.IntegerField()
-    media_id = models.IntegerField()
 
 class Settings(models.Model):
     id = models.IntegerField(db_column='Id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
@@ -43,73 +36,12 @@ class Settings(models.Model):
     lidarr_apikey = models.TextField(db_column='LIDARR_APIKey')
     class Meta:
         managed = False
-        db_table = 'MediaFileSync_settings'
-
-#class mfsMovie(object):
-#    media_id = 0
-#    title = ""
-#    tmdbid = ""
-#    releaseDate = ""
-#    lastUpdt = ""
-#    isMonitored = False
-#    isNewer = False
-#    class Meta:
-#        managed = False
-#    def new(self):
-#        self.media_id = 0
-#        self.title = ""
-#        self.tmdbid = ""
-#        self.releaseDate = ""
-#        self.lastUpdt = ""
-#        self.isMonitored = False
-#        self.isNewer = False
-#        return(self)
-#    def __init__(self):
-#        self.media_id = 0
-#        self.title = ""
-#        self.tmdbid = ""
-#        self.releaseDate = ""
-#        self.lastUpdt = ""
-#        self.isMonitored = False
-#        self.isNewer = False    
+        db_table = 'MediaFileSync_settings'  
 
 class radarrMovieList(list):
      movielist = []
-#     count = 0
-#     class Meta:
-#         managed = False
      def __init__(self):
-#         data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
-#         output = json.loads(data)
         self.movielist = []
-#         cnt = 0
-#         for var in output:
-#             cnt = cnt + 1
-#             rm = radarrMovie()
-#             rm.title = var['title']
-#             rm.r_id = var['id']
-
-#             try:
-#                 rm.releaseDate = var['inCinemas']
-#             except KeyError:
-#                 pass
-                     
-#             if var['hasFile']:
-#                 rm.lastUpdt = var['movieFile']['dateAdded']
-#                 rm.folderName = var["folderName"]
-#                 rm.fileName =  var["movieFile"]["relativePath"]
-          
-#             #pm_list = ProfileMedia.objects.all()
-#             #for val2 in pm_list:
-#             #    if val2.profile_id == 1:
-#             #        if val2.media_source_id == var.r_id:
-#             #            rm.isMonitored = True
-                        
-
-#             rm.media_id = var['id']
-#             rm.isNewer = False
-#             self.movielist.append(rm)
-#         self.count = cnt
 
 class radarrMovie(object):
     # properties here
@@ -126,12 +58,10 @@ class radarrMovie(object):
     rating = 0
     class Meta:
         managed = False
-    #def __init__(self):
-    #    data = urlopen("http://localhost:7878/api/movie?apikey=7b8c09c2a62b4cc6917be34043f67313").read()
-    #    output = json.loads(data)
-    #    #self.r_id = output[1].id
-     #   self.title = "qwer" #output[1]['title']
-    #    #self.inCinemas = output[1].inCinemas
-    #    #self.dateAdded = output[1].movieFile.dateAdded
-        
-        
+
+class ProfileRadarr(models.Model):
+    id = models.IntegerField(db_column='id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    profile_id = models.IntegerField()
+    radarr_id = models.IntegerField()
+    class Meta:
+        db_table = 'MediaFileSync_radarr'
