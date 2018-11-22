@@ -18,7 +18,7 @@
     <table id="tblMovies" class="" style='width:100%;'>
         <thead>
             <tr>
-                <th style='display:none;'>id</th>
+                <th>id</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
@@ -29,7 +29,7 @@
         <tbody>
             {% for val in testitem.movielist %}
             <tr>
-                <td style="display:none;">{{ val.media_id }}</td>
+                <td>{{ val.media_id }}</td>
                 <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
                 <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
                 <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
@@ -37,14 +37,15 @@
                 <td style="border-bottom:1px solid gray;">
                     {% if val.isMonitored %}
                     <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Monitored" onclick='delMonitor({{ val.media_id }});' ></i>
-                    {% else %}
-                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.r_id }},{{ system_profile.id }});'></i>
-                    {% endif %}
                     {% if val.isNewer %}
                     <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
                     {% else %}
                     <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
                     {% endif %}
+                    {% else %}
+                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.r_id }},{{ system_profile.id }});'></i>
+                    {% endif %}
+                    
                 </td>
             </tr>
             {% endfor %}
@@ -64,15 +65,10 @@
         $("#divWaiting").show();
         $("#tblMovies").DataTable({
             "order": [[ 1, "asc" ]],
-            "columnDefs": [
-            {
-                "targets": [ 0 ],
-                "visible": false,
-                "searchable": false
-            }
+            columnDefs: [
+                {targets: 0, visible: false, searchable: false}
             ]
-        }
-        );
+        });
         $("#divWaiting").hide();
     });
     function addMonitor(rid,pid) {

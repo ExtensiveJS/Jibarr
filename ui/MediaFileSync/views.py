@@ -12,21 +12,8 @@ import MediaFileSync.checkFolder
 from .models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr
 
 def index(request):
-    media_list = [] 
-    #radarr_list = Movies.objects.using("radarr").all()
     system_settings = Settings.objects.all()[:1].get()
-    filtered_list = []
-
-    #for val in radarr_list:
-    #    for val2 in media_list:
-    #        if val.id == val2.media_id:
-    #            filtered_list.append(val)
-
-
     context = {
-        'media_list': media_list,
-        #'radarr_list': radarr_list,
-        'filtered_list': filtered_list,
         'system_settings': system_settings
     }
     template = loader.get_template("MediaFileSync/index.html")
@@ -76,16 +63,48 @@ def movies(request):
         rm.title = var['title']
         rm.r_id = var['id']
         try:
-            rm.releaseDate = var['inCinemas']
+            rd = var['inCinemas'][:10] # + " " + var['inCinemas'][11:16]
+            #rm.releaseDate = var['inCinemas']
+            rm.releaseDate = rd
         except KeyError:
             pass
                     
+        lr = datetime.fromtimestamp(mktime(time.strptime(prof.profile_lastRun, "%b %d %Y %I:%M%p")))
+        
+        mId = 0
+        for pr in prList:
+            if pr.radarr_id == var["id"]:
+                rm.media_id = pr.id
+                mId = pr.id
+                prLr = datetime.fromtimestamp(mktime(time.strptime(pr.lastRun, "%b %d %Y %I:%M%p")))
+        
+        if rm.media_id > 0:
+            rm.isMonitored = True
+            monCnt = monCnt + 1
+
         if var['hasFile']:
-            rm.lastUpdt = var['movieFile']['dateAdded']
+            #rm.lastUpdt = var['movieFile']['dateAdded']
             rm.folderName = var["folderName"]
             rm.fileName =  var["movieFile"]["relativePath"]
             rm.size = var["movieFile"]["size"]
-        
+            plu = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
+            rm.lastUpdt = plu
+            lu = datetime.fromtimestamp(mktime(time.strptime(plu, "%Y-%m-%d %H:%M")))
+            if lr < lu:
+                rm.isNewer = True
+                monNotSync = monNotSync + 1
+            else: 
+                if mId > 0:
+                    if lu >  prLr:
+                        rm.isNewer = True
+                        monNotSync = monNotSync + 1
+                    else:
+                        rm.isNewer = False
+                        monSync = monSync + 1
+                else:
+                    rm.isNewer = False
+                    monSync = monSync + 1        
+
         rm.rating = var["ratings"]["value"]
 
         try:
@@ -98,31 +117,10 @@ def movies(request):
         except KeyError:
             pass
         
-        # find the media_id from the Media table
-        for pr in prList:
-            if pr.radarr_id == var["id"]:
-                rm.media_id = pr.id
-        if rm.media_id > 0:
-            rm.isMonitored = True
-            monCnt = monCnt + 1
-        # use the Profile ID and the Media_ID to check the
-        #       profile_media table for a entry.
-        #if var['movieFile']['dateAdded'] > prof.profile_lastUpd:
-        #    rm.isNewer = True
+        
+        
+        
 
-        lr = datetime.fromtimestamp(mktime(time.strptime(prof.profile_lastRun, "%b %d %Y %I:%M%p")))
-        # 2018-10-03T14:39:11.9966581Z
-        #lu = datetime.fromtimestamp(mktime(time.strptime(var['movieFile']['dateAdded'], "%Y-%m-%d")))
-        if var['hasFile']:
-            plu = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
-        lu = datetime.fromtimestamp(mktime(time.strptime(plu, "%Y-%m-%d %H:%M")))
-        #rm.isNewer = lu # lu[:10] + " " + lu[11:16]
-        if lr < lu:
-            rm.isNewer = True
-            monNotSync = monNotSync + 1
-        else: 
-            rm.isNewer = False
-            monSync = monSync + 1
         rML.movielist.append(rm)
     rML.count = cnt
     rML.monitoredCount = monCnt

@@ -34,10 +34,12 @@ class ProfileViewSet(viewsets.ModelViewSet):
     #def post(self, request, pk):
     def post(self, request, pk):
         if pk =='add':
-            p = Profile.objects.create()
-            p.profile_name = request.POST.get('profile_name')
-            p.profile_lastRun = request.POST.get('profile_lastRun')
-            p.save()
+            pname = request.POST.get('profile_name')
+            plr = request.POST.get('profile_lastRun')
+            p = Profile.objects.create(profile_name=pname,profile_lastRun=plr)
+            #p.profile_name = request.POST.get('profile_name')
+            #p.profile_lastRun = request.POST.get('profile_lastRun')
+            #p.save()
         elif pk == 'delete':
             pid = int(request.POST.get('profile_id'))
             p = Profile.objects.get(id=pid)
@@ -49,10 +51,12 @@ class ProfileRadarrViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileRadarrSerializer
     def post(self, request, pk):
         if pk == 'add':
-            pr = ProfileRadarr.objects.create()
-            pr.profile_id = request.POST.get('profile_id')
-            pr.radarr_id = request.POST.get('radarr_id')
-            pr.save()
+            pid = request.POST.get('profile_id')
+            rid = request.POST.get('radarr_id')
+            pr = ProfileRadarr.objects.create(profile_id=pid,radarr_id=rid,lastRun='Jan 01 1970 11:59PM')
+            #pr.profile_id = request.POST.get('profile_id')
+            #pr.radarr_id = request.POST.get('radarr_id')
+            #pr.save()
         if pk == 'delete':
             prid = int(request.POST.get('prid'))
             pr = ProfileRadarr.objects.get(id=prid)

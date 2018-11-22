@@ -14,4 +14,4 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 class ProfileRadarrSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProfileRadarr
-        fields = ('id', 'profile_id', 'radarr_id')
+        fields = ('id', 'profile_id', 'radarr_id', 'lastRun')
