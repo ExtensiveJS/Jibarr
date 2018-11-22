@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from urllib.request import urlopen
 import MediaFileSync.checkFolder
-from .models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr
+from .models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
 
 def index(request):
     system_settings = Settings.objects.all()[:1].get()
@@ -135,3 +135,24 @@ def movies(request):
     template = loader.get_template("MediaFileSync/movies.html")
     return HttpResponse(template.render(context, request))
 
+def shows(request):
+    system_settings = Settings.objects.all()[:1].get()
+    prof = Profile.objects.get(id=1)
+    
+    context = {
+        'system_settings': system_settings,
+        'system_profile': prof
+    }
+    template = loader.get_template("MediaFileSync/shows.html")
+    return HttpResponse(template.render(context, request))
+
+def music(request):
+    system_settings = Settings.objects.all()[:1].get()
+    prof = Profile.objects.get(id=1)
+    
+    context = {
+        'system_settings': system_settings,
+        'system_profile': prof
+    }
+    template = loader.get_template("MediaFileSync/music.html")
+    return HttpResponse(template.render(context, request))

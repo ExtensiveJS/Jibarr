@@ -1,7 +1,7 @@
-from MediaFileSync.models import Settings, Profile, ProfileRadarr
+from MediaFileSync.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer
+from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer
 
 
 #class SettingsViewSet(viewsets.ModelViewSet):
@@ -54,11 +54,36 @@ class ProfileRadarrViewSet(viewsets.ModelViewSet):
             pid = request.POST.get('profile_id')
             rid = request.POST.get('radarr_id')
             pr = ProfileRadarr.objects.create(profile_id=pid,radarr_id=rid,lastRun='Jan 01 1970 11:59PM')
-            #pr.profile_id = request.POST.get('profile_id')
-            #pr.radarr_id = request.POST.get('radarr_id')
-            #pr.save()
         if pk == 'delete':
             prid = int(request.POST.get('prid'))
             pr = ProfileRadarr.objects.get(id=prid)
             pr.delete()
+        return Response("Ok")
+
+class ProfileSonarrViewSet(viewsets.ModelViewSet):
+    queryset = ProfileSonarr.objects.all()
+    serializer_class = ProfileSonarrSerializer
+    def post(self, request, pk):
+        if pk == 'add':
+            pid = request.POST.get('profile_id')
+            sid = request.POST.get('sonarr_id')
+            ps = ProfileSonarr.objects.create(profile_id=pid,sonarr_id=sid,lastRun='Jan 01 1970 11:59PM')
+        if pk == 'delete':
+            psid = int(request.POST.get('psid'))
+            ps = ProfileSonarr.objects.get(id=psid)
+            ps.delete()
+        return Response("Ok")
+
+class ProfileLidarrViewSet(viewsets.ModelViewSet):
+    queryset = ProfileLidarr.objects.all()
+    serializer_class = ProfileLidarrSerializer
+    def post(self, request, pk):
+        if pk == 'add':
+            pid = request.POST.get('profile_id')
+            lid = request.POST.get('lidarr_id')
+            pl = ProfileLidarr.objects.create(profile_id=pid,lidarr_id=rid,lastRun='Jan 01 1970 11:59PM')
+        if pk == 'delete':
+            plid = int(request.POST.get('plid'))
+            pl = ProfileLidarr.objects.get(id=plid)
+            pl.delete()
         return Response("Ok")

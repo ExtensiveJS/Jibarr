@@ -23,6 +23,8 @@ urlpatterns = [
     url(r'^settings/', views.settings, name='settings'),
     url(r'^donate/', views.donate, name='donate'),
     url(r'^movies/', views.movies, name='movies'),
+    url(r'^shows/', views.shows, name='shows'),
+    url(r'^music/', views.music, name='music'),
     #url(r'^', views.index, name='index'),
     
 ]

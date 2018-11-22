@@ -1,4 +1,4 @@
-from MediaFileSync.models import Settings, Profile, ProfileRadarr
+from MediaFileSync.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
 from rest_framework import serializers
 
 class SettingsSerializer(serializers.HyperlinkedModelSerializer):
@@ -15,3 +15,13 @@ class ProfileRadarrSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProfileRadarr
         fields = ('id', 'profile_id', 'radarr_id', 'lastRun')
+
+class ProfileSonarrSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProfileSonarr
+        fields = ('id', 'profile_id', 'sonarr_id', 'lastRun')
+
+class ProfileLidarrSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProfileLidarr
+        fields = ('id', 'profile_id', 'lidarr_id', 'lastRun')

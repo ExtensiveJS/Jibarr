@@ -66,3 +66,19 @@ class ProfileRadarr(models.Model):
     lastRun = models.CharField(max_length=200)
     class Meta:
         db_table = 'MediaFileSync_radarr'
+
+class ProfileSonarr(models.Model):
+    id = models.IntegerField(db_column='id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    profile_id = models.IntegerField()
+    sonarr_id = models.IntegerField()
+    lastRun = models.CharField(max_length=200)
+    class Meta:
+        db_table = 'MediaFileSync_sonarr'
+
+class ProfileLidarr(models.Model):
+    id = models.IntegerField(db_column='id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    profile_id = models.IntegerField()
+    lidarr_id = models.IntegerField()
+    lastRun = models.CharField(max_length=200)
+    class Meta:
+        db_table = 'MediaFileSync_lidarr'
