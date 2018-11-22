@@ -64,7 +64,6 @@ def movies(request):
         rm.r_id = var['id']
         try:
             rd = var['inCinemas'][:10] # + " " + var['inCinemas'][11:16]
-            #rm.releaseDate = var['inCinemas']
             rm.releaseDate = rd
         except KeyError:
             pass
@@ -80,30 +79,24 @@ def movies(request):
         
         if rm.media_id > 0:
             rm.isMonitored = True
-            monCnt = monCnt + 1
+            monCnt = monCnt + 1        
 
         if var['hasFile']:
-            #rm.lastUpdt = var['movieFile']['dateAdded']
             rm.folderName = var["folderName"]
             rm.fileName =  var["movieFile"]["relativePath"]
             rm.size = var["movieFile"]["size"]
             plu = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
             rm.lastUpdt = plu
             lu = datetime.fromtimestamp(mktime(time.strptime(plu, "%Y-%m-%d %H:%M")))
-            if lr < lu:
-                rm.isNewer = True
-                monNotSync = monNotSync + 1
-            else: 
-                if mId > 0:
-                    if lu >  prLr:
-                        rm.isNewer = True
-                        monNotSync = monNotSync + 1
-                    else:
-                        rm.isNewer = False
-                        monSync = monSync + 1
+            if mId > 0:
+                if lu >  prLr:
+                    rm.isNewer = True
+                    monNotSync = monNotSync + 1
                 else:
                     rm.isNewer = False
-                    monSync = monSync + 1        
+                    monSync = monSync + 1
+            else:
+                rm.isNewer = False      
 
         rm.rating = var["ratings"]["value"]
 
@@ -117,10 +110,6 @@ def movies(request):
         except KeyError:
             pass
         
-        
-        
-        
-
         rML.movielist.append(rm)
     rML.count = cnt
     rML.monitoredCount = monCnt
