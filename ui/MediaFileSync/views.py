@@ -12,42 +12,85 @@ import MediaFileSync.checkFolder
 from .models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
 
 def index(request):
+    prof_id = 1
+    try:
+        prof_id = request.session["prof_id"]
+    except KeyError:
+        #prof_id = 1
+        pass
     system_settings = Settings.objects.all()[:1].get()
+    prof_list = Profile.objects.all()
     context = {
-        'system_settings': system_settings
+        'system_settings': system_settings,
+        'prof_list': prof_list,
+        'prof_id': prof_id
     }
     template = loader.get_template("MediaFileSync/index.html")
     return HttpResponse(template.render(context, request))
 
 def profiles(request):
+    prof_id = 1
+    try:
+        prof_id = request.session["prof_id"]
+    except KeyError:
+        #prof_id = 1
+        pass
     system_settings = Settings.objects.all()[:1].get()
+    prof_list = Profile.objects.all()
     profile_list = Profile.objects.all()
     context = {
         'system_settings': system_settings,
-        'profile_list': profile_list
+        'profile_list': profile_list,
+        'prof_list': prof_list,
+        'prof_id': prof_id
     }
     template = loader.get_template("MediaFileSync/profiles.html")
     return HttpResponse(template.render(context, request))
 
 def settings(request):
+    prof_id = 1
+    try:
+        prof_id = request.session["prof_id"]
+    except KeyError:
+        #prof_id = 1
+        pass
     system_settings = Settings.objects.all()[:1].get()
+    prof_list = Profile.objects.all()
     context = {
-        'system_settings': system_settings
+        'system_settings': system_settings,
+        'prof_list': prof_list,
+        'prof_id': prof_id
     }
     template = loader.get_template("MediaFileSync/settings.html")
     return HttpResponse(template.render(context, request))
 
 def donate(request):
+    prof_id = 1
+    try:
+        prof_id = request.session["prof_id"]
+    except KeyError:
+        #prof_id = 1
+        pass
     system_settings = Settings.objects.all()[:1].get()
+    prof_list = Profile.objects.all()
     context = {
-        'system_settings': system_settings
+        'system_settings': system_settings,
+        'prof_list': prof_list,
+        'prof_id': prof_id
     }
     template = loader.get_template("MediaFileSync/donate.html")
     return HttpResponse(template.render(context, request))
 
 def movies(request):
+    prof_id = 1
+    try:
+        prof_id = request.session["prof_id"]
+    except KeyError:
+        #prof_id = 1
+        pass
     system_settings = Settings.objects.all()[:1].get()
-    prof = Profile.objects.get(id=1)
+    prof_list = Profile.objects.all()
+    prof = Profile.objects.get(id=prof_id)
     rML = radarrMovieList()
     rML.movielist.clear
     prList = ProfileRadarr.objects.filter(profile_id=prof.id)
@@ -119,29 +162,49 @@ def movies(request):
     context = {
         'system_settings': system_settings,
         'testitem': rML,
-        'system_profile': prof
+        'system_profile': prof,
+        'prof_list': prof_list,
+        'prof_id': prof_id
     }
     template = loader.get_template("MediaFileSync/movies.html")
     return HttpResponse(template.render(context, request))
 
 def shows(request):
+    prof_id = 1
+    try:
+        prof_id = request.session["prof_id"]
+    except KeyError:
+        #prof_id = 1
+        pass
     system_settings = Settings.objects.all()[:1].get()
+    prof_list = Profile.objects.all()
     prof = Profile.objects.get(id=1)
     
     context = {
         'system_settings': system_settings,
-        'system_profile': prof
+        'system_profile': prof,
+        'prof_list': prof_list,
+        'prof_id': prof_id
     }
     template = loader.get_template("MediaFileSync/shows.html")
     return HttpResponse(template.render(context, request))
 
 def music(request):
+    prof_id = 1
+    try:
+        prof_id = request.session["prof_id"]
+    except KeyError:
+        #prof_id = 1
+        pass
     system_settings = Settings.objects.all()[:1].get()
+    prof_list = Profile.objects.all()
     prof = Profile.objects.get(id=1)
     
     context = {
         'system_settings': system_settings,
-        'system_profile': prof
+        'system_profile': prof,
+        'prof_list': prof_list,
+        'prof_id': prof_id
     }
     template = loader.get_template("MediaFileSync/music.html")
     return HttpResponse(template.render(context, request))

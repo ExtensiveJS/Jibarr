@@ -15,18 +15,22 @@ class SettingsViewSet(viewsets.ModelViewSet):
     queryset = Settings.objects.all()
     serializer_class = SettingsSerializer
     def post(self, request, pk):
-        sett = Settings.objects.all()[:1].get()
-        sett.radarr_enabled = request.POST.get('radarr_enabled')
-        sett.radarr_path = request.POST.get('radarr_path')
-        sett.radarr_apikey = request.POST.get('radarr_apikey')
-        sett.sonarr_enabled = request.POST.get('sonarr_enabled')
-        sett.sonarr_path = request.POST.get('sonarr_path')
-        sett.sonarr_apikey = request.POST.get('sonarr_apikey')
-        sett.lidarr_enabled = request.POST.get('lidarr_enabled')
-        sett.lidarr_path = request.POST.get('lidarr_path')
-        sett.lidarr_apikey = request.POST.get('lidarr_apikey')
-        sett.save()
-        return Response("Ok")
+        if pk == 'update':
+            request.session["prof_id"] = request.POST.get('profile_id')
+            return Response("Ok")
+        else:
+            sett = Settings.objects.all()[:1].get()
+            sett.radarr_enabled = request.POST.get('radarr_enabled')
+            sett.radarr_path = request.POST.get('radarr_path')
+            sett.radarr_apikey = request.POST.get('radarr_apikey')
+            sett.sonarr_enabled = request.POST.get('sonarr_enabled')
+            sett.sonarr_path = request.POST.get('sonarr_path')
+            sett.sonarr_apikey = request.POST.get('sonarr_apikey')
+            sett.lidarr_enabled = request.POST.get('lidarr_enabled')
+            sett.lidarr_path = request.POST.get('lidarr_path')
+            sett.lidarr_apikey = request.POST.get('lidarr_apikey')
+            sett.save()
+            return Response("Ok")
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()

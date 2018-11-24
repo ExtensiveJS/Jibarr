@@ -26,11 +26,41 @@
                 <a href="/MediaFileSync/profiles"><div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>PROFILES</div></a>
                 <a href="/MediaFileSync/settings"><div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>SETTINGS</div></a>
                 <a href="/MediaFileSync/donate"><div class="HEADERITEM" style='width:100px;text-align:center;float:left;padding:25px 10px 10px 10px;'>DONATE</div></a>
+                <div style="float:right;width:150px;text-align:right;color:black;">
+                    <select id="ddlProfiles" onchange="profileChanged();">
+                        {% for prof in prof_list %}
+                            <option value="{{ prof.id }}">{{ prof.profile_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
             <div id="content">
                 {% block content %}{% endblock %}
             </div>
         </div>
+        <script>
+            $(function () {
+                $("#ddlProfiles").val({{ prof_id }});
+            });
+            function profileChanged(){
+                //alert('prof change:' + $("#ddlProfiles").val());
+                $.ajax({
+                    url : '/api/settings/update/',
+                    type : 'POST',
+                    data: { 
+                        profile_id: $("#ddlProfiles").val()
+                    },
+                    success: function(data)
+                    {
+                        //alert('success');
+                        location.reload(true);
+                    },
+                    fail: function(xhr, textStatus, errorThrown){
+                        //alert('request failed');
+                   }
+                });
+            };
+        </script>
         {% block postbody %}{% endblock postbody %}
     </body>
 </html>
