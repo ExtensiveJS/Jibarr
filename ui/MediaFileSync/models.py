@@ -23,6 +23,8 @@ class Profile(models.Model):
     profile_name = models.CharField(max_length=200)
     profile_lastRun = models.CharField(max_length=200)
 
+    objects = models.Manager()
+
 class Settings(models.Model):
     id = models.IntegerField(db_column='Id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     radarr_enabled = models.IntegerField(db_column='RADARR_Enabled', null=False)
@@ -34,6 +36,9 @@ class Settings(models.Model):
     lidarr_enabled = models.IntegerField(db_column='LIDARR_Enabled', null=False)
     lidarr_path =  models.TextField(db_column='LIDARR_Path')
     lidarr_apikey = models.TextField(db_column='LIDARR_APIKey')
+
+    objects = models.Manager()
+
     class Meta:
         managed = False
         db_table = 'MediaFileSync_settings'  
@@ -83,6 +88,9 @@ class ProfileRadarr(models.Model):
     profile_id = models.IntegerField()
     radarr_id = models.IntegerField()
     lastRun = models.CharField(max_length=200)
+
+    objects = models.Manager()
+    
     class Meta:
         db_table = 'MediaFileSync_radarr'
 
