@@ -59,6 +59,25 @@ class radarrMovie(object):
     class Meta:
         managed = False
 
+class sonarrShowList(list):
+    showlist = []
+    def __init__(self):
+        self.showlist = []
+
+class sonarrShow(object):
+    s_id = 0 # id
+    media_id = 0 # from MFS
+    title = "" # title
+    year = "" # year
+    imdbId = 0 # imdbId
+    tvdbId = 0 # tvdbId
+    tvRageId = 0 # tvRageId
+    status = "unknown"
+    folderName = "" # path
+    isMonitored = False
+    class Meta:
+        managed = False
+
 class ProfileRadarr(models.Model):
     id = models.IntegerField(db_column='id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     profile_id = models.IntegerField()

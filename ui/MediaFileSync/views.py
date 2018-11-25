@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from urllib.request import urlopen
 import MediaFileSync.checkFolder
-from .models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
+from .models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, ProfileSonarr, sonarrShow, sonarrShowList, ProfileLidarr
 
 def index(request):
     prof_id = 1
@@ -178,8 +178,16 @@ def shows(request):
         pass
     system_settings = Settings.objects.all()[:1].get()
     prof_list = Profile.objects.all()
-    prof = Profile.objects.get(id=1)
+    prof = Profile.objects.filter(id=prof_id)
     
+    sSL = sonarrShowList()
+    sSL.showlist.clear
+    psList = ProfileSonarr.objects.filter(profile_id=prof_id)
+    data = urlopen(system_settings.sonarr_path + "/api/series?apikey=" + system_settings.sonarr_apikey).read()
+    output = json.loads(data)
+
+
+
     context = {
         'system_settings': system_settings,
         'system_profile': prof,
