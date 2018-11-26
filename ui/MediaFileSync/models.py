@@ -99,6 +99,9 @@ class ProfileSonarr(models.Model):
     profile_id = models.IntegerField()
     sonarr_id = models.IntegerField()
     lastRun = models.CharField(max_length=200)
+
+    objects = models.Manager()
+
     class Meta:
         db_table = 'MediaFileSync_sonarr'
 
