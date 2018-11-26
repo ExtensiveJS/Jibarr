@@ -28,12 +28,36 @@
                     <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
                 </tr>
             </thead>
-            
+            <tbody> 
+                    {% for val in show_list.showlist %}
+                    <tr>
+                        <td>{{ val.media_id }}</td>
+                        <td style="border-bottom:1px solid gray;"><a href="http://thetvdb.com/dereferrer/series/{{ val.tvdbId }}" target="_new">{{ val.title }}</a></td>
+                        <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
+                        <td style="border-bottom:1px solid gray;">{{ val.year }}</td>
+                        <td style="border-bottom:1px solid gray;">{{ val.seasonCount }}</td>
+                        <td style="border-bottom:1px solid gray;">{{ val.episodeCount }}</td>
+                        <td style="border-bottom:1px solid gray;">&nbsp;</td>
+                        <td style="border-bottom:1px solid gray;">
+                            {% if val.isMonitored %}
+                            <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Monitored" onclick='delMonitor({{ val.media_id }});' ></i>
+                            {% if val.isNewer %}
+                            <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+                            {% else %}
+                            <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
+                            {% endif %}
+                            {% else %}
+                            <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.s_id }},{{ system_profile.id }});'></i>
+                            {% endif %}    
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
         </table>
         <div style="margin-top:20px;margin-bottom:5px;border-top:1px dotted silver;padding-top:5px;">
-            <div style="float:left;width:15%;">total series: 0000</div>
-            <div style="float:left;width:15%;">total episodes: 0000</div>
-            <div style="float:left;width:20%;">total series monitored: 0000</div>
+            <div style="float:left;width:15%;">total series: {{ show_list.count }}</div>
+            <div style="float:left;width:15%;">total episodes: {{ show_list.episodeCount}}</div>
+            <div style="float:left;width:20%;">total series monitored: {{ show_list.monitoredCount }}</div>
             <div style="float:left;width:23%;">total episodes synced: 0000</div>
             <div style="float:left;width:23%;">total episodes not synced: 0000</div>
         </div>
@@ -53,5 +77,42 @@
         });
         $("#divWaiting").hide();
     });
+    function addMonitor(rid,pid) {
+        $.ajax({
+            url : '/api/profilesonarr/add/',
+            type : 'POST',
+            data: { 
+                profile_id: pid,
+                sonarr_id: rid
+            },
+            success: function(data)
+            {
+                //alert('success');
+                location.reload(true);
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+    function delMonitor(id) {
+        if(confirm('are you sure?')){
+            $.ajax({
+                url : '/api/profilesonarr/delete/',
+                type : 'POST',
+                data: { 
+                    psid: id
+                },
+                success: function(data)
+                {
+                    //alert('success');
+                    location.reload(true);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+               }
+            });
+        }
+    }
 </script>
 {% endblock postbody %}

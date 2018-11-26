@@ -74,12 +74,16 @@ class sonarrShow(object):
     media_id = 0 # from MFS
     title = "" # title
     year = "" # year
-    imdbId = 0 # imdbId
+    imdbId = 0 # imdbId 
     tvdbId = 0 # tvdbId
     tvRageId = 0 # tvRageId
     status = "unknown"
     folderName = "" # path
     isMonitored = False
+    rating = 0
+    seasonCount = 0
+    episodeCount = 0
+    isNewer = False
     class Meta:
         managed = False
 
