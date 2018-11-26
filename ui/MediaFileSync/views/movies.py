@@ -7,8 +7,11 @@ import time
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from threading import Thread, Lock
+import math
 
 threadLock = Lock()
+pageSize = 250
+
 
 def movies(request):
     global cnt
@@ -44,40 +47,51 @@ def movies(request):
 
 def get_movie_info(system_settings, prof):
     prList = ProfileRadarr.objects.filter(profile_id=prof.id)
-    data = urlopen(system_settings.radarr_path + "/api/movie?apikey=" + system_settings.radarr_apikey).read()
-    output = json.loads(data)
+
+    countURL = urlopen(system_settings.radarr_path + "/api/movie?page=1&pageSize=1&apikey=" + system_settings.radarr_apikey).read()
+    numberOfMovies = json.loads(countURL)['totalRecords']
+    pages = math.ceil(numberOfMovies/ pageSize)
     results = radarrMovieList()
     results.movielist.clear
-    results.movielist = [{} for x in output]
-
-    #create a list of threads
+    results.movielist = [{} for x in range(numberOfMovies)]
     threads = []
-    # In this case 'urls' is a list of urls to be crawled.
-    for ii in range(len(output)):
-        # We start one thread per url present.
-        process = Thread(target=process_movie, args=[output[ii], prList, prof,  results.movielist, ii])
+    for nn in range(pages):     
+        process = Thread(target=get_pages, args=[system_settings, nn, prList, prof, results])
         process.start()
         threads.append(process)
-    # We now pause execution on the main thread by 'joining' all of our started threads.
-    # This ensures that each has finished processing the urls.
+
     for process in threads:
         process.join()
-    # At this point, results for each URL are now neatly stored in order in 'results'
       
-    results.count = cnt
+    results.count = numberOfMovies
     results.monitoredCount = monCnt
     results.syncCount = monSync
     results.notSyncCount = monNotSync
 
     return results
 
+def get_pages(system_settings, nn, prList, prof, results):
+    global pageSize
+    data = urlopen(system_settings.radarr_path + "/api/movie?page=" + str(nn+1) + "&pageSize=" + str(pageSize) + "&apikey=" + system_settings.radarr_apikey).read()
+    pageAdd = nn * pageSize
+
+    output = json.loads(data)
+    #create a list of threads
+    threads = []
+    for ii in range(len(output["records"])):
+        # We start one thread per url present.
+        process = Thread(target=process_movie, args=[output["records"][ii], prList, prof,  results.movielist, ii+pageAdd])
+        process.start()
+        threads.append(process)
+    # We now pause execution on the main thread by 'joining' all of our started threads.
+    for process in threads:
+        process.join()
+
 def process_movie (var, prList, prof, result, index):
-    global cnt
     global monCnt
     global monSync
     global monNotSync
-    with threadLock:
-        cnt = cnt + 1
+
     rm = radarrMovie()
     rm.title = var['title']
     rm.r_id = var['id']
