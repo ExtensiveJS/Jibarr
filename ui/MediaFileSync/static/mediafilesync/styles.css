@@ -5,8 +5,7 @@ li a {
 
 .CONTAINER {background-color:whitesmoke;color:black;padding:5px;min-height:400px;}
 .HEADERITEM {border-radius:10px;height:75px;width:100px;text-align:center;float:left;padding:15px 10px 10px 10px;text-align:center;border:1px solid #1F1E1E;}
-.HEADERITEM:HOVER {background-color:teal;}
-.HEADERITEM A {color:whitesmoke;}
+.HEADERITEM:HOVER {background-color:teal;color:antiquewhite;}
 
 .LISTTABLE a {text-decoration:none;color:blue;}
 .LISTTABLE a:hover {background-color:lightslategray;}
