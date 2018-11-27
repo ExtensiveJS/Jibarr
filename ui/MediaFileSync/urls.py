@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^movies/', views.movies, name='movies'),
     url(r'^shows/', views.shows, name='shows'),
     url(r'^music/', views.music, name='music'),
+    url(r'^runsync/', views.runsync, name='runsync')
     #url(r'^', views.index, name='index'),
     
 ]
