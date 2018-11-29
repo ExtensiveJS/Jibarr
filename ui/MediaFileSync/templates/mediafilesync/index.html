@@ -3,34 +3,25 @@
 {% block title %}Movie List{% endblock title %}
 {% block content %}
 <div class='CONTAINER'>
-    <div style="margin:5px 5px 20px auto;float:right;border:1px dotted silver;height:20px;padding:3px;border-radius:5px;background-color:lightblue;">
-        <div style="float:left;margin:auto 5px;background-color:teal;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">monitored only</div>
-        <div style="float:left;margin:auto 5px;background-color:white;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">unmonitored only</div>
-        <div style="float:left;margin:auto 5px;background-color:white;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">All</div>
-        <div style="float:left;margin:auto 5px;background-color:white;border:1px dotted silver;border-radius: 25px;padding-left:8px;padding-right:8px;">Available</div>
-    </div>
     {% if system_settings.radarr_enabled == 1 %}
-    <table id="tblMovies" style='width:100%;padding-left:20px;padding-right:20px;' class="">
+    <table id="tblMovies">
         <thead>
             <tr>
-                <th colspan="5" style="background-color:lightblue;font-size:larger;border-bottom:1px dotted grey;">Movies</th>
-            </tr>
-            <tr>
-                <th style='background-color:lightblue;height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'><input type="checkbox" /></th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Title</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Released</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+                <th>&nbsp;</th>
+                <th style="width:55px;">&nbsp;</th>
+                <th style="background-color:rgba(255,255,255,.1);" >Movies awaiting sync</th>
             </tr>
         </thead>
         <tbody>
-            {% for val in filtered_list %}
+            {% for val in radarr_list.movielist %}
                 <tr>
-                    <td style="border-bottom:1px solid gray;display:none;">{{ val.id }}</td>
-                    <td style="height:30px;border-bottom:1px solid gray;"><input type="checkbox" /></td>
-                    <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
-                    <td style="border-bottom:1px solid gray;">{{ val.year }}</td>
-                    <td style="border-bottom:1px solid gray;">{{ val.lastinfosync }}</td>
+                    <td>{{ val.id }}</td>
+                    <td style="border-bottom:1px solid gray;">
+                        <img src="http://localhost:7878/MediaCover/{{ val.id }}/poster.jpg" style="width:50px;" />
+                    </td>
+                    <td style="border-bottom:1px solid gray;">
+                        <a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a> ({{ val.releaseDate }})
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -38,34 +29,26 @@
     <br />
     {% endif %}
     {% if system_settings.sonarr_enabled == 1 %}
-    <table style='width:100%;padding-left:20px;padding-right:20px;border-spacing:0px;'>
+    <table id="tblShows">
         <thead>
             <tr>
-                <th colspan="5" style="background-color:lightblue;font-size:larger;border-bottom:1px dotted grey;">TV Shows</th>
-            </tr>
-            <tr>
-                <th style='background-color:lightblue;height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'><input type="checkbox" /></th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Title</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Released</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>id</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
             </tr>
         </thead>
     </table>
     <br />
     {% endif %}
     {% if system_settings.lidarr_enabled == 1 %}
-    <table style='width:100%;padding-left:20px;padding-right:20px;border-spacing:0px;'>
+    <table id='tblMusic'>
         <thead>
             <tr>
-                <th colspan="5" style="background-color:lightblue;font-size:larger;border-bottom:1px dotted grey;">Music</th>
-            </tr>
-            <tr>
-                <th style='background-color:lightblue;height:15px;border-bottom:2px solid gray;text-align:left;display:none;'>id</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'><input type="checkbox" /></th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Title</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>Released</th>
-                <th style='background-color:lightblue;border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>id</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
             </tr>
         </thead>
     </table>
@@ -79,9 +62,27 @@
 <script>
     $(function () {
         $("#tblMovies").DataTable({
-        "order": [[ 1, "asc" ]]
-        }
-        );
+            searching: false,
+            columnDefs: [
+                {targets: 0, visible: false, searchable: false}
+            ],
+            "bLengthChange": false,
+            "bSort" : false
+        });
+        $("#tblShows").DataTable({
+            searching: false,
+            columnDefs: [
+                {targets: 0, visible: false, searchable: false}
+            ],
+            "bLengthChange": false
+        });
+        $("#tblMusic").DataTable({
+            searching: false,
+            columnDefs: [
+                {targets: 0, visible: false, searchable: false}
+            ],
+            "bLengthChange": false
+        });
     });
 </script>
 {% endblock postbody %}

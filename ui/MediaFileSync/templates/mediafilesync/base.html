@@ -24,15 +24,16 @@
                 {% if system_settings.sonarr_enabled == 1 %}<a href="/MediaFileSync/shows"><div class="HEADERITEM"><i class="glyphicon glyphicon-phone" style="font-size:xx-large;"></i><br/>TV Shows</div></a>{% endif %}
                 {% if system_settings.lidarr_enabled == 1 %}<a href="/MediaFileSync/music"><div class="HEADERITEM"><i class="glyphicon glyphicon-music" style="font-size:xx-large;"></i><br/>Music</div></a>{% endif %}
                 <a href="/MediaFileSync/profiles"><div class="HEADERITEM"><i class="glyphicon glyphicon-user" style="font-size:xx-large;"></i><br/>Profiles</div></a>
-                <a href="/MediaFileSync/settings"><div class="HEADERITEM"><i class="glyphicon glyphicon-cog" style="font-size:xx-large;"></i><br/>Settings</div></a>
                 <a href="/MediaFileSync/runsync"><div class="HEADERITEM"><i class="glyphicon glyphicon-transfer" style="font-size:xx-large;"></i><br/>Run Sync</div></a>
-                <a href="/MediaFileSync/donate"><div class="HEADERITEM"><i class="glyphicon glyphicon-heart" style="font-size:xx-large;"></i><br/>Donate</div></a>
-                <div style="float:right;width:150px;text-align:right;color:black;">
-                    <select id="ddlProfiles" onchange="profileChanged();">
+                <a href="/MediaFileSync/settings"><div class="HEADERITEM"><i class="glyphicon glyphicon-cog" style="font-size:xx-large;"></i><br/>Settings</div></a>
+                <a href="/MediaFileSync/donate"><div class="HEADERITEM"><i class="glyphicon glyphicon-heart" style="font-size:xx-large;color:red;"></i><br/>Donate</div></a>
+                <div style="float:right;width:150px;text-align:right;">
+                    <select id="ddlProfiles" onchange="profileChanged();" class="form-control" style="height:30px;font-size:small;">
                         {% for prof in prof_list %}
                             <option value="{{ prof.id }}">{{ prof.profile_name }}</option>
                         {% endfor %}
                     </select>
+                    <div style="text-align:center;color:#b9b9b9;">Select Profile</div>
                 </div>
             </div>
             <div id="content">
