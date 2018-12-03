@@ -1,7 +1,97 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block content %}
+
 <div class='CONTAINER'>
-    <h2>Run Sync</h2><br />
-</div>
+        {% if system_settings.radarr_enabled == 1 %}
+        <table id="tblMovies">
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <td style="width:55px;text-align:left;padding-left:10px;"><input type="checkbox" id="chkAll" /></td>
+                    <th style="background-color:rgba(255,255,255,.1);" >Movies awaiting sync</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for val in radarr_list.movielist %}
+                    <tr>
+                        <td>{{ val.id }}</td>
+                        <td style="border-bottom:1px solid gray;"><input type="checkbox" /></td>
+                        <td style="border-bottom:1px solid gray;">
+                            <a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a> ({{ val.releaseDate }})
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br />
+        <input type="button" value="Run Sync" onclick="runDriveSelect();" />
+        {% endif %}
+    </div>
+    <div id="divDialog" title="Validate Destination" style="width:460px;">
+        <div style="height:35px;"><input type="text" id="txtDestination" style="width:240px;" /><i class="glyphicon glyphicon-folder-open" style="padding-left:5px;font-size:larger;"></i></div>
+        <div style="margin-top:15px;"><input type="button" style="float:right;" value="Start" onclick="runProcessing();"></div>
+    </div>
 {% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+        $("#divDialog").dialog({
+            autoOpen: false,
+            modal: true
+        })
+        var table = $("#tblMovies").DataTable({
+            searching: false,
+            columnDefs: [
+                {targets: 0, visible: false, searchable: false}
+            ],
+            "bLengthChange": false,
+            "bSort" : false,
+            paging: false,
+            "oLanguage": {
+                "sInfo": "_TOTAL_ movies need to be synched"
+            }
+        });
+        // Handle click on "Select all" control
+        $('#chkAll').on('click', function(){
+            // Get all rows with search applied
+            var rows = table.rows({ 'search': 'applied' }).nodes();
+            // Check/uncheck checkboxes for all rows in the table
+            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        });
+        
+    });
+    function runDriveSelect() {
+        $("#divDialog").dialog("open");
+    };
+    function runProcessing(){
+        var idList = new Array();
+        var table = $("#tblMovies").DataTable();
+        cnt = 0
+        var rows = $(table.$('input[type="checkbox"]').map(function () {
+            if($(this).prop("checked")){
+                var dat = table.rows(cnt).data();
+                idList.push(dat[0][0]);
+            };
+            cnt = cnt + 1;
+        }));
+        $.ajax({
+            url : '/api/runsync/',
+            type : 'POST',
+            data: { 
+                idlist: idList
+            },
+            success: function(data)
+            {
+                $("#divDialog").dialog("close");
+                // Uncheck all the checked episodes......
+                // ? Do something else?
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+
+</script>
+{% endblock postbody %}

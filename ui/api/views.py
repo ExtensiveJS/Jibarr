@@ -1,8 +1,10 @@
 from MediaFileSync.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
 from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer
-
+from MediaFileSync.copyTheFile import copyTheFile
 
 #class SettingsViewSet(viewsets.ModelViewSet):
 #    """
@@ -91,3 +93,10 @@ class ProfileLidarrViewSet(viewsets.ModelViewSet):
             pl = ProfileLidarr.objects.get(id=plid)
             pl.delete()
         return Response("Ok")
+
+@api_view(['GET', 'POST'])
+def RunSync(request):
+    #    if pk == 'execute':
+    idList = request.POST.getlist('idlist[]')
+    copyTheFile(idList)
+    return Response("OK")
