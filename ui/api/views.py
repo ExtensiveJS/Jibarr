@@ -98,5 +98,7 @@ class ProfileLidarrViewSet(viewsets.ModelViewSet):
 def RunSync(request):
     #    if pk == 'execute':
     idList = request.POST.getlist('idlist[]')
-    copyTheFile(idList)
+    destDir = request.POST.get('destDir')
+    prof_id = request.POST.get('prof_id')
+    copyTheFile(idList, destDir, prof_id)
     return Response("OK")

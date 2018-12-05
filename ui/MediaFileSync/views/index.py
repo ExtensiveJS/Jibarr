@@ -2,15 +2,16 @@ from django.template import loader
 from django.http import HttpResponse
 from MediaFileSync.models  import Settings, Profile, ProfileRadarr, radarrMovieList, radarrMovie
 from urllib.request import urlopen
-import json
+import json, time
+from time import mktime
+from datetime import datetime
+
 
 def index(request):
-    #http://localhost:7878/api/movie/1?apikey=7b8c09c2a62b4cc6917be34043f67313
     prof_id = 1
     try:
         prof_id = request.session["prof_id"]
     except KeyError:
-        #prof_id = 1
         pass
     system_settings = Settings.objects.all()[:1].get()
     prof_list = Profile.objects.all()
@@ -19,6 +20,7 @@ def index(request):
     profile_radarr_list = ProfileRadarr.objects.filter(profile_id=prof_id)
     for pr in profile_radarr_list:
         rid = pr.radarr_id
+        prLr = datetime.fromtimestamp(mktime(time.strptime(pr.lastRun, "%b %d %Y %I:%M%p")))
     
         data = urlopen(system_settings.radarr_path + "/api/movie/" + str(rid) + "?apikey=" + system_settings.radarr_apikey).read()
         output = json.loads(data)  
@@ -26,6 +28,12 @@ def index(request):
         rm = radarrMovie()
         rm.id = output['id']
         rm.title = output['title']
+        
+        if output['hasFile']:
+            plu = output['movieFile']['dateAdded'][:10] + " " + output['movieFile']['dateAdded'][11:16]
+            #rm.lastUpdt = plu
+            rmlu = datetime.fromtimestamp(mktime(time.strptime(plu, "%Y-%m-%d %H:%M")))
+
         try:
             rm.releaseDate = output['inCinemas'][:4]
         except KeyError:
@@ -35,18 +43,10 @@ def index(request):
             rm.tmdbid = output["tmdbId"]
         except KeyError:
             pass
-        radarr_list.movielist.append(rm)
-        #for key, value in data.iteritems():
-        #for key in output.items():
-            #rm = radarrMovie()
-            #rm.title = var['title']
-            #rm.r_id = key['id']
-            #try:
-            #    rm.releaseDate = key['inCinemas'][:10]
-            #except KeyError:
-            #    pass
-            #radarr_list.movielist.append(rm)
-
+        
+        # check if rm.lastUpdt > pr.lastRun
+        if rmlu > prLr:
+            radarr_list.movielist.append(rm)
 
 
     context = {

@@ -2,7 +2,9 @@ from django.template import loader
 from django.http import HttpResponse
 from MediaFileSync.models import Settings, Profile, ProfileRadarr, radarrMovieList, radarrMovie
 from urllib.request import urlopen
-import json
+import json, time
+from time import mktime
+from datetime import datetime
 
 def runsync(request):
     prof_id = 1
@@ -18,6 +20,7 @@ def runsync(request):
     profile_radarr_list = ProfileRadarr.objects.filter(profile_id=prof_id)
     for pr in profile_radarr_list:
         rid = pr.radarr_id
+        prLr = datetime.fromtimestamp(mktime(time.strptime(pr.lastRun, "%b %d %Y %I:%M%p")))
     
         data = urlopen(system_settings.radarr_path + "/api/movie/" + str(rid) + "?apikey=" + system_settings.radarr_apikey).read()
         output = json.loads(data)  
@@ -34,7 +37,14 @@ def runsync(request):
             rm.tmdbid = output["tmdbId"]
         except KeyError:
             pass
-        radarr_list.movielist.append(rm)
+        
+        if output['hasFile']:
+            plu = output['movieFile']['dateAdded'][:10] + " " + output['movieFile']['dateAdded'][11:16]
+            #rm.lastUpdt = plu
+            rmlu = datetime.fromtimestamp(mktime(time.strptime(plu, "%Y-%m-%d %H:%M")))
+            
+        if rmlu > prLr:
+            radarr_list.movielist.append(rm)
 
     context = {
         'system_settings': system_settings,

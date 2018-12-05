@@ -26,16 +26,18 @@
         </table>
         <br />
         <input type="button" value="Run Sync" onclick="runDriveSelect();" />
+        <span id="spanWaiting">...WAITING...</span>
         {% endif %}
     </div>
     <div id="divDialog" title="Validate Destination" style="width:460px;">
-        <div style="height:35px;"><input type="text" id="txtDestination" style="width:240px;" /><i class="glyphicon glyphicon-folder-open" style="padding-left:5px;font-size:larger;"></i></div>
+        <div style="height:35px;"><input type="text" id="txtDestination" style="width:240px;" value="d:\temp\MFSTest\" /><i class="glyphicon glyphicon-folder-open" style="padding-left:5px;font-size:larger;"></i></div>
         <div style="margin-top:15px;"><input type="button" style="float:right;" value="Start" onclick="runProcessing();"></div>
     </div>
 {% endblock content %}
 {% block postbody %}
 <script>
     $(function () {
+        $("#spanWaiting").hide();
         $("#divDialog").dialog({
             autoOpen: false,
             modal: true
@@ -75,17 +77,21 @@
             };
             cnt = cnt + 1;
         }));
+        $("#spanWaiting").show();
+        $("#divDialog").dialog("close");
         $.ajax({
             url : '/api/runsync/',
             type : 'POST',
             data: { 
-                idlist: idList
+                idlist: idList,
+                destDir: $("#txtDestination").val(),
+                prof_id: {{ prof_id }}
             },
             success: function(data)
             {
-                $("#divDialog").dialog("close");
                 // Uncheck all the checked episodes......
                 // ? Do something else?
+                $("#spanWaiting").hide();
             },
             fail: function(xhr, textStatus, errorThrown){
                 alert('request failed');
