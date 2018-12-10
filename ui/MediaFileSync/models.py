@@ -88,7 +88,7 @@ class sonarrShow(object):
         managed = False
 
 class ProfileRadarr(models.Model):
-    id = models.IntegerField(db_column='id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    #id = models.IntegerField(db_column='id', auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     profile_id = models.IntegerField()
     radarr_id = models.IntegerField()
     lastRun = models.CharField(max_length=200)

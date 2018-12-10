@@ -55,16 +55,20 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class ProfileRadarrViewSet(viewsets.ModelViewSet):
     queryset = ProfileRadarr.objects.all()
     serializer_class = ProfileRadarrSerializer
+    ret = ""
     def post(self, request, pk):
         if pk == 'add':
             pid = request.POST.get('profile_id')
             rid = request.POST.get('radarr_id')
             pr = ProfileRadarr.objects.create(profile_id=pid,radarr_id=rid,lastRun='Jan 01 1970 11:59PM')
+            pr.save()
+            ret = pr.pk
         if pk == 'delete':
             prid = int(request.POST.get('prid'))
             pr = ProfileRadarr.objects.get(id=prid)
             pr.delete()
-        return Response("Ok")
+            ret = "DelOK"
+        return Response(ret)
 
 class ProfileSonarrViewSet(viewsets.ModelViewSet):
     queryset = ProfileSonarr.objects.all()

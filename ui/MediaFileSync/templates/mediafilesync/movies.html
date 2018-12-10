@@ -9,27 +9,28 @@
 <div class='CONTAINER'>
     <div style='float:left;width:30px;display:none;' id='divWaiting'>..waiting..</div>
     <div style="margin:5px 5px 20px auto;float:right;border:1px dotted silver;height:25px;padding:3px;border-radius:5px;background-color:lightblue;">
-        <i style="padding-left:3px;padding-right:3px;" class='glyphicon glyphicon-record' title='Show All'></i>
-        <i style="padding-right:3px;" class='glyphicon glyphicon-star-empty' title='Show Unmonitored'></i>
-        <i style="padding-right:3px;" class='glyphicon glyphicon-star' title='Show Monitored'></i>
-        <i style="padding-right:3px;" class='glyphicon glyphicon-save' title='Show Sync Needed'></i>
-        <i style="padding-right:3px;" class='glyphicon glyphicon-saved' title='Show Synced'></i>
+        <i style="padding-left:3px;padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-record' title='Show All' onclick="filterResults('all');"></i>
+        <i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star-empty' title='Show Unmonitored' onclick="filterResults('unmon');"></i>
+        <i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star' title='Show Monitored' onclick="filterResults('mon');"></i>
     </div>
     <table id="tblMovies" class="" style='width:100%;'>
         <thead>
             <tr>
-                <th>id</th>
+                <th>media_id</th>
+                <th>radarr_id</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
+                <th>status</th>
             </tr>
         </thead>
         <tbody>
             {% for val in testitem.movielist %}
             <tr>
                 <td>{{ val.media_id }}</td>
+                <td>{{ val.r_id }}</td>
                 <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
                 <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
                 <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
@@ -43,9 +44,15 @@
                     <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
                     {% endif %}
                     {% else %}
-                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.r_id }},{{ system_profile.id }});'></i>
+                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.r_id }},{{ system_profile.id }},{{ forloop.counter }});'></i>
                     {% endif %}
-                    
+                </td>
+                <td>
+                    {% if val.isMonitored %}
+                    IsMonitored
+                    {% else %}
+                    UnMonitored
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -67,12 +74,21 @@
             "order": [[ 1, "asc" ]],
             columnDefs: [
                 {targets: 0, visible: false, searchable: false},
-                {targets: 5, sortable: false}
+                {targets: 1, visible: false, searchable: false},
+                {targets: 6, sortable: false},
+                {targets: 7, visible: false},
             ]
         });
         $("#divWaiting").hide();
     });
-    function addMonitor(rid,pid) {
+    function addMonitor(rid,pid,idx) {
+        var table = $("#tblMovies").DataTable();
+        rIdx = 0
+        var indexes = table.rows().eq( 0 ).filter( function (rowIdx) {
+            if(table.cell( rowIdx, 1 ).data() == rid) {
+                rIdx = rowIdx;
+            }
+        });
         $.ajax({
             url : '/api/profileradarr/add/',
             type : 'POST',
@@ -82,16 +98,28 @@
             },
             success: function(data)
             {
-                //alert('success');
-                location.reload(true);
+                var reg = new RegExp('^[0-9]+$');
+                if(reg.test(data)){
+                    // update the media_id to the new data
+                    table.cell(rIdx,6).data("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + ");' ></i>")
+                    table.cell(rIdx,0).data(data);
+                };
             },
             fail: function(xhr, textStatus, errorThrown){
                 alert('request failed');
             }
         });
+        
     }
     function delMonitor(id) {
         if(confirm('are you sure?')){
+            var table = $("#tblMovies").DataTable();
+            rIdx = 0;
+            var indexes = table.rows().eq( 0 ).filter( function (rowIdx) {
+                if(table.cell( rowIdx, 0 ).data() == id) {
+                    rIdx = rowIdx;
+                };
+            });
             $.ajax({
                 url : '/api/profileradarr/delete/',
                 type : 'POST',
@@ -100,13 +128,30 @@
                 },
                 success: function(data)
                 {
-                    //alert('success');
-                    location.reload(true);
+                    if(data == "DelOK"){
+                        // update the star to an empty star
+                        var r_id = table.cell(rIdx,1).data();
+                        table.cell(rIdx,6).data("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + r_id +",{{ system_profile.id }}," + rIdx + ");' ></i>")
+                        // clear the media_id, set to 0
+                        table.cell(rIdx,0).data("0");
+                    } else {
+                        alert("Data not DelOK = " + data);
+                    };
                 },
                 fail: function(xhr, textStatus, errorThrown){
                     alert('request failed');
                }
             });
+        }
+    }
+    function filterResults(stat){
+        var table = $("#tblMovies").DataTable();
+        if(stat=="mon"){
+            table.column(7).search("IsMonitored").draw();
+        } else if(stat=="unmon") {
+            table.column(7).search("UnMonitored").draw();
+        } else {
+            table.column(7).search("").draw();
         }
     }
 </script>
