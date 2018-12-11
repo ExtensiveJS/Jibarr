@@ -1,4 +1,4 @@
 django
 djangorestframework
 python-dateutil
-django-toast-messages
+celery

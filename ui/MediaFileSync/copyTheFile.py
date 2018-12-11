@@ -1,8 +1,9 @@
 import os, shutil, json
 from MediaFileSync.models import Settings, radarrMovie, ProfileRadarr, Profile
-
 from urllib.request import urlopen
+from celery import task
 
+@task
 def copyTheFile(idList, destDir, prof_id):
     isSuccessful = False
     try:
