@@ -82,6 +82,7 @@
         $("#divWaiting").hide();
     });
     function addMonitor(rid,pid,idx) {
+
         var table = $("#tblMovies").DataTable();
         rIdx = 0
         var indexes = table.rows().eq( 0 ).filter( function (rowIdx) {
@@ -103,6 +104,7 @@
                     // update the media_id to the new data
                     table.cell(rIdx,6).data("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + ");' ></i>")
                     table.cell(rIdx,0).data(data);
+                    table.cell(rIdx,7).data("IsMonitored");
                 };
             },
             fail: function(xhr, textStatus, errorThrown){
@@ -132,6 +134,7 @@
                         // update the star to an empty star
                         var r_id = table.cell(rIdx,1).data();
                         table.cell(rIdx,6).data("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + r_id +",{{ system_profile.id }}," + rIdx + ");' ></i>")
+                        table.cell(rIdx,7).data("UnMonitored");
                         // clear the media_id, set to 0
                         table.cell(rIdx,0).data("0");
                     } else {

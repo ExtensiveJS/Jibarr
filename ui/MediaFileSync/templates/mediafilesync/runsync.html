@@ -67,6 +67,8 @@
         $("#divDialog").dialog("open");
     };
     function runProcessing(){
+        //$().toastmessage('showNoticeToast', 'some message here');
+       
         var idList = new Array();
         var table = $("#tblMovies").DataTable();
         cnt = 0
@@ -77,6 +79,12 @@
             };
             cnt = cnt + 1;
         }));
+        $().toastmessage('showToast', {
+            text     : 'Processing ' + cnt + ' files',
+            sticky   : false,
+            position : 'bottom-right',
+        //    type     : 'notice'
+        });
         $("#spanWaiting").show();
         $("#divDialog").dialog("close");
         $.ajax({
