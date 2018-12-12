@@ -1,15 +1,22 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block title %}Movie List{% endblock title %}
+{% block javascript%}
+<style>
+    .siteCallout {color:white;font-size:smaller;background-color:cornflowerblue;border-radius:5px;padding:2px 5px 2px 5px;margin:2px;cursor:pointer;}
+</style>
+{% endblock javascript %}
 {% block content %}
 <div class='CONTAINER'>
     {% if system_settings.radarr_enabled == 1 %}
-    <table id="tblMovies">
+    <table id="tblMovies" class="table stripe">
         <thead>
             <tr>
                 <th>&nbsp;</th>
                 <th style="width:55px;">&nbsp;</th>
                 <th style="background-color:rgba(255,255,255,.1);" >Movies awaiting sync</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
             </tr>
         </thead>
         <tbody>
@@ -20,7 +27,17 @@
                         <img src="http://localhost:7878/MediaCover/{{ val.id }}/poster.jpg" style="width:50px;" />
                     </td>
                     <td style="border-bottom:1px solid gray;">
-                        <a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a> ({{ val.releaseDate }})
+                        {{ val.title }} ({{ val.releaseDate }})
+                    </td>
+                    <td style="border-bottom:1px solid gray;width:125px;">
+                        {{ val.quality }}
+                    </td>
+                    <td style="border-bottom:1px solid gray;width:200px;">
+                        <span class="siteCallout" onclick="window.open('http://themoviedb.org/movie/{{ val.tmdbid }}');">The Movie DB</span>
+                        <span class="siteCallout" onclick="window.open('http://imdb.com/title/{{ val.imdbid }}');">IMDB</span>
+                        <span class="siteCallout" onclick="window.open('http://youtube.com/watch?v={{ val.youtube }}');">Trailer</span>
+                        <span class="siteCallout" onclick="window.open('http://{{ val.website }}');">Homepage</span>
+                        <span class="siteCallout" onclick="window.open('http://trakt.tv/search/tmdb/{{ val.tmdbid }}?id_type=movie');">Trakt</span>
                     </td>
                 </tr>
             {% endfor %}

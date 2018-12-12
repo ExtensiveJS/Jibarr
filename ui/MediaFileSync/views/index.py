@@ -44,6 +44,26 @@ def index(request):
         except KeyError:
             pass
         
+        try:
+            rm.imdbid = output["imdbId"]
+        except KeyError:
+            pass
+        
+        try:
+            rm.youtube = output["youTubeTrailerId"]
+        except KeyError:
+            pass
+        
+        try:
+            rm.website = output["website"]
+        except KeyError:
+            pass
+        
+        try:
+            rm.quality = output["movieFile"]["quality"]["quality"]["name"]
+        except KeyError:
+            pass
+        
         # check if rm.lastUpdt > pr.lastRun
         if rmlu > prLr:
             radarr_list.movielist.append(rm)

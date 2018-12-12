@@ -144,4 +144,19 @@ def process_movie (var, prList, prof, result, index):
     except KeyError:
         pass
     
+    try:
+        rm.youtube = var["youTubeTrailerId"]
+    except KeyError:
+        pass
+    
+    try:
+        rm.website = var["website"]
+    except KeyError:
+        pass
+    
+    try:
+        rm.quality = var["movieFile"]["quality"]["quality"]["name"]
+    except KeyError:
+        pass
+    
     result[index] = rm
