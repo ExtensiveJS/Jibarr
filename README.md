@@ -1,4 +1,5 @@
-# MediaFileSync ![alt text](https://github.com/ExtensiveJS/MediaFileSync/blob/master/ui/MediaFileSync/static/mediafilesync/images/MFS_Logo.png?raw=true "MediaFileSync") 
+![alt text](https://github.com/ExtensiveJS/MediaFileSync/blob/master/ui/MediaFileSync/static/mediafilesync/images/MFS_Logo.png?raw=true "MediaFileSync")
+# MediaFileSync
 
 Utility to allow you to track files that need to be synced to secondary drives. 
 
