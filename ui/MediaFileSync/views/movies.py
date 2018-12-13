@@ -95,6 +95,7 @@ def process_movie (var, prList, prof, result, index):
     rm = radarrMovie()
     rm.title = var['title']
     rm.r_id = var['id']
+    rm.titleSlug = var['titleSlug']
     try:
         rd = var['inCinemas'][:10] # + " " + var['inCinemas'][11:16]
         rm.releaseDate = rd

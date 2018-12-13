@@ -2,7 +2,11 @@
 {% load static %}
 {% block title %}Movies{% endblock title %}
 {% block javascript%}
-
+<style>
+    .siteCallout {color:white;font-size:smaller;background-color:cornflowerblue;border-radius:5px;padding:2px 5px 2px 5px;cursor:pointer;}
+    .siteCallout A {color:white;}
+    .siteCallout A:HOVER {text-decoration: none;}
+</style>
 {% endblock javascript %}
 {% block content %}
 
@@ -18,10 +22,12 @@
             <tr>
                 <th>media_id</th>
                 <th>radarr_id</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Quality</th>
+                <th style='border-bottom:2px solid gray;text-align:left;'>Links</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
                 <th>status</th>
             </tr>
@@ -31,10 +37,30 @@
             <tr>
                 <td>{{ val.media_id }}</td>
                 <td>{{ val.r_id }}</td>
-                <td style="border-bottom:1px solid gray;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></td>
-                <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
+                <td style="border-bottom:1px solid gray;width:60px;">
+                    <img src="http://localhost:7878/MediaCover/{{ val.r_id }}/poster.jpg" style="width:50px;cursor:pointer;" onclick="window.open('http://localhost:7878/MediaCover/{{ val.r_id }}/poster.jpg');" />
+                </td>
+                <td style="border-bottom:1px solid gray;"><a href="{{ system_settings.radarr_path }}/movies/{{ val.titleSlug }}" target="_new">{{ val.title }}</a></td>
                 <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
-                <td style="border-bottom:1px solid gray;">{{ val.lastUpdt }}</td>
+                <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
+                <td style="border-bottom:1px solid gray;">{{ val.quality }}</td>
+                <td style="border-bottom:1px solid gray;width:150px;">
+                    {% if val.tmdbid %}
+                    <span class="siteCallout"><a href='http://themoviedb.org/movie/{{ val.tmdbid }}' target="_new">The Movie DB</a></span>
+                    {% endif %}
+                    {% if val.imdbid %}
+                    <span class="siteCallout"><a href='http://imdb.com/title/{{ val.imdbid }}' target="_new">IMDB</a></span>
+                    {% endif %}
+                    {% if val.youtube %}
+                    <span class="siteCallout"><a href='http://youtube.com/watch?v={{ val.youtube }}' target="_new">Trailer</a></span>
+                    {% endif %}
+                    {% if val.website %}
+                    <span class="siteCallout"><a href='http://{{ val.website }}' target="_new">Homepage</a></span>
+                    {% endif %}
+                    {% if val.tmdbid %}
+                    <span class="siteCallout"><a href='http://trakt.tv/search/tmdb/{{ val.tmdbid }}?id_type=movie' target="_new">Trakt</a></span>
+                    {% endif %}
+                </td>
                 <td style="border-bottom:1px solid gray;">
                     {% if val.isMonitored %}
                     <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Monitored" onclick='delMonitor({{ val.media_id }});' ></i>
@@ -75,8 +101,9 @@
             columnDefs: [
                 {targets: 0, visible: false, searchable: false},
                 {targets: 1, visible: false, searchable: false},
-                {targets: 6, sortable: false},
-                {targets: 7, visible: false},
+                {targets: 2, sortable: false, searchable: false},
+                {targets: 8, sortable: false},
+                {targets: 9, visible: false},
             ]
         });
         $("#divWaiting").hide();
@@ -102,9 +129,9 @@
                 var reg = new RegExp('^[0-9]+$');
                 if(reg.test(data)){
                     // update the media_id to the new data
-                    table.cell(rIdx,6).data("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + ");' ></i>")
+                    table.cell(rIdx,8).data("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + ");' ></i>")
                     table.cell(rIdx,0).data(data);
-                    table.cell(rIdx,7).data("IsMonitored");
+                    table.cell(rIdx,9).data("IsMonitored");
                 };
             },
             fail: function(xhr, textStatus, errorThrown){
@@ -133,8 +160,8 @@
                     if(data == "DelOK"){
                         // update the star to an empty star
                         var r_id = table.cell(rIdx,1).data();
-                        table.cell(rIdx,6).data("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + r_id +",{{ system_profile.id }}," + rIdx + ");' ></i>")
-                        table.cell(rIdx,7).data("UnMonitored");
+                        table.cell(rIdx,8).data("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + r_id +",{{ system_profile.id }}," + rIdx + ");' ></i>")
+                        table.cell(rIdx,9).data("UnMonitored");
                         // clear the media_id, set to 0
                         table.cell(rIdx,0).data("0");
                     } else {
@@ -150,11 +177,11 @@
     function filterResults(stat){
         var table = $("#tblMovies").DataTable();
         if(stat=="mon"){
-            table.column(7).search("IsMonitored").draw();
+            table.column(9).search("IsMonitored").draw();
         } else if(stat=="unmon") {
-            table.column(7).search("UnMonitored").draw();
+            table.column(9).search("UnMonitored").draw();
         } else {
-            table.column(7).search("").draw();
+            table.column(9).search("").draw();
         }
     }
 </script>
