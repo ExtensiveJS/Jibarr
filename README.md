@@ -20,6 +20,7 @@ To Run/Install
 * Install Python 3.7
 * Install DJango
 * Install djangorestframework
+* Install celery
 * Run django (point it to the ui\manage.py )
     * PYTHON.EXE \path\to\ui\manage.py runserver 8125
 * Open a web browser to http://localhost:8125/MediaFileSync
