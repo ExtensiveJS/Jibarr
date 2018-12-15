@@ -4,6 +4,7 @@
 {% block javascript%}
 <style>
     .siteCallout {color:white;font-size:smaller;background-color:cornflowerblue;border-radius:5px;padding:2px 5px 2px 5px;cursor:pointer;}
+    .qualityCallout {color:white;font-size:smaller;background-color:goldenrod;border-radius:5px;padding:2px 5px 2px 5px;margin:2px;cursor:pointer;}
     .siteCallout A {color:white;}
     .siteCallout A:HOVER {text-decoration: none;}
 </style>
@@ -43,7 +44,7 @@
                 <td style="border-bottom:1px solid gray;"><a href="{{ system_settings.radarr_path }}/movies/{{ val.titleSlug }}" target="_new">{{ val.title }}</a></td>
                 <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
                 <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
-                <td style="border-bottom:1px solid gray;">{{ val.quality }}</td>
+                <td style="border-bottom:1px solid gray;"><span class="qualityCallout">{{ val.quality }}</span></td>
                 <td style="border-bottom:1px solid gray;width:150px;">
                     {% if val.tmdbid %}
                     <span class="siteCallout"><a href='http://themoviedb.org/movie/{{ val.tmdbid }}' target="_new">The Movie DB</a></span>
