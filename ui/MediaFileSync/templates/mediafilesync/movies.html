@@ -21,8 +21,8 @@
     <table id="tblMovies" class="table stripe" style='width:100%;'>
         <thead>
             <tr>
-                <th>media_id</th>
-                <th>radarr_id</th>
+                <th style="width:0px;">media_id</th>
+                <th style="width:0px;">radarr_id</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
                 <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
@@ -36,16 +36,20 @@
         <tbody>
             {% for val in testitem.movielist %}
             <tr>
-                <td>{{ val.media_id }}</td>
-                <td>{{ val.r_id }}</td>
+                <td style="width:0px;">{{ val.media_id }}</td>
+                <td style="width:0px;">{{ val.r_id }}</td>
                 <td style="border-bottom:1px solid gray;width:60px;">
-                    <img src="http://localhost:7878/MediaCover/{{ val.r_id }}/poster.jpg" style="width:50px;cursor:pointer;" onclick="window.open('http://localhost:7878/MediaCover/{{ val.r_id }}/poster.jpg');" />
+                    <img src="{{ system_settings.radarr_path }}/MediaCover/{{ val.r_id }}/poster.jpg" style="width:50px;cursor:pointer;" onclick="window.open('http://localhost:7878/MediaCover/{{ val.r_id }}/poster.jpg');" />
                 </td>
                 <td style="border-bottom:1px solid gray;"><a href="{{ system_settings.radarr_path }}/movies/{{ val.titleSlug }}" target="_new">{{ val.title }}</a></td>
                 <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
                 <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
-                <td style="border-bottom:1px solid gray;"><span class="qualityCallout">{{ val.quality }}</span></td>
-                <td style="border-bottom:1px solid gray;width:150px;">
+                <td style="border-bottom:1px solid gray;width:120px">
+                    {% if val.quality %}
+                    <span class="qualityCallout">{{ val.quality }}</span>
+                    {% endif %}
+                </td>
+                <td style="border-bottom:1px solid gray;width:100px;">
                     {% if val.tmdbid %}
                     <span class="siteCallout"><a href='http://themoviedb.org/movie/{{ val.tmdbid }}' target="_new">The Movie DB</a></span>
                     {% endif %}
@@ -98,7 +102,7 @@
     $(function () {
         $("#divWaiting").show();
         $("#tblMovies").DataTable({
-            "order": [[ 1, "asc" ]],
+            //"order": [[ 2, "asc" ]],
             columnDefs: [
                 {targets: 0, visible: false, searchable: false},
                 {targets: 1, visible: false, searchable: false},

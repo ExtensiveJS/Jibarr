@@ -22,7 +22,6 @@ def movies(request):
     try:
         prof_id = request.session["prof_id"]
     except KeyError:
-        #prof_id = 1
         pass
     system_settings = Settings.objects.all()[:1].get()
     prof_list = Profile.objects.all()
@@ -33,10 +32,13 @@ def movies(request):
     monSync = 0
     monNotSync = 0
 
+    rdml = get_movie_info(system_settings, prof)
+    rdml.movielist = [x for x in rdml.movielist if x.quality]
+    rdml.movielist.sort(key=lambda x: x.title.lower(), reverse=False)
 
     context = {
         'system_settings': system_settings,
-        'testitem': get_movie_info(system_settings, prof),
+        'testitem': rdml,
         'system_profile': prof,
         'prof_list': prof_list,
         'prof_id': prof_id
@@ -155,9 +157,10 @@ def process_movie (var, prList, prof, result, index):
     except KeyError:
         pass
     
+    rm.quality = ""
     try:
         rm.quality = var["movieFile"]["quality"]["quality"]["name"]
     except KeyError:
         pass
-    
+
     result[index] = rm
