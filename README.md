@@ -22,6 +22,6 @@ Utility to allow you to track files that need to be synced to secondary drives.
 * Install celery
 * Run django (point it to the ui\manage.py )
     * PYTHON.EXE \path\to\ui\manage.py runserver 8125
-* Open a web browser to http://localhost:8125/Jibarr
+* Open a web browser to http://localhost:8125/jibarr
 
 
