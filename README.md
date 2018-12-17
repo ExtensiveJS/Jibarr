@@ -1,4 +1,4 @@
-![alt text](https://github.com/ExtensiveJS/Jibarr/blob/master/ui/Jibarr/static/mediafilesync/images/MFS_Logo.png?raw=true "Jibarr")
+![alt text](https://github.com/ExtensiveJS/Jibarr/blob/master/ui/Jibarr/static/jibarr/images/jibar_title_Logo_black.png?raw=true "Jibarr")
 # Jibarr
 
 Utility to allow you to track files that need to be synced to secondary drives. 
