@@ -1,0 +1,22 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block title %}About{% endblock title %}
+{% block content %}
+
+<div class='CONTAINER' style="font-size:larger;">
+
+    <ul class="nav nav-tabs" style="margin-top:10px;">
+        <li><a href="/jibarr/settings">Media</a></li>
+        <li><a href="/jibarr/profiles">Profiles</a></li>
+        <li><a href="/jibarr/logs">Logs</a></li>
+        <li class="active"><a href="/jibarr/about">About</a></li>
+    </ul>
+
+</div>
+{% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+    });
+</script>
+{% endblock postbody %}

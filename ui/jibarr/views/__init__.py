@@ -6,3 +6,5 @@ from .movies import *
 from .shows import *
 from .music import *
 from .runsync import *
+from .logs import *
+from .about import *

@@ -1,0 +1,43 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block title %}Logs{% endblock title %}
+{% block content %}
+
+<div class='CONTAINER' style="font-size:larger;">
+
+    <ul class="nav nav-tabs" style="margin-top:10px;">
+        <li><a href="/jibarr/settings">Media</a></li>
+        <li><a href="/jibarr/profiles">Profiles</a></li>
+        <li class="active"><a href="#">Logs</a></li>
+        <li><a href="/jibarr/about">About</a></li>
+    </ul>
+
+    <h2>Logs </h2><br />
+    <table id="tblLogs" class="table stripe">
+        <thead>
+            <tr><th>id</th><th style="width:50px;">Type</th><th>Message</th><th style="width:50px;">Timestamp</th></tr>
+        </thead>
+        <tbody>
+            {% for var in log_list %}
+            <tr>
+                <td>{{ var.id }}</td>
+                <td>{{ var.log_type }}</td>
+                <td>{{ var.log_message }}</td>
+                <td>{{ var.log_datetime }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+        $("#tblLogs").DataTable({
+            "order": [[ 3, "desc" ]]
+        }
+        );
+    });
+</script>
+{% endblock postbody %}

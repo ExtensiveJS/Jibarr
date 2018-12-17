@@ -104,3 +104,12 @@ class ProfileLidarr(models.Model):
     lastRun = models.CharField(max_length=200)
     class Meta:
         db_table = 'Jibarr_lidarr'
+
+class Logs(models.Model):
+    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    log_type = models.CharField(max_length=25)
+    log_message = models.CharField(max_length=2000)
+    log_datetime = models.CharField(max_length=200)
+    objects = models.Manager()
+    class Meta:
+        db_table = 'Jibarr_logs'
