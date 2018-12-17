@@ -1,5 +1,5 @@
-![alt text](https://github.com/ExtensiveJS/MediaFileSync/blob/master/ui/MediaFileSync/static/mediafilesync/images/MFS_Logo.png?raw=true "MediaFileSync")
-# MediaFileSync
+![alt text](https://github.com/ExtensiveJS/Jibarr/blob/master/ui/Jibarr/static/mediafilesync/images/MFS_Logo.png?raw=true "Jibarr")
+# Jibarr
 
 Utility to allow you to track files that need to be synced to secondary drives. 
 
@@ -22,6 +22,6 @@ Utility to allow you to track files that need to be synced to secondary drives.
 * Install celery
 * Run django (point it to the ui\manage.py )
     * PYTHON.EXE \path\to\ui\manage.py runserver 8125
-* Open a web browser to http://localhost:8125/MediaFileSync
+* Open a web browser to http://localhost:8125/Jibarr
 
 

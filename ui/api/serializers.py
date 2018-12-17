@@ -1,4 +1,4 @@
-from MediaFileSync.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
+from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
 from rest_framework import serializers
 
 class SettingsSerializer(serializers.HyperlinkedModelSerializer):

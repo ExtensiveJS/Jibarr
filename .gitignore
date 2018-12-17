@@ -1,5 +1,5 @@
 ui/ui/__pycache__
-ui/MediaFileSync/__pycache__
-ui/MediaFileSync/migrations/__pycache__
+ui/Jibarr/__pycache__
+ui/Jibarr/migrations/__pycache__
 ui/api/__pycache__
 MFS.code-workspace

@@ -1,10 +1,10 @@
-from MediaFileSync.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
+from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer
-from MediaFileSync.copyTheFile import copyTheFile
+from jibarr.copyTheFile import copyTheFile
 
 #class SettingsViewSet(viewsets.ModelViewSet):
 #    """
@@ -37,15 +37,11 @@ class SettingsViewSet(viewsets.ModelViewSet):
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    #def post(self, request, pk):
     def post(self, request, pk):
         if pk =='add':
             pname = request.POST.get('profile_name')
             plr = request.POST.get('profile_lastRun')
             p = Profile.objects.create(profile_name=pname,profile_lastRun=plr)
-            #p.profile_name = request.POST.get('profile_name')
-            #p.profile_lastRun = request.POST.get('profile_lastRun')
-            #p.save()
         elif pk == 'delete':
             pid = int(request.POST.get('profile_id'))
             p = Profile.objects.get(id=pid)
@@ -91,7 +87,7 @@ class ProfileLidarrViewSet(viewsets.ModelViewSet):
         if pk == 'add':
             pid = request.POST.get('profile_id')
             lid = request.POST.get('lidarr_id')
-            pl = ProfileLidarr.objects.create(profile_id=pid,lidarr_id=rid,lastRun='Jan 01 1970 11:59PM')
+            pl = ProfileLidarr.objects.create(profile_id=pid,lidarr_id=lid,lastRun='Jan 01 1970 11:59PM')
         if pk == 'delete':
             plid = int(request.POST.get('plid'))
             pl = ProfileLidarr.objects.get(id=plid)

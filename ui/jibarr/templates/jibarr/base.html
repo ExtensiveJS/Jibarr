@@ -1,0 +1,70 @@
+{% load static %}
+<html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/styles.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+        <title>{% block title %}{% endblock %} - Jibarr</title>
+        <script src="https://code.jquery.com/jquery-3.3.1.js" %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/datatables.min.css' %}"/>
+        <script type="text/javascript" src="{% static 'jibarr/datatables.min.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'jibarr/jquery-ui-1.12.1/jquery-ui.css' %}">
+        <script src="{% static 'jibarr/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
+        <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+        <script src="https://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+        <link rel="shortcut icon" type="image/png" href="{% static 'jibarr/favicon.ico' %}"/>
+        <script src="{% static 'jibarr/jquery.toastmessage.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/jquery.toastmessage.css' %}">
+        {% block javascript %}{% endblock javascript %}
+    </head> 
+    <body style='background-color:#1F1E1E;margin:0px;'>         
+        <div style='position:relative;'>"
+            <!-- HEADER MENU -->
+            <div style='margin:5px 110px auto 110px;height:155px;color:white;' class="HEADERMENU">
+                <div style='width:160px;text-align:center;float:left;'><a href="/jibarr/"><img src="{% static 'jibarr/images/Jibarr_logo.png' %}"></a></div>
+                {% if system_settings.radarr_enabled == 1 %}<a href="/jibarr/movies"><div class="HEADERITEM"><i class="glyphicon glyphicon-film" style="font-size:xx-large;"></i><br/>Movies</div></a>{% endif %}
+                {% if system_settings.sonarr_enabled == 1 %}<a href="/jibarr/shows"><div class="HEADERITEM"><i class="glyphicon glyphicon-blackboard" style="font-size:xx-large;"></i><br/>TV Shows</div></a>{% endif %}
+                {% if system_settings.lidarr_enabled == 1 %}<a href="/jibarr/music"><div class="HEADERITEM"><i class="glyphicon glyphicon-music" style="font-size:xx-large;"></i><br/>Music</div></a>{% endif %}
+                <a href="/jibarr/profiles"><div class="HEADERITEM"><i class="glyphicon glyphicon-user" style="font-size:xx-large;"></i><br/>Profiles</div></a>
+                <a href="/jibarr/runsync"><div class="HEADERITEM"><i class="glyphicon glyphicon-transfer" style="font-size:xx-large;"></i><br/>Run Sync</div></a>
+                <a href="/jibarr/settings"><div class="HEADERITEM"><i class="glyphicon glyphicon-cog" style="font-size:xx-large;"></i><br/>Settings</div></a>
+                <!-- a href="/jibarr/donate"><div class="HEADERITEM"><i class="glyphicon glyphicon-heart" style="font-size:xx-large;color:red;"></i><br/>Donate</div></a -->
+                <div style="float:right;width:150px;text-align:right;">
+                    <select id="ddlProfiles" onchange="profileChanged();" class="form-control" style="height:30px;font-size:small;">
+                        {% for prof in prof_list %}
+                            <option value="{{ prof.id }}">{{ prof.profile_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div style="text-align:center;color:#b9b9b9;">Select Profile</div>
+                </div>
+            </div>
+            <div id="content">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        <script>
+            $(function () {
+                $("#ddlProfiles").val({{ prof_id }});
+            });
+            function profileChanged(){
+                //alert('prof change:' + $("#ddlProfiles").val());
+                $.ajax({
+                    url : '/api/settings/update/',
+                    type : 'POST',
+                    data: { 
+                        profile_id: $("#ddlProfiles").val()
+                    },
+                    success: function(data)
+                    {
+                        //alert('success');
+                        location.reload(true);
+                    },
+                    fail: function(xhr, textStatus, errorThrown){
+                        //alert('request failed');
+                   }
+                });
+            };
+        </script>
+        {% block postbody %}{% endblock postbody %}
+    </body>
+</html>
