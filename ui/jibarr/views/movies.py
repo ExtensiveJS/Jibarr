@@ -101,6 +101,7 @@ def process_movie (var, prList, prof, result, index):
     try:
         rd = var['inCinemas'][:10] # + " " + var['inCinemas'][11:16]
         rm.releaseDate = rd
+        rm.releaseYear = var['inCinemas'][:4]
     except KeyError:
         pass
   

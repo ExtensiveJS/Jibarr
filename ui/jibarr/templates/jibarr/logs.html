@@ -12,18 +12,36 @@
         <li><a href="/jibarr/about">About</a></li>
     </ul>
 
-    <h2>Logs </h2><br />
-    <table id="tblLogs" class="table stripe">
+    <div style="padding-bottom:10px;">
+        <div style="float:right;">
+            <div style="margin-top:5px;float:right;border-radius:5px;border:1px solid grey;padding:3px 4px 3px 4px;">
+                Filters:
+                <i style="padding-left:3px;padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-record' title='Show All' onclick="filterResults('all');"></i>
+                <i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-film' title='Show Media Only' onclick="filterResults('media');"></i>
+                <i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-hdd' title='Show System Only' onclick="filterResults('system');"></i>
+            </div>
+            <div style="float:right;padding:5px;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="clearLogs();">Clear</button>
+            </div>
+        </div>
+        <h2>Logs </h2>
+    </div>
+    <table id="tblLogs" class="table stripe" style="font-size:small;">
         <thead>
-            <tr><th>id</th><th style="width:50px;">Type</th><th>Message</th><th style="width:50px;">Timestamp</th></tr>
+            <tr><th>id</th><th style="width:50px;">Category</th><th style="width:50px;">Type</th><th>Message</th><th style="width:50px;">Timestamp</th></tr>
         </thead>
         <tbody>
             {% for var in log_list %}
             <tr>
                 <td>{{ var.id }}</td>
-                <td>{{ var.log_type }}</td>
+                <td style="width:30px;text-align:center;">
+                    {{ var.log_category }}
+                </td>
+                <td style="width:30px;text-align:center;">
+                    {{ var.log_type }}
+                </td>
                 <td>{{ var.log_message }}</td>
-                <td>{{ var.log_datetime }}</td>
+                <td style="width:150px;">{{ var.log_datetime }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -35,9 +53,42 @@
 <script>
     $(function () {
         $("#tblLogs").DataTable({
-            "order": [[ 3, "desc" ]]
+            "order": [[ 4, "desc" ]],
+            columnDefs: [
+                {targets: 0, visible: false, searchable: false},
+            ],
+            "sDom": 'Rfrtlip'
         }
         );
     });
+    function clearLogs() {
+        $.ajax({
+                url : '/api/logs/clear/',
+                type : 'POST',
+                data: {},
+                success: function(data)
+                {
+                    if(data == "Ok"){
+                        // update the table
+                        location.reload();
+                    } else {
+                        alert("Data not DelOK = " + data);
+                    };
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+               }
+            });
+    };
+    function filterResults(stat) {
+        var table = $("#tblLogs").DataTable();
+        if(stat=="media"){
+            table.column(1).search("Radarr").draw();
+        } else if(stat=="system") {
+            table.column(1).search("System").draw();
+        } else {
+            table.column(1).search("").draw();
+        }
+    }
 </script>
 {% endblock postbody %}

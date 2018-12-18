@@ -1,4 +1,4 @@
-from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
+from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs
 from rest_framework import serializers
 
 class SettingsSerializer(serializers.HyperlinkedModelSerializer):
@@ -25,3 +25,8 @@ class ProfileLidarrSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProfileLidarr
         fields = ('id', 'profile_id', 'lidarr_id', 'lastRun')
+
+class LogsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Logs
+        fields = ('id','log_type','log_message','log_category','log_datetime')

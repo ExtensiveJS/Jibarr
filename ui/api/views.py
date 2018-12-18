@@ -1,10 +1,11 @@
-from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr
+from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
-from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer
+from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer, LogsSerializer
 from jibarr.copyTheFile import copyTheFile
+from datetime import datetime
 
 #class SettingsViewSet(viewsets.ModelViewSet):
 #    """
@@ -56,14 +57,25 @@ class ProfileRadarrViewSet(viewsets.ModelViewSet):
         if pk == 'add':
             pid = request.POST.get('profile_id')
             rid = request.POST.get('radarr_id')
+            rt = request.POST.get('radarr_title')
             pr = ProfileRadarr.objects.create(profile_id=pid,radarr_id=rid,lastRun='Jan 01 1970 11:59PM')
             pr.save()
             ret = pr.pk
+            try:
+                Logs.objects.create(log_type='Add',log_category='Radarr',log_message='Added ' + rt + ' to ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            except KeyError:
+                pass
         if pk == 'delete':
             prid = int(request.POST.get('prid'))
+            pid = request.POST.get('profile_id')
+            rt = request.POST.get('radarr_title')
             pr = ProfileRadarr.objects.get(id=prid)
             pr.delete()
             ret = "DelOK"
+            try:
+                Logs.objects.create(log_type='Delete',log_category='Radarr',log_message='Deleted ' + rt + ' from ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            except KeyError:
+                pass
         return Response(ret)
 
 class ProfileSonarrViewSet(viewsets.ModelViewSet):
@@ -102,3 +114,11 @@ def RunSync(request):
     prof_id = request.POST.get('prof_id')
     copyTheFile(idList, destDir, prof_id)
     return Response("OK")
+
+class LogsViewSet(viewsets.ModelViewSet):
+    queryset = Logs.objects.all()
+    serializer_class = LogsSerializer
+    def post(self, request, pk):
+        if pk == 'clear':
+            Logs.objects.all().delete()
+        return Response("Ok")

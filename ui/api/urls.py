@@ -8,6 +8,7 @@ router.register(r'profile', views.ProfileViewSet)
 router.register(r'profileradarr', views.ProfileRadarrViewSet)
 router.register(r'profilesonarr', views.ProfileSonarrViewSet)
 router.register(r'profilelidarr', views.ProfileLidarrViewSet)
+router.register(r'logs', views.LogsViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

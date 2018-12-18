@@ -110,6 +110,7 @@ class Logs(models.Model):
     log_type = models.CharField(max_length=25)
     log_message = models.CharField(max_length=2000)
     log_datetime = models.CharField(max_length=200)
+    log_category = models.CharField(max_length=25)
     objects = models.Manager()
     class Meta:
         db_table = 'Jibarr_logs'
