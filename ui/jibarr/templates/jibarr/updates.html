@@ -1,0 +1,38 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block title %}Updates{% endblock title %}
+{% block javascript%}
+<style>
+    .newTag {border-radius:3px;background-color:mediumseagreen;padding:2px 4px 2px 4px;color:white;font-size:x-small;}
+    .updateTag {border-radius:3px;background-color:lightskyblue;padding:2px 4px 2px 4px;color:white;font-size:x-small;}
+</style>
+{% endblock javascript %}
+{% block content %}
+
+<div class='CONTAINER' style="font-size:larger;">
+
+    <ul class="nav nav-tabs" style="margin-top:10px;">
+        <li><a href="/jibarr/settings">Media</a></li>
+        <li><a href="/jibarr/profiles">Profiles</a></li>
+        <li><a href="/jibarr/logs">Logs</a></li>
+        <li class="active"><a href="/jibarr/updates">Updates</a></li>
+        <li><a href="/jibarr/about">About</a></li>
+    </ul>
+
+    <div style="font-size:small;padding:10px;font-family:Verdana, Geneva, Tahoma, sans-serif;">
+        <div style="padding-bottom:20px;">
+            <h4 style="border-bottom:1px solid lightgrey;">0.1.0.0 - Dec 31 2018</h4>
+            <div>
+                <span class="newTag">NEW</span>
+                Initial Release for the Jibarr application.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+    });
+</script>
+{% endblock postbody %}

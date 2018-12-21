@@ -1,4 +1,4 @@
-from jibarr.models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr
+from jibarr.models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, PageStuff
 from urllib.request import urlopen
 import json
 from time import mktime
@@ -7,6 +7,7 @@ import time
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from threading import Thread, Lock
+from django.core.paginator import Paginator
 import math
 
 threadLock = Lock()
@@ -32,16 +33,49 @@ def movies(request):
     monSync = 0
     monNotSync = 0
 
+    pageNum = 1
+    try:
+        if(request.GET.get("page")):
+            pageNum = request.GET.get("page")
+    except KeyError:
+        pass
     rdml = get_movie_info(system_settings, prof)
     rdml.movielist = [x for x in rdml.movielist if x.quality]
     rdml.movielist.sort(key=lambda x: x.title.lower(), reverse=False)
+
+    filterCriteria = "all"
+    try:
+        if(request.GET.get("filter")):
+            filterCriteria = request.GET.get("filter")
+    except KeyError:
+        pass
+
+    if(filterCriteria=='monitored'):
+        rdml.movielist = [x for x in rdml.movielist if x.isMonitored]
+    
+    if(filterCriteria=='unmonitored'):
+        rdml.movielist = [x for x in rdml.movielist if x.isMonitored == False]
+    
+    rdml.filterCriteria = filterCriteria
+    paginator = Paginator(rdml.movielist, 25)
+    if(int(pageNum) > paginator.num_pages):
+        pageNum = 1
+    pageStuff = PageStuff
+    pageStuff.pageNumber = pageNum
+    pageStuff.totalPages = paginator.num_pages
+    pageStuff.perPage = 5
+    pageStuff.totalRecords = paginator.count
+
+    
+    rdml.movielist = paginator.page(int(pageNum))
 
     context = {
         'system_settings': system_settings,
         'testitem': rdml,
         'system_profile': prof,
         'prof_list': prof_list,
-        'prof_id': prof_id
+        'prof_id': prof_id,
+        'pageStuff': pageStuff
     }
     template = loader.get_template("jibarr/movies.html")
     return HttpResponse(template.render(context, request))
@@ -110,7 +144,7 @@ def process_movie (var, prList, prof, result, index):
         if pr.radarr_id == var["id"]:
             rm.media_id = pr.id
             mId = pr.id
-            prLr = datetime.fromtimestamp(mktime(time.strptime(pr.lastRun, "%b %d %Y %I:%M%p")))
+            prLr = datetime.fromtimestamp(mktime(time.strptime(pr.lastRun, "%b %d %Y %H:%M:%S")))
     
     if rm.media_id > 0:
         rm.isMonitored = True    

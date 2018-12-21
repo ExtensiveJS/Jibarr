@@ -1,59 +1,50 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block title %}Profiles{% endblock title %}
+{% block javascript%}
+<style>
+    .divRow {height:26px;border-bottom:1px solid lightgrey;}
+    .divRow:nth-of-type(even) {background-color:linen;}
+</style>
+{% endblock javascript %}
 {% block content %}
 
 <div class='CONTAINER' style="font-size:larger;">
 
     <ul class="nav nav-tabs" style="margin-top:10px;">
         <li><a href="/jibarr/settings">Media</a></li>
-        <li class="active"><a href="#">Profiles</a></li>
+        <li class="active"><a href="/jibarr/profiles">Profiles</a></li>
         <li><a href="/jibarr/logs">Logs</a></li>
+        <li><a href="/jibarr/updates">Updates</a></li>
         <li><a href="/jibarr/about">About</a></li>
     </ul>
 
-    <h2>Profiles <i class="glyphicon glyphicon-plus ADDBUTTON" onclick="showAdd();"></i></h2><br />
-    <table id="tblProfiles" class="table stripe">
-        <thead>
-            <tr><th>id</th><th>Name</th><th style="width:150px;">Last Run</th><th style="width:10px;">&nbsp;</th></tr>
-        </thead>
-        <tbody>
-            {% for var in profile_list %}
-            <tr>
-                <td>{{ var.id }}</td>
-                <td>{{ var.profile_name }}</td>
-                <td>{{ var.profile_lastRun }}</td>
-                <td><i class="glyphicon glyphicon-remove-circle DELBUTTON" onclick="delData({{ var.id }});"></i></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h2>Profiles <i class="glyphicon glyphicon-plus ADDBUTTON" onclick="showAdd();" title="Add"></i></h2><br />
+    <div>
+        <div class="divRow">
+            <div style="width:75%;float:left;font-weight:bold;">Name</div>
+            <div style="width:19%;float:left;font-weight:bold;">Last Run</div>
+            <div style="width:5%;float:left;">&nbsp;</div>
+        </div>
+        {% for var in profile_list %}
+            <div class="divRow">
+                <div style="width:75%;float:left;">{{ var.profile_name }}</div>
+                <div style="width:19%;float:left;">{{ var.profile_lastRun }}</div>
+                <div style="width:5%;float:left;"><i class="glyphicon glyphicon-remove-circle DELBUTTON" onclick="delData({{ var.id }});"></i></div>
+            </div>
+        {% endfor %}
+    </div>
+
 </div>
 <div id="divDialog" title="Create new profile" style="width:360px;">
     <div style="float:left;width:100px;text-align:right;padding-right:5px;height:35px;">Profile Name:</div>
     <div style="float:left;width:150px;height:35px;"><input type="text" id="txtNewProfileName" /></div>
-    <div style="margin-top:15px;"><input type="button" style="float:right;" value="Save" onclick="saveNew();"></div>
+    <div style="margin-top:15px;"><button type="button" class="btn btn-primary btn-sm" onclick="saveNew();" style="float:right;">Save</button></div>
 </div>
 {% endblock content %}
 {% block postbody %}
 <script>
     $(function () {
-        $("#tblProfiles").DataTable({
-            "order": [[ 1, "asc" ]],
-            "columnDefs": [
-            {
-                "targets": [ 0 ],
-                "visible": false,
-                "searchable": false
-            },
-            {
-                "targets": [3],
-                "searchable": false,
-                "sortable": false
-            }
-            ]
-        }
-        );
         $("#divDialog").dialog({
             autoOpen: false,
             modal: true
@@ -69,7 +60,7 @@
             type : 'POST',
             data: { 
                 profile_name: $("#txtNewProfileName").val(),
-                profile_lastRun: 'Jan 01 1900 11:59PM'
+                profile_lastRun: 'Jan 01 1900 11:59:59'
             },
             success: function(data)
             {

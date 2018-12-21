@@ -14,5 +14,6 @@ urlpatterns = [
     url(r'^music/', views.music, name='music'),
     url(r'^runsync/', views.runsync, name='runsync'),
     url(r'^logs/', views.logs, name='logs'),
-    url(r'^about/', views.about, name='about')
+    url(r'^about/', views.about, name='about'),
+    url(r'^updates/', views.updates, name='updates')
 ]

@@ -1,7 +1,8 @@
 import os, shutil, json
-from jibarr.models import Settings, radarrMovie, ProfileRadarr, Profile
+from jibarr.models import Settings, radarrMovie, ProfileRadarr, Profile, Logs
 from urllib.request import urlopen
 from celery import task
+from datetime import datetime
 
 @task
 def copyTheFile(idList, destDir, prof_id):
@@ -10,7 +11,6 @@ def copyTheFile(idList, destDir, prof_id):
         isSuccessful = True
 
         for var in idList:
-            
             system_settings = Settings.objects.all()[:1].get()
             data = urlopen(system_settings.radarr_path + "/api/movie/" + str(var) + "?apikey=" + system_settings.radarr_apikey).read()
             output = json.loads(data) 
@@ -19,10 +19,18 @@ def copyTheFile(idList, destDir, prof_id):
             sourcePath = output['path'] + '\\' + output['movieFile']['relativePath']
             if os.path.exists(destDir + destSubDir) == False:
                 os.makedirs(destDir + destSubDir)
+            try:
+                Logs.objects.create(log_type='Sync',log_category='System',log_message='Sync started for ' + output['movieFile']['relativePath'],log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            except KeyError:
+                pass
             shutil.copy2(sourcePath,destDir + destSubDir + '\\' + output['movieFile']['relativePath'])
+            try:
+                Logs.objects.create(log_type='Sync',log_category='System',log_message='Sync finished for ' + output['movieFile']['relativePath'],log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            except KeyError:
+                pass
             # call to update the ProfileRadarr table for this radarr_id and this profile_id
             profile_radarr = ProfileRadarr.objects.get(profile_id=prof_id,radarr_id=var)
-            profile_radarr.lastRun = 'Dec 04 2018 02:30PM'
+            profile_radarr.lastRun = datetime.now().strftime("%b %d %Y %H:%M:%S")
             profile_radarr.save()
     except KeyError:
         isSuccessful = False
@@ -31,7 +39,7 @@ def copyTheFile(idList, destDir, prof_id):
     if isSuccessful:
         # call to update the Profile to the new date/time stamp
         prof = Profile.objects.get(id=prof_id)
-        prof.profile_lastRun = 'Dec 04 2018 02:30PM'
+        prof.profile_lastRun = datetime.now().strftime("%b %d %Y %H:%M:%S")
         prof.save()
     return isSuccessful
     

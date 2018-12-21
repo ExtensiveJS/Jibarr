@@ -3,10 +3,12 @@
 {% block title %}Movies{% endblock title %}
 {% block javascript%}
 <style>
-    .siteCallout {color:white;font-size:smaller;background-color:cornflowerblue;border-radius:5px;padding:2px 5px 2px 5px;cursor:pointer;}
-    .qualityCallout {color:white;font-size:smaller;background-color:goldenrod;border-radius:5px;padding:2px 5px 2px 5px;margin:2px;cursor:pointer;}
+    .siteCallout {color:white;font-size:x-small;background-color:#337ab7;border-radius:5px;padding:2px 5px 2px 5px;cursor:pointer;}
+    .qualityCallout {color:white;font-size:x-small;background-color:goldenrod;border-radius:5px;padding:2px 5px 2px 5px;margin:2px;cursor:pointer;}
     .siteCallout A {color:white;}
     .siteCallout A:HOVER {text-decoration: none;}
+    .divRow {height:30px;border-bottom:1px solid lightgrey;}
+    .divRow:nth-of-type(even) {background-color:linen;}
 </style>
 {% endblock javascript %}
 {% block content %}
@@ -14,43 +16,44 @@
 <div class='CONTAINER'>
     <div style='float:left;width:30px;display:none;' id='divWaiting'>..waiting..</div>
     <div style="margin:5px 5px 20px auto;float:right;border:1px dotted silver;height:25px;padding:3px;border-radius:5px;background-color:lightblue;">
-        <i style="padding-left:3px;padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-record' title='Show All' onclick="filterResults('all');"></i>
-        <i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star-empty' title='Show Unmonitored' onclick="filterResults('unmon');"></i>
-        <i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star' title='Show Monitored' onclick="filterResults('mon');"></i>
+        <a href="?filter=all"><i style="padding-left:3px;padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-record' title='Show All' onclick="filterResults('all');"></i></a>
+        <a href="?filter=unmonitored"><i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star-empty' title='Show Unmonitored' onclick="filterResults('unmon');"></i></a>
+        <a href="?filter=monitored"><i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star' title='Show Monitored' onclick="filterResults('mon');"></i></a>
     </div>
-    <table id="tblMovies" class="table stripe" style='width:100%;'>
-        <thead>
-            <tr>
-                <th style="width:0px;">media_id</th>
-                <th style="width:0px;">radarr_id</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>Quality</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>Links</th>
-                <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
-                <th>status</th>
-                <th>titleclean</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for val in testitem.movielist %}
-            <tr>
-                <td style="width:0px;">{{ val.media_id }}</td>
-                <td style="width:0px;">{{ val.r_id }}</td>
-                <td style="border-bottom:1px solid gray;width:60px;">
+
+    <div style="margin-top:40px;">
+        <div class="divRow" style="height:35px;font-weight:bold;vertical-align:bottom;padding-top:5px;">
+            <div style="display:none;">val.title (val.releaseYear)</div>
+            <div style="width:70;float:left;text-align:center;">&nbsp;</div>
+            <div style="float:left;">Title</div>
+            <div style="width:65px;float:right;">&nbsp;</div>
+            <div style="width:100px;float:right;">Links</div>
+            <div style="width:120px;float:right;">Quality</div>
+            <div style="width:75px;float:right;">Rating</div>
+            <div style="width:135px;float:right;">Released</div>
+        </div>
+        {% for val in testitem.movielist %}
+            <div class="divRow" style="height:90px;padding-top:5px;">
+                <div id="divTitle_{{ val.r_id }}" style="display:none;">{{ val.title }} ({{ val.releaseYear }})</div>
+                <div style="width:70;float:left;text-align:center;">
                     <img src="{{ system_settings.radarr_path }}/MediaCover/{{ val.r_id }}/poster.jpg" style="width:50px;cursor:pointer;" onclick="window.open('http://localhost:7878/MediaCover/{{ val.r_id }}/poster.jpg');" />
-                </td>
-                <td style="border-bottom:1px solid gray;"><a href="{{ system_settings.radarr_path }}/movies/{{ val.titleSlug }}" target="_new">{{ val.title }}</a></td>
-                <td style="border-bottom:1px solid gray;">{{ val.releaseDate }}</td>
-                <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
-                <td style="border-bottom:1px solid gray;width:120px">
-                    {% if val.quality %}
-                    <span class="qualityCallout">{{ val.quality }}</span>
+                </div>
+                <div style="float:left;">
+                    <a href="{{ system_settings.radarr_path }}/movies/{{ val.titleSlug }}" target="_new">{{ val.title }}</a>
+                </div>
+                <div id="divAction_{{ val.r_id }}" style="width:65px;float:right;margin-right:0px;text-align:center;font-size:medium;">
+                    {% if val.isMonitored %}
+                    <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Monitored" onclick='delMonitor({{ val.media_id }},{{ val.r_id }});' ></i>
+                    {% if val.isNewer %}
+                    <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+                    {% else %}
+                    <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
                     {% endif %}
-                </td>
-                <td style="border-bottom:1px solid gray;width:100px;">
+                    {% else %}
+                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.r_id }});'></i>
+                    {% endif %}
+                </div>
+                <div style="width:100px;float:right;">
                     {% if val.tmdbid %}
                     <span class="siteCallout"><a href='http://themoviedb.org/movie/{{ val.tmdbid }}' target="_new">The Movie DB</a></span>
                     {% endif %}
@@ -66,81 +69,70 @@
                     {% if val.tmdbid %}
                     <span class="siteCallout"><a href='http://trakt.tv/search/tmdb/{{ val.tmdbid }}?id_type=movie' target="_new">Trakt</a></span>
                     {% endif %}
-                </td>
-                <td style="border-bottom:1px solid gray;">
-                    {% if val.isMonitored %}
-                    <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Monitored" onclick='delMonitor({{ val.media_id }});' ></i>
-                    {% if val.isNewer %}
-                    <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+                </div>
+                <div style="width:120px;float:right;">
+                    {% if val.quality %}
+                    <span class="qualityCallout">{{ val.quality }}</span>
                     {% else %}
-                    <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
+                    &nbsp;
                     {% endif %}
+                </div>
+                <div style="width:75px;float:right;">{{ val.rating }}</div>
+                <div style="width:135px;float:right;">{{ val.releaseDate }}</div>
+            </div>
+        {% endfor %}
+        <div style="height:50px;">
+            <div style="float:right;margin-right:30px;padding-top:3px;font-size:small;font-weight:bold;;white-space: nowrap;width:180px;">
+                <div style="float:left;width:150px;text-align:right;padding-right:15px;">total movies</div><div style="width:30px;padding-right:10px;">{{ pageStuff.totalRecords }}</div>
+                <div style="float:left;width:150px;text-align:right;padding-right:15px;">total monitored</div><div style="width:30px;padding-right:10px;">{{ testitem.monitoredCount }}</div>
+                <div style="float:left;width:150px;text-align:right;padding-right:15px;">total synced</div><div style="width:30px;padding-right:10px;">{{ testitem.syncCount }}</div>
+                <div style="float:left;width:150px;text-align:right;padding-right:15px;">total not synced</div><div style="width:30px;padding-right:10px;">{{ testitem.notSyncCount }}</div>
+            </div>
+            <div style="float:left;">
+                {% if testitem.movielist.has_other_pages %}
+                <ul class="pagination">
+                    {% if testitem.movielist.has_previous %}
+                    <li><a href="?page={{ users.previous_page_number }}&filterCriteria={{ testitem.filterCriteria }}">&laquo;</a></li>
                     {% else %}
-                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.r_id }},{{ system_profile.id }},{{ forloop.counter }});'></i>
+                    <li class="disabled"><span>&laquo;</span></li>
                     {% endif %}
-                </td>
-                <td>
-                    {% if val.isMonitored %}
-                    IsMonitored
+                    {% for i in testitem.movielist.paginator.page_range %}
+                    {% if testitem.movielist.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
                     {% else %}
-                    UnMonitored
+                        <li><a href="?page={{ i }}&filterCriteria={{ testitem.filterCriteria }}">{{ i }}</a></li>
                     {% endif %}
-                </td>
-                <td>{{ val.title }} ({{ val.releaseYear }})</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <div style="margin-top:20px;margin-bottom:5px;border-top:1px dotted silver;padding-top:5px;">
-        <div style="float:left;width:24%;">total movies: {{ testitem.count }}</div>
-        <div style="float:left;width:24%;">total monitored: {{ testitem.monitoredCount }}</div>
-        <div style="float:left;width:24%;">total synced: {{ testitem.syncCount }}</div>
-        <div style="float:left;width:24%;">total not synced: {{ testitem.notSyncCount }}</div>
+                    {% endfor %}
+                    {% if testitem.movielist.has_next %}
+                    <li><a href="?page={{ testitem.movielist.next_page_number }}&filterCriteria={{ testitem.filterCriteria }}">&raquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}
 {% block postbody %}
 <script>
     $(function () {
-        $("#divWaiting").show();
-        $("#tblMovies").DataTable({
-            "order": [[ 2, "asc" ]],
-            columnDefs: [
-                {targets: 0, visible: false, searchable: false},
-                {targets: 1, visible: false, searchable: false},
-                {targets: 2, sortable: false, searchable: false},
-                {targets: 8, sortable: false},
-                {targets: 9, visible: false},
-                {targets: 10, visible: false}
-            ]
-        });
-        $("#divWaiting").hide();
     });
-    function addMonitor(rid,pid,idx) {
-
-        var table = $("#tblMovies").DataTable();
-        rIdx = 0
-        var indexes = table.rows().eq( 0 ).filter( function (rowIdx) {
-            if(table.cell( rowIdx, 1 ).data() == rid) {
-                rIdx = rowIdx;
-            }
-        });
+    function addMonitor(rid) {
         $.ajax({
             url : '/api/profileradarr/add/',
             type : 'POST',
             data: { 
-                profile_id: pid,
+                profile_id: {{ system_profile.id }},
                 radarr_id: rid,
-                radarr_title: table.cell(rIdx,10).data()
+                radarr_title: $("#divTitle_" + rid).html()
             },
             success: function(data)
             {
                 var reg = new RegExp('^[0-9]+$');
                 if(reg.test(data)){
-                    // update the media_id to the new data
-                    table.cell(rIdx,8).data("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + ");' ></i>")
-                    table.cell(rIdx,0).data(data);
-                    table.cell(rIdx,9).data("IsMonitored");
+                    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + "," + rid + ");' ></i>")
                 };
             },
             fail: function(xhr, textStatus, errorThrown){
@@ -149,32 +141,21 @@
         });
         
     }
-    function delMonitor(id) {
+    function delMonitor(id,rid) {
         if(confirm('are you sure?')){
-            var table = $("#tblMovies").DataTable();
             rIdx = 0;
-            var indexes = table.rows().eq( 0 ).filter( function (rowIdx) {
-                if(table.cell( rowIdx, 0 ).data() == id) {
-                    rIdx = rowIdx;
-                };
-            });
             $.ajax({
                 url : '/api/profileradarr/delete/',
                 type : 'POST',
                 data: { 
                     prid: id,
                     profile_id: {{ system_profile.id }},
-                    radarr_title: table.cell(rIdx,10).data()
+                    radarr_title: $("#divTitle_" + rid).html()
                 },
                 success: function(data)
                 {
                     if(data == "DelOK"){
-                        // update the star to an empty star
-                        var r_id = table.cell(rIdx,1).data();
-                        table.cell(rIdx,8).data("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + r_id +",{{ system_profile.id }}," + rIdx + ");' ></i>")
-                        table.cell(rIdx,9).data("UnMonitored");
-                        // clear the media_id, set to 0
-                        table.cell(rIdx,0).data("0");
+                        $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + rid +");' ></i>")
                     } else {
                         alert("Data not DelOK = " + data);
                     };
@@ -185,15 +166,6 @@
             });
         }
     }
-    function filterResults(stat){
-        var table = $("#tblMovies").DataTable();
-        if(stat=="mon"){
-            table.column(9).search("IsMonitored").draw();
-        } else if(stat=="unmon") {
-            table.column(9).search("UnMonitored").draw();
-        } else {
-            table.column(9).search("").draw();
-        }
-    }
+
 </script>
 {% endblock postbody %}

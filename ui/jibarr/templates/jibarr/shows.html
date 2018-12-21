@@ -67,15 +67,6 @@
 {% block postbody %}
 <script>
     $(function () {
-        $("#divWaiting").show();
-        $("#tblMovies").DataTable({
-            "order": [[ 1, "asc" ]],
-            columnDefs: [
-                {targets: 0, visible: false, searchable: false},
-                {targets: 7, sortable: false}
-            ]
-        });
-        $("#divWaiting").hide();
     });
     function addMonitor(rid,pid) {
         $.ajax({

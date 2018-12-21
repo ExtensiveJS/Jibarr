@@ -12,6 +12,7 @@ class Profile(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     profile_name = models.CharField(max_length=200)
     profile_lastRun = models.CharField(max_length=200)
+    profile_lastPath = models.CharField(max_length=512)
     objects = models.Manager()
 
 class Settings(models.Model):
@@ -114,3 +115,12 @@ class Logs(models.Model):
     objects = models.Manager()
     class Meta:
         db_table = 'Jibarr_logs'
+
+class PageStuff(object):
+    # properties here
+    pageNumber = 0
+    totalPages = 0
+    perPage = 5
+    totalRecords = 0
+    class Meta:
+        managed = False

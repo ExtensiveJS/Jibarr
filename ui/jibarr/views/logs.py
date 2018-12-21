@@ -8,9 +8,23 @@ def logs(request):
         prof_id = request.session["prof_id"]
     except KeyError:
         pass
+    filterCriteria = "all"
+    try:
+        if(request.GET.get("filter")):
+            if(request.GET.get("filter") == "Media"):
+                filterCriteria = "Radarr"
+            else:
+                filterCriteria = request.GET.get("filter")
+    except KeyError:
+        pass
     system_settings = Settings.objects.all()[:1].get()
     prof_list = Profile.objects.all()
-    log_list = Logs.objects.all()
+    if(filterCriteria=='all'):
+        log_list = Logs.objects.all().order_by('-log_datetime')
+    else:
+        log_list = Logs.objects.all().order_by('-log_datetime').filter(log_category = filterCriteria)
+
+
     context = {
         'system_settings': system_settings,
         'log_list': log_list,

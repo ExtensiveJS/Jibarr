@@ -13,5 +13,8 @@ li a {
 .DELBUTTON {padding:5px;border-radius:10px;}
 .DELBUTTON:hover {background-color:lightslategray;color:white;}
 
-.ADDBUTTON {font-size:small;vertical-align:super;cursor:pointer;padding:5px;border-radius:10px;}
+.ADDBUTTON {font-size:small;vertical-align:super;cursor:pointer;padding:5px;border-radius:5px;background-color:mediumseagreen;color:white;}
 .ADDBUTTON:hover {background-color:lightslategray;color:white;}
+
+.divRow {height:30px;border-bottom:1px solid lightgrey;}
+.divRow:nth-of-type(even) {background-color:linen;}

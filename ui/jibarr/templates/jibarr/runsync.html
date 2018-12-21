@@ -1,111 +1,156 @@
 {% extends "./base.html" %}
 {% load static %}
+{% block title %}Sync{% endblock title %}
+{% block javascript%}
+<style>
+    .divRow {height:30px;border-bottom:1px solid lightgrey;}
+    .divRow:nth-of-type(even) {background-color:linen;}
+</style>
+{% endblock javascript %}
 {% block content %}
 
 <div class='CONTAINER'>
         {% if system_settings.radarr_enabled == 1 %}
-        <table id="tblMovies" class="table stripe">
-            <thead>
-                <tr>
-                    <th>&nbsp;</th>
-                    <td style="width:55px;text-align:left;padding-left:10px;"><input type="checkbox" id="chkAll" /></td>
-                    <th style="background-color:rgba(255,255,255,.1);" >Movies awaiting sync</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for val in radarr_list.movielist %}
-                    <tr>
-                        <td>{{ val.id }}</td>
-                        <td style="border-bottom:1px solid gray;"><input type="checkbox" /></td>
-                        <td style="border-bottom:1px solid gray;">
-                            <a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a> ({{ val.releaseDate }})
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div style="padding-top:20px;" id="synclist">
+            <div class="divRow" style="height:35px;">
+                <div style="width:35px;float:left;text-align:center;"><input type="checkbox" id="chkAll" /></div>
+                <div style="float:left;font-weight:bold;font-size:large;">Movies Awaiting Sync</div>
+                <div style="float:right;padding-right:15px;">Size</div>
+            </div>
+            {% for val in radarr_list.movielist %}
+                <div class="divRow">
+                    <div style="width:35px;float:left;text-align:center;"><input type="checkbox" tag="{{ val.id }}" /></div>
+                    <div style="float:left;height:27px;margin-top:3px;"><a href="http://themoviedb.org/movie/{{ val.tmdbid }}" target="_new">{{ val.title }}</a></div>
+                    <div style="float:right;height:27px;margin-top:3px;">{{ val.fileSize }}</div>
+                </div>
+            {% endfor %}
+        </div>
         <br />
-        <input type="button" value="Run Sync" onclick="runDriveSelect();" />
-        <span id="spanWaiting">...WAITING...</span>
+        <button type="button" class="btn btn-primary btn-sm" onclick="runDriveSelect();">Run Sync</button>
         {% endif %}
     </div>
     <div id="divDialog" title="Validate Destination" style="width:460px;">
-        <div style="height:35px;"><input type="text" id="txtDestination" style="width:240px;" value="d:\temp\MFSTest\" /><i class="glyphicon glyphicon-folder-open" style="padding-left:5px;font-size:larger;"></i></div>
+        <div style="height:35px;"><input type="text" id="txtDestination" style="width:240px;" value="{{ prof_lastPath }}" /><i class="glyphicon glyphicon-folder-open" style="padding-left:5px;font-size:larger;" onclick="browseForFolder();"></i></div>
         <div style="margin-top:15px;"><input type="button" style="float:right;" value="Start" onclick="runProcessing();"></div>
+    </div>
+    <div id="divDirBrowser" title="Directory Browser" style="background-color:lightgray;">
+        <div id="divDirList" style="background-color:white;width:100%;height:300px;border:1px groove black;overflow:auto; ">
+            here
+        </div>
+        <div>
+            <input type="text" id="txtSelectedFolder" class="input-sm" style="float:left;max-width:300px;width:100%;">
+            <button type="button" style="float:right;" class="btn btn-primary btn-sm" onclick="fillFolder();">Select</button>
+        </div>
+        <div><input type="text" id="txtSelectFolderFull" hidden></div>
     </div>
 {% endblock content %}
 {% block postbody %}
 <script>
     $(function () {
-        $("#spanWaiting").hide();
         $("#divDialog").dialog({
             autoOpen: false,
             modal: true
         })
-        var table = $("#tblMovies").DataTable({
-            searching: false,
-            columnDefs: [
-                {targets: 0, visible: false, searchable: false}
-            ],
-            "bLengthChange": false,
-            "bSort" : false,
-            paging: false,
-            "oLanguage": {
-                "sInfo": "_TOTAL_ movies need to be synched"
-            }
-        });
+        $("#divDirBrowser").dialog({
+            autoOpen: false,
+            modal: true,
+            height: 400,
+            width: 450
+        })
+        
         // Handle click on "Select all" control
         $('#chkAll').on('click', function(){
-            // Get all rows with search applied
-            var rows = table.rows({ 'search': 'applied' }).nodes();
-            // Check/uncheck checkboxes for all rows in the table
-            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+            $('input:checkbox').not(this).prop('checked', this.checked);
         });
         
+        var folder = document.getElementById("myFolderInput");
+        folder.onchange=function(){
+            var files = folder.files,
+                len = files.length,
+                i;
+                alert('stuff');
+            for(i=0;i<len;i+=1){
+                console.log(files[i]);
+            }
+        }
+
     });
     function runDriveSelect() {
         $("#divDialog").dialog("open");
     };
     function runProcessing(){
-        //$().toastmessage('showNoticeToast', 'some message here');
-       
         var idList = new Array();
-        var table = $("#tblMovies").DataTable();
         cnt = 0
-        var rows = $(table.$('input[type="checkbox"]').map(function () {
-            if($(this).prop("checked")){
-                var dat = table.rows(cnt).data();
-                idList.push(dat[0][0]);
-            };
+        $('#synclist input:checked').each(function() {
+            idList.push($(this).attr('tag'));
             cnt = cnt + 1;
-        }));
-        $().toastmessage('showToast', {
+        });
+     
+        var myToast = $().toastmessage('showToast', {
             text     : 'Processing ' + cnt + ' files',
-            sticky   : false,
+            sticky   : true,
             position : 'bottom-right',
         //    type     : 'notice'
         });
         $("#spanWaiting").show();
         $("#divDialog").dialog("close");
+        
         $.ajax({
             url : '/api/runsync/',
             type : 'POST',
             data: { 
                 idlist: idList,
                 destDir: $("#txtDestination").val(),
-                prof_id: {{ prof_id }}
+                prof_id: {{ prof_id }},
             },
             success: function(data)
             {
-                // Uncheck all the checked episodes......
-                // ? Do something else?
                 $("#spanWaiting").hide();
+                $().toastmessage('removeToast', myToast);
+                location.reload();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+                $().toastmessage('removeToast', myToast);
+            }
+        });
+        
+    };
+    function formatBytes(a,b){if(0==a)return"0 Bytes";var c=1024,d=b||2,e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]}
+    
+    function browseForFolder() {
+        $("#divDirBrowser").dialog("open");
+        $("#txtSelectFolderFull").val($("#txtDestination").val());
+        goGetFolders($("#txtDestination").val(),true)
+    }
+    function goGetFolders(f,root) {
+        if(root==false){
+            f = $('#txtSelectFolderFull').val() + f + "\\";
+            $("#txtSelectFolderFull").val(f);
+        }
+        $.ajax({
+            url : '/api/GetFolders/',
+            type : 'POST',
+            data: { 
+                startDir: f
+            },
+            success: function(data)
+            {
+                var dc = "";
+                for (index = 0; index < data.length; ++index) {
+                    dc = dc + "<div ondblclick=\"goGetFolders($(this).text(),false);$(\'#txtSelectedFolder\').val(\'\');\" onclick=\"$(this).css(\'background\', \'red\');$(\'#txtSelectedFolder\').val(\'" + data[index] + "\');\">" + data[index] + "</div>";
+                }
+                $("#divDirList").html(dc);
+                
             },
             fail: function(xhr, textStatus, errorThrown){
                 alert('request failed');
             }
         });
     }
-
+    function fillFolder() {
+        $("#txtDestination").val($("#txtSelectFolderFull").val() + $("#txtSelectedFolder").val());
+        $("#divDirBrowser").dialog("close");
+    }
 </script>
 {% endblock postbody %}

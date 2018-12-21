@@ -14,9 +14,10 @@
 <div class='CONTAINER' style="font-size:larger;">
 
     <ul class="nav nav-tabs" style="margin-top:10px;">
-        <li class="active"><a href="#">Media</a></li>
+        <li class="active"><a href="/jibarr/settings">Media</a></li>
         <li><a href="/jibarr/profiles">Profiles</a></li>
         <li><a href="/jibarr/logs">Logs</a></li>
+        <li><a href="/jibarr/updates">Updates</a></li>
         <li><a href="/jibarr/about">About</a></li>
     </ul>
     
@@ -73,16 +74,18 @@
             </div>
         </div>
     </div>
+    <div style="text-align:right;" >
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveSettings();">Save</button>
+    </div>
+
 </div>
-<div style="text-align:right;" class='CONTAINER' >
-    <input type="button" class="button" value="Save" onclick="testThis();" />
-</div>
+
 {% endblock content %}
 {% block postbody %}
 <script>
     $(function () {
     });
-    function testThis() {
+    function saveSettings() {
         var radChk = ($("#chkRadarrEnabled").is(':checked') === true) ? 1 : 0;
         var sonChk = ($("#chkSonarrEnabled").is(':checked') === true) ? 1 : 0;
         var lidChk = ($("#chkLidarrEnabled").is(':checked') === true) ? 1 : 0;

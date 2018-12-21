@@ -8,3 +8,4 @@ from .music import *
 from .runsync import *
 from .logs import *
 from .about import *
+from .updates import *

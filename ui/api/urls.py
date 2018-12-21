@@ -14,5 +14,6 @@ router.register(r'logs', views.LogsViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^runsync/', views.RunSync),
+    url(r'^GetFolders/', views.GetFolders),
     url(r'^', include(router.urls)),
 ]

@@ -5,12 +5,8 @@
         <link rel="stylesheet" type="text/css" href="{% static 'jibarr/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
         <title>{% block title %}{% endblock %} - Jibarr</title>
         <script src="https://code.jquery.com/jquery-3.3.1.js" %}"></script>
-        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/datatables.min.css' %}"/>
-        <script type="text/javascript" src="{% static 'jibarr/datatables.min.js' %}"></script>
         <link rel="stylesheet" href="{% static 'jibarr/jquery-ui-1.12.1/jquery-ui.css' %}">
         <script src="{% static 'jibarr/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
-        <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
-        <script src="https://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
         <link rel="shortcut icon" type="image/png" href="{% static 'jibarr/favicon.ico' %}"/>
         <script src="{% static 'jibarr/jquery.toastmessage.js' %}"></script>
@@ -41,8 +37,11 @@
                 {% block content %}{% endblock %}
             </div>
         </div>
+        <span id="spanWaiting" style="position:absolute;top:50%;left:45%;z-index: 99 !important;"><img style="width:100px;" src="{% static 'jibarr/images/spinner.gif' %}"></span>
+        <div style="padding-bottom:65px;padding-top:15px;text-align:center;color:grey;">Jibarr Ver. 0.1.0.0</div>
         <script>
             $(function () {
+                $("#spanWaiting").hide();
                 $("#ddlProfiles").val({{ prof_id }});
             });
             function profileChanged(){

@@ -9,7 +9,7 @@ class SettingsSerializer(serializers.HyperlinkedModelSerializer):
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Profile
-        fields = ('id','profile_name','profile_lastRun')
+        fields = ('id','profile_name','profile_lastRun','profile_lastPath')
 
 class ProfileRadarrSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

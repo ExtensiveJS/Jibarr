@@ -1,24 +1,30 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block title %}Logs{% endblock title %}
+{% block javascript%}
+<style>
+    
+</style>
+{% endblock javascript %}
 {% block content %}
 
-<div class='CONTAINER' style="font-size:larger;">
+<div class='CONTAINER' style="font-size:larger;padding-bottom:20px;">
 
     <ul class="nav nav-tabs" style="margin-top:10px;">
         <li><a href="/jibarr/settings">Media</a></li>
         <li><a href="/jibarr/profiles">Profiles</a></li>
-        <li class="active"><a href="#">Logs</a></li>
+        <li class="active"><a href="/jibarr/logs">Logs</a></li>
+        <li><a href="/jibarr/updates">Updates</a></li>
         <li><a href="/jibarr/about">About</a></li>
     </ul>
 
     <div style="padding-bottom:10px;">
         <div style="float:right;">
-            <div style="margin-top:5px;float:right;border-radius:5px;border:1px solid grey;padding:3px 4px 3px 4px;">
+            <div id="divFilters" style="margin-top:5px;float:right;border-radius:5px;border:1px solid grey;padding:3px 4px 3px 4px;">
                 Filters:
-                <i style="padding-left:3px;padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-record' title='Show All' onclick="filterResults('all');"></i>
-                <i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-film' title='Show Media Only' onclick="filterResults('media');"></i>
-                <i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-hdd' title='Show System Only' onclick="filterResults('system');"></i>
+                <a href="?filter=all"><i style="padding-left:3px;padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-record' title='Show All' ></i></a>
+                <a href="?filter=Media"><i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-film' title='Show Media Only'></i></a>
+                <a href="?filter=System"><i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-hdd' title='Show System Only'></i></a>
             </div>
             <div style="float:right;padding:5px;">
                 <button type="button" class="btn btn-primary btn-sm" onclick="clearLogs();">Clear</button>
@@ -26,69 +32,46 @@
         </div>
         <h2>Logs </h2>
     </div>
-    <table id="tblLogs" class="table stripe" style="font-size:small;">
-        <thead>
-            <tr><th>id</th><th style="width:50px;">Category</th><th style="width:50px;">Type</th><th>Message</th><th style="width:50px;">Timestamp</th></tr>
-        </thead>
-        <tbody>
-            {% for var in log_list %}
-            <tr>
-                <td>{{ var.id }}</td>
-                <td style="width:30px;text-align:center;">
-                    {{ var.log_category }}
-                </td>
-                <td style="width:30px;text-align:center;">
-                    {{ var.log_type }}
-                </td>
-                <td>{{ var.log_message }}</td>
-                <td style="width:150px;">{{ var.log_datetime }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
+    <div class="divRow" style="font-size:small;font-weight:bold;padding-left:15px;padding-top:9px;">
+        <div style="float:left;width:100px;">Category</div>
+        <div style="float:left;width:80px;">Type</div>
+        <div style="float:left;">Message</div>
+        <div style="float:right;width:150px;">Timestamp</div>
+    </div>
+    {% for var in log_list %}
+    <div class="divRow" style="font-size:small;padding-left:15px;padding-top:5px;">
+        <div style="float:left;width:100px;">{{ var.log_category }}</div>
+        <div style="float:left;width:80px;">{{ var.log_type }}</div>
+        <div style="float:left;">{{ var.log_message }}</div>
+        <div style="float:right;width:150px;">{{ var.log_datetime }}</div>
+    </div>
+    {% endfor %}
 </div>
 {% endblock content %}
 {% block postbody %}
 <script>
     $(function () {
-        $("#tblLogs").DataTable({
-            "order": [[ 4, "desc" ]],
-            columnDefs: [
-                {targets: 0, visible: false, searchable: false},
-            ],
-            "sDom": 'Rfrtlip'
-        }
-        );
+        
     });
     function clearLogs() {
         $.ajax({
-                url : '/api/logs/clear/',
-                type : 'POST',
-                data: {},
-                success: function(data)
-                {
-                    if(data == "Ok"){
-                        // update the table
-                        location.reload();
-                    } else {
-                        alert("Data not DelOK = " + data);
-                    };
-                },
-                fail: function(xhr, textStatus, errorThrown){
-                    alert('request failed');
-               }
-            });
+            url : '/api/logs/clear/',
+            type : 'POST',
+            data: {},
+            success: function(data)
+            {
+                if(data == "Ok"){
+                    // update the table
+                    location.reload();
+                } else {
+                    alert("Data not DelOK = " + data);
+                };
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
     };
-    function filterResults(stat) {
-        var table = $("#tblLogs").DataTable();
-        if(stat=="media"){
-            table.column(1).search("Radarr").draw();
-        } else if(stat=="system") {
-            table.column(1).search("System").draw();
-        } else {
-            table.column(1).search("").draw();
-        }
-    }
 </script>
 {% endblock postbody %}
