@@ -5,7 +5,7 @@
 <style>
     .subSetting {font-size:smaller;}
     .subSettingHelp {font-size:small;cursor:pointer;padding-left:4px;color:dodgerblue;}
-    .subSettingLabel {float:left;width:200px;text-align:right;padding-right:5px;}
+    .subSettingLabel {float:left;width:200px;text-align:right;padding-right:5px;font-family:monospace;}
     .subSettingTextbox {font-size:small;width:250px;}
 </style>
 {% endblock javascript %}
@@ -21,9 +21,18 @@
         <li><a href="/jibarr/about">About</a></li>
     </ul>
     
-    <div>
-        <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Movies</div>
-        <div class="subSetting">
+    <div style="height:160px;">
+        <div style=font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Movies</div>
+        <div class="subSetting" style="width:49%;float:right;">
+            <div style="width:auto;height:25px;">
+                <div>Last Synced:</div>
+                <div>
+                    Jan 1 1900 23:59:59
+                    <i class="glyphicon glyphicon-refresh ADDBUTTON" style="margin-left:20px;" onclick="alert('Run DB Sync');"></i>
+                </div>
+            </div>
+        </div>
+        <div class="subSetting" style="width:49%;float:left;">
             <div style="width:auto;height:30px;">
                 <div class="subSettingLabel">RADARR Enabled:</div>
                 <div><input type="checkbox" id="chkRadarrEnabled" {% if system_settings.radarr_enabled %} checked {% endif %} /></div>
@@ -61,15 +70,15 @@
         <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Music</div>
         <div class="subSetting">
             <div style="width:auto;height:30px;">
-                <div style="float:left;width:200px;text-align:right;padding-right:5px;">LIDARR Enabled:</div>
+                <div class="subSettingLabel">LIDARR Enabled:</div>
                 <div><input type="checkbox" id="chkLidarrEnabled" {% if system_settings.lidarr_enabled %} checked {% endif %} disabled /></div>
             </div>
             <div style="width:auto;height:30px;">
-                <div style="float:left;width:200px;text-align:right;padding-right:5px;">LIDARR Path:</div>
+                <div class="subSettingLabel">LIDARR Path:</div>
                 <div><input class="subSettingTextbox" type="text" id="txtLidarrPath" value="{{ system_settings.lidarr_path }}" disabled /><i class="glyphicon glyphicon-info-sign subSettingHelp" title="The URL to the root of your Lidarr site, typically http://localhost:8686"></i></div>
             </div>
             <div style="width:auto;height:30px;">
-                <div style="float:left;width:200px;text-align:right;padding-right:5px;">LIDARR APIKey:</div>
+                <div class="subSettingLabel">LIDARR APIKey:</div>
                 <div><input class="subSettingTextbox" type="text" id="txtLidarrAPIKey" value="{{ system_settings.lidarr_apikey }}" disabled /><i class="glyphicon glyphicon-info-sign subSettingHelp" title="The API key provided by Lidarr to access the site."></i></div>
             </div>
         </div>

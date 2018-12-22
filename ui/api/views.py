@@ -1,4 +1,4 @@
-from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs
+from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -163,17 +163,24 @@ class LogsViewSet(viewsets.ModelViewSet):
 def GetFolders(request):
     startDir = request.POST.get(r'startDir')
     subDirs = []
-    # [x[0] for x in os.walk(directory)]
-    #for startDir,subdir,files in os.walk(startDir):
-    #[x[0] for x in os.walk(startDir):
-    #    for name in subdir:
-    #        subDirs.append(name)
-    #for subdir in os.listdir(startDir):
-    #    for name in subdir:
-    #        subDirs.append(name)
     for d in os.listdir(startDir):
         if os.path.isdir(os.path.join(startDir,d)):
             subDirs.append(d)
-    #[os.path.join(d, o) for o in os.listdir(d) 
-    #                if os.path.isdir(os.path.join(d,o))]
     return Response(subDirs)
+
+@api_view(['GET', 'POST'])
+def DbSync(request):
+    sourceSync = 'all'
+    try:
+        if(request.POST.get("sourceSync")):
+            sourceSync = request.POST.get("sourceSync")
+    except KeyError:
+        pass
+    if(sourceSync=='radarr'):
+        # call out to Radarr
+        # iterate the Radarr JSON
+        # check against DB
+        # Insert/Update DB
+        return Response("OK")
+        
+
