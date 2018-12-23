@@ -1,16 +1,10 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models  import Settings, Profile, ProfileRadarr, radarrMovieList, radarrMovie
-from urllib.request import urlopen
-import json, time
+from jibarr.models  import Settings, Profile, ProfileRadarr, radarrMovieList, radarrMovie, RadarrMedia
+import time, math
 from time import mktime
 from datetime import datetime
 from django.template import loader
-from threading import Thread, Lock
-import math
-
-threadLock = Lock()
-pageSize = 250
 
 def index(request):
     prof_id = 1
@@ -39,88 +33,27 @@ def index(request):
 
 def get_movie_info(system_settings):
     
-    countURL = urlopen(system_settings.radarr_path + "/api/movie?page=1&pageSize=1&apikey=" + system_settings.radarr_apikey).read()
-    numberOfMovies = json.loads(countURL)['totalRecords']
-    pages = math.ceil(numberOfMovies/ pageSize)
     results = radarrMovieList()
     results.movielist.clear
-    results.movielist = [{} for x in range(numberOfMovies)]
-    threads = []
-    for nn in range(pages):     
-        process = Thread(target=get_pages, args=[system_settings, nn, results])
-        process.start()
-        threads.append(process)
+    
+    for var in RadarrMedia.objects.all():
 
-    for process in threads:
-        process.join()
-      
-    results.count = numberOfMovies
+        rm = radarrMovie()
+        rm.title = var.title
+        rm.r_id = var.radarr_id
+        rm.titleSlug = var.title_slug
+        rm.releaseDate = var.release_date
+        rm.folderName = var.folder_name
+        rm.fileName =  var.file_name
+        rm.size = var.size
+        rm.lastUpdt = var.last_updt
+        rm.rating = var.rating
+        rm.tmdbid = var.tmdbid
+        rm.imdbid = var.imdbid
+        rm.youtube = var.youtube
+        rm.website = var.website
+        rm.quality = var.quality
+        
+        results.movielist.append(rm)
 
     return results
-
-def get_pages(system_settings, nn, results):
-    global pageSize
-    data = urlopen(system_settings.radarr_path + "/api/movie?page=" + str(nn+1) + "&pageSize=" + str(pageSize) + "&apikey=" + system_settings.radarr_apikey).read()
-    pageAdd = nn * pageSize
-
-    output = json.loads(data)
-    #create a list of threads
-    threads = []
-    for ii in range(len(output["records"])):
-        # We start one thread per url present.
-        process = Thread(target=process_movie, args=[output["records"][ii], results.movielist, ii+pageAdd])
-        process.start()
-        threads.append(process)
-    # We now pause execution on the main thread by 'joining' all of our started threads.
-    for process in threads:
-        process.join()
-
-def process_movie (var, result, index):
-    rm = radarrMovie()
-    rm.title = var['title']
-    rm.r_id = var['id']
-    rm.titleSlug = var['titleSlug']
-    try:
-        rd = datetime(int(var['inCinemas'][:4]), int(var['inCinemas'][5:7]), int(var['inCinemas'][8:10])).date()
-        #rd = datetime(int(var['inCinemas'][:4]), int(var['inCinemas'][5:7]), int(var['inCinemas'][8:10])
-        # datetime.fromtimestamp(mktime(time.strptime(pr.lastRun, "%b %d %Y %I:%M%p")))
-        rm.releaseDate = rd # var['inCinemas'][:4] + ', ' + var['inCinemas'][5:7] + ', ' + var['inCinemas'][8:10]
-
-    except KeyError:
-        pass
-  
-    if var['hasFile']:
-        rm.folderName = var["folderName"]
-        rm.fileName =  var["movieFile"]["relativePath"]
-        rm.size = var["movieFile"]["size"]
-        plu = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
-        rm.lastUpdt = plu
-        
-    rm.rating = var["ratings"]["value"]
-
-    try:
-        rm.tmdbid = var["tmdbId"]
-    except KeyError:
-        pass
-    
-    try:
-        rm.imdbid = var["imdbId"]
-    except KeyError:
-        pass
-    
-    try:
-        rm.youtube = var["youTubeTrailerId"]
-    except KeyError:
-        pass
-    
-    try:
-        rm.website = var["website"]
-    except KeyError:
-        pass
-    
-    try:
-        rm.quality = var["movieFile"]["quality"]["quality"]["name"]
-    except KeyError:
-        pass
-    
-    result[index] = rm

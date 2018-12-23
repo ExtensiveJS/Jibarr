@@ -15,5 +15,6 @@ router.register(r'logs', views.LogsViewSet)
 urlpatterns = [
     url(r'^runsync/', views.RunSync),
     url(r'^GetFolders/', views.GetFolders),
+    url(r'dbsync', views.dbsync),
     url(r'^', include(router.urls)),
 ]

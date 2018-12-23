@@ -38,3 +38,24 @@ class radarrMovie(object):
     rating = 0
     class Meta:
         managed = False
+
+class RadarrMedia(models.Model):
+    radarr_id = models.IntegerField()
+    title = models.CharField(max_length=200)
+    title_slug = models.CharField(max_length=200)
+    release_date = models.CharField(max_length=200)
+    folder_name = models.CharField(max_length=200)
+    size = models.IntegerField()
+    file_name = models.CharField(max_length=200)
+    last_updt = models.CharField(max_length=200)
+    rating = models.IntegerField()
+    tmdbid = models.CharField(max_length=200)
+    imdbid = models.CharField(max_length=200)
+    youtube = models.CharField(max_length=200)
+    website = models.CharField(max_length=200)
+    quality = models.CharField(max_length=200)
+
+    objects = models.Manager()
+    
+    class Meta:
+        db_table = 'Jibarr_Radarr_Media'

@@ -1,18 +1,11 @@
-from jibarr.models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, PageStuff
-from urllib.request import urlopen
-import json
+from jibarr.models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, PageStuff, RadarrMedia
 from time import mktime
 from datetime import datetime
 import time
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from threading import Thread, Lock
 from django.core.paginator import Paginator
 import math
-
-threadLock = Lock()
-pageSize = 250
-
 
 def movies(request):
     global cnt
@@ -82,120 +75,59 @@ def movies(request):
   
 
 def get_movie_info(system_settings, prof):
-    prList = ProfileRadarr.objects.filter(profile_id=prof.id)
-
-    countURL = urlopen(system_settings.radarr_path + "/api/movie?page=1&pageSize=1&apikey=" + system_settings.radarr_apikey).read()
-    numberOfMovies = json.loads(countURL)['totalRecords']
-    pages = math.ceil(numberOfMovies/ pageSize)
-    results = radarrMovieList()
-    results.movielist.clear
-    results.movielist = [{} for x in range(numberOfMovies)]
-    threads = []
-    for nn in range(pages):     
-        process = Thread(target=get_pages, args=[system_settings, nn, prList, prof, results])
-        process.start()
-        threads.append(process)
-
-    for process in threads:
-        process.join()
-      
-    results.count = numberOfMovies
-    results.monitoredCount = monCnt
-    results.syncCount = monSync
-    results.notSyncCount = monNotSync
-
-    return results
-
-def get_pages(system_settings, nn, prList, prof, results):
-    global pageSize
-    data = urlopen(system_settings.radarr_path + "/api/movie?page=" + str(nn+1) + "&pageSize=" + str(pageSize) + "&apikey=" + system_settings.radarr_apikey).read()
-    pageAdd = nn * pageSize
-
-    output = json.loads(data)
-    #create a list of threads
-    threads = []
-    for ii in range(len(output["records"])):
-        # We start one thread per url present.
-        process = Thread(target=process_movie, args=[output["records"][ii], prList, prof,  results.movielist, ii+pageAdd])
-        process.start()
-        threads.append(process)
-    # We now pause execution on the main thread by 'joining' all of our started threads.
-    for process in threads:
-        process.join()
-
-def process_movie (var, prList, prof, result, index):
     global monCnt
     global monSync
     global monNotSync
 
-    rm = radarrMovie()
-    rm.title = var['title']
-    rm.r_id = var['id']
-    rm.titleSlug = var['titleSlug']
-    try:
-        rd = var['inCinemas'][:10] # + " " + var['inCinemas'][11:16]
-        rm.releaseDate = rd
-        rm.releaseYear = var['inCinemas'][:4]
-    except KeyError:
-        pass
-  
-    mId = 0
-    for pr in prList:
-        if pr.radarr_id == var["id"]:
-            rm.media_id = pr.id
-            mId = pr.id
-            prLr = datetime.fromtimestamp(mktime(time.strptime(pr.lastRun, "%b %d %Y %H:%M:%S")))
+    results = radarrMovieList()
+    results.movielist.clear
     
-    if rm.media_id > 0:
-        rm.isMonitored = True    
-        with threadLock:
+    prList = ProfileRadarr.objects.filter(profile_id=prof.id)
+
+    for var in RadarrMedia.objects.all():
+
+        rm = radarrMovie()
+        rm.title = var.title
+        rm.r_id = var.radarr_id
+        rm.titleSlug = var.title_slug
+        rm.releaseDate = var.release_date
+        rm.folderName = var.folder_name
+        rm.fileName =  var.file_name
+        rm.size = var.size
+        rm.lastUpdt = var.last_updt
+        rm.rating = var.rating
+        rm.tmdbid = var.tmdbid
+        rm.imdbid = var.imdbid
+        rm.youtube = var.youtube
+        rm.website = var.website
+        rm.quality = var.quality
+        
+        mId = 0
+        for pr in prList:
+            if pr.radarr_id == var.radarr_id:
+                rm.media_id = pr.id
+                mId = pr.id
+                prLr = datetime.fromtimestamp(mktime(time.strptime(pr.lastRun, "%b %d %Y %H:%M:%S")))
+        
+        if rm.media_id > 0:
+            rm.isMonitored = True    
             monCnt = monCnt + 1
 
-    if var['hasFile']:
-        rm.folderName = var["folderName"]
-        rm.fileName =  var["movieFile"]["relativePath"]
-        rm.size = var["movieFile"]["size"]
-        plu = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
-        rm.lastUpdt = plu
-        lu = datetime.fromtimestamp(mktime(time.strptime(plu, "%Y-%m-%d %H:%M")))
         if mId > 0:
+            lu = datetime.fromtimestamp(mktime(time.strptime(var.last_updt, "%Y-%m-%d %H:%M")))
             if lu >  prLr:
                 rm.isNewer = True
-                with threadLock:
-                    monNotSync = monNotSync + 1
+                monNotSync = monNotSync + 1
             else:
                 rm.isNewer = False
-                with threadLock:
-                    monSync = monSync + 1
+                monSync = monSync + 1
         else:
-            rm.isNewer = False      
+            rm.isNewer = False
 
-    rm.rating = var["ratings"]["value"]
+        results.movielist.append(rm)
 
-    try:
-        rm.tmdbid = var["tmdbId"]
-    except KeyError:
-        pass
+    results.monitoredCount = monCnt
+    results.syncCount = monSync
+    results.notSyncCount = monNotSync
     
-    try:
-        rm.imdbid = var["imdbId"]
-    except KeyError:
-        pass
-    
-    try:
-        rm.youtube = var["youTubeTrailerId"]
-    except KeyError:
-        pass
-    
-    try:
-        rm.website = var["website"]
-    except KeyError:
-        pass
-    
-    rm.quality = ""
-    try:
-        rm.quality = var["movieFile"]["quality"]["quality"]["name"]
-    except KeyError:
-        pass
-
-    result[index] = rm
+    return results

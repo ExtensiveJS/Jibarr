@@ -28,7 +28,7 @@
                 <div>Last Synced:</div>
                 <div>
                     Jan 1 1900 23:59:59
-                    <i class="glyphicon glyphicon-refresh ADDBUTTON" style="margin-left:20px;" onclick="alert('Run DB Sync');"></i>
+                    <i class="glyphicon glyphicon-refresh ADDBUTTON" style="margin-left:20px;" onclick="runSync();"></i>
                 </div>
             </div>
         </div>
@@ -112,6 +112,23 @@
                 lidarr_enabled: lidChk, 
                 lidarr_path: $("#txtLidarrPath").val(),
                 lidarr_apikey: $("#txtLidarrAPIKey").val()},
+            success: function(data)
+            {
+                //alert('success');
+                location.reload(true);
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+    function runSync(){
+        $.ajax({
+            url : '/api/dbsync/',
+            type : 'POST',
+            data: {
+                sourceSync: 'radarr'
+            },
             success: function(data)
             {
                 //alert('success');

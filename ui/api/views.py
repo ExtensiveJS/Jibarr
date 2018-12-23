@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer, LogsSerializer
 from jibarr.copyTheFile import copyTheFile
+from jibarr.RadarrSync import RadarrSync
 from datetime import datetime
 import os, os.path
 
@@ -169,7 +170,7 @@ def GetFolders(request):
     return Response(subDirs)
 
 @api_view(['GET', 'POST'])
-def DbSync(request):
+def dbsync(request):
     sourceSync = 'all'
     try:
         if(request.POST.get("sourceSync")):
@@ -177,10 +178,7 @@ def DbSync(request):
     except KeyError:
         pass
     if(sourceSync=='radarr'):
-        # call out to Radarr
-        # iterate the Radarr JSON
-        # check against DB
-        # Insert/Update DB
-        return Response("OK")
+        RadarrSync(True)
+    return Response("OK")
         
 
