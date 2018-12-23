@@ -22,6 +22,7 @@ class Settings(models.Model):
     lidarr_path =  models.TextField(db_column='LIDARR_Path')
     lidarr_apikey = models.TextField(db_column='LIDARR_APIKey')
     lidarr_last_sync = models.TextField(db_column='LIDARR_Last_Sync')
+    jibarr_version = models.TextField(db_column='Jibarr_Version')
 
     objects = models.Manager()
 

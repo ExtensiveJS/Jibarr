@@ -30,6 +30,10 @@
                     {{ system_settings.radarr_last_sync }}
                     <i class="glyphicon glyphicon-refresh ADDBUTTON" style="margin-left:20px;" onclick="runSync();"></i>
                 </div>
+                <div style="text-align:right;">
+                    <div id="divRadarrTestConnectionText">&nbsp;</div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="testRadarrConnection();">Test Connection</button>
+                </div>
             </div>
         </div>
         <div class="subSetting" style="width:49%;float:left;">
@@ -139,6 +143,30 @@
                 }
             });
         }
+    }
+    function testRadarrConnection(){
+        $("#spanWaiting").show();
+        $("#divRadarrTestConnectionText").html("...checking connection...");
+        $.ajax({
+            url : '{{ system_settings.radarr_path }}/api/system/status/?apikey={{ system_settings.radarr_apikey }}',
+            type : 'GET',
+            data: {},
+            success: function(data)
+            {
+                $("#divRadarrTestConnectionText").html("Connection Successful");
+            },
+            error:function (xhr, ajaxOptions, thrownError){
+                if(xhr.status==404) {
+                    $("#divRadarrTestConnectionText").html("Connection Failed 404");
+                } else {
+                    $("#divRadarrTestConnectionText").html("Connection Failed");
+                }
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                $("#divRadarrTestConnectionText").html("Connection Failed");
+            }
+        });
+        $("#spanWaiting").hide();
     }
 </script>
 {% endblock postbody %}
