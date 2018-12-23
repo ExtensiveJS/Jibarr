@@ -27,7 +27,7 @@
             <div style="width:auto;height:25px;">
                 <div>Last Synced:</div>
                 <div>
-                    Jan 1 1900 23:59:59
+                    {{ system_settings.radarr_last_sync }}
                     <i class="glyphicon glyphicon-refresh ADDBUTTON" style="margin-left:20px;" onclick="runSync();"></i>
                 </div>
             </div>
@@ -123,21 +123,22 @@
         });
     }
     function runSync(){
-        $.ajax({
-            url : '/api/dbsync/',
-            type : 'POST',
-            data: {
-                sourceSync: 'radarr'
-            },
-            success: function(data)
-            {
-                //alert('success');
-                location.reload(true);
-            },
-            fail: function(xhr, textStatus, errorThrown){
-                alert('request failed');
-            }
-        });
+        if(confirm('are you sure?')){
+            $.ajax({
+                url : '/api/dbsync/',
+                type : 'POST',
+                data: {
+                    sourceSync: 'radarr'
+                },
+                success: function(data)
+                {
+                    location.reload(true);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+                }
+            });
+        }
     }
 </script>
 {% endblock postbody %}

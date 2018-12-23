@@ -182,7 +182,7 @@ def RadarrSync(forceload):
     if isSuccessful:
         ############################################### update settings last sync date
         sett = Settings.objects.all()[:1].get()
-        sett.RADARR_Last_Sync = datetime.now().strftime("%b %d %Y %H:%M:%S")
+        sett.radarr_last_sync = datetime.now().strftime("%b %d %Y %H:%M:%S")
         sett.save()
         try:
             Logs.objects.create(log_type='Sync',log_category='System',log_message='Radarr Database sync finished',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))

@@ -13,12 +13,15 @@ class Settings(models.Model):
     radarr_enabled = models.IntegerField(db_column='RADARR_Enabled', null=False)
     radarr_path =  models.TextField(db_column='RADARR_Path')
     radarr_apikey = models.TextField(db_column='RADARR_APIKey')
+    radarr_last_sync = models.TextField(db_column='RADARR_Last_Sync')
     sonarr_enabled = models.IntegerField(db_column='SONARR_Enabled', null=False)
     sonarr_path =  models.TextField(db_column='SONARR_Path')
     sonarr_apikey = models.TextField(db_column='SONARR_APIKey')
+    sonarr_last_sync = models.TextField(db_column='SONARR_Last_Sync')
     lidarr_enabled = models.IntegerField(db_column='LIDARR_Enabled', null=False)
     lidarr_path =  models.TextField(db_column='LIDARR_Path')
     lidarr_apikey = models.TextField(db_column='LIDARR_APIKey')
+    lidarr_last_sync = models.TextField(db_column='LIDARR_Last_Sync')
 
     objects = models.Manager()
 
