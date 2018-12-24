@@ -1,0 +1,92 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block title %}System Settings{% endblock title %}
+{% block javascript%}
+<style>
+    .subSetting {font-size:smaller;}
+    .subSettingHelp {font-size:small;cursor:pointer;padding-left:4px;color:dodgerblue;}
+    .subSettingLabel {float:left;width:200px;text-align:right;padding-right:5px;font-family:monospace;}
+    .subSettingTextbox {font-size:small;width:250px;}    
+</style>
+{% endblock javascript %}
+{% block content %}
+
+<div class='CONTAINER' style="font-size:larger;">
+
+    <ul class="nav nav-tabs" style="margin-top:10px;">
+        <li><a href="/jibarr/settings">Media</a></li>
+        <li><a href="/jibarr/profiles">Profiles</a></li>
+        <li class="active"><a href="/jibarr/systemsettings">System</a></li>
+        <li><a href="/jibarr/logs">Logs</a></li>
+        <li><a href="/jibarr/updates">Updates</a></li>
+        <li><a href="/jibarr/about">About</a></li>
+    </ul>
+    <div style="padding-bottom:10px;">
+        <h2>System Settings: </h2>
+    </div>
+    <div style="height:160px;">
+        <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Scheduler</div>
+        <div class="subSetting" style="width:49%;float:left;">
+            <div style="width:auto;height:30px;">
+                <div class="subSettingLabel">Scheduler Enabled (24h):</div>
+                <div><input type="checkbox" id="chkSchedulerEnabled" {% if system_settings.scheduler_enabled %} checked {% endif %} /></div>
+            </div>
+        </div>
+    </div>
+    <div style="text-align:right;" >
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveSettings();">Save</button>
+    </div>
+</div>
+{% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+    });
+    function saveSettings() {
+        var wasSchChk = {{ system_settings.scheduler_enabled }};
+        var schChk = ($("#chkSchedulerEnabled").is(':checked') === true) ? 1 : 0;
+        if(wasSchChk==schChk){
+            // do nothing?
+        } else {
+            toggleScheduler(schChk);
+        }
+    }
+    function toggleScheduler(s) {
+        $("#spanWaiting").show();
+        if(s==1){
+            $.ajax({
+                url : '/api/scheduler',
+                type : 'POST',
+                data: {
+                    runType: 'enable'
+                },
+                success: function(data){},
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('Error toggling scheduler: ' + xhr.status);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('Error toggling scheduler: ' + xhr.status);
+                }
+            });
+        }
+        if(s==0) {
+            $.ajax({
+                url : '/api/scheduler',
+                type : 'POST',
+                data: {
+                    runType: 'disable'
+                },
+                success: function(data){},
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('Error toggling scheduler: ' + xhr.status);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('Error toggling scheduler: ' + xhr.status);
+                }
+            });
+        }
+        
+        $("#spanWaiting").hide();
+    }
+</script>
+{% endblock postbody %}

@@ -16,13 +16,14 @@
     <ul class="nav nav-tabs" style="margin-top:10px;">
         <li class="active"><a href="/jibarr/settings">Media</a></li>
         <li><a href="/jibarr/profiles">Profiles</a></li>
+        <li><a href="/jibarr/systemsettings">System</a></li>
         <li><a href="/jibarr/logs">Logs</a></li>
         <li><a href="/jibarr/updates">Updates</a></li>
         <li><a href="/jibarr/about">About</a></li>
     </ul>
     
     <div style="height:160px;">
-        <div style=font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Movies</div>
+        <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Movies</div>
         <div class="subSetting" style="width:49%;float:right;">
             <div style="width:auto;height:25px;">
                 <div>Last Synced:</div>
@@ -128,6 +129,7 @@
     }
     function runSync(){
         if(confirm('are you sure?')){
+            $("#spanWaiting").show();
             $.ajax({
                 url : '/api/dbsync/',
                 type : 'POST',
@@ -136,9 +138,11 @@
                 },
                 success: function(data)
                 {
+                    $("#spanWaiting").hide();
                     location.reload(true);
                 },
                 fail: function(xhr, textStatus, errorThrown){
+                    $("#spanWaiting").hide();
                     alert('request failed');
                 }
             });
@@ -168,5 +172,6 @@
         });
         $("#spanWaiting").hide();
     }
+    
 </script>
 {% endblock postbody %}

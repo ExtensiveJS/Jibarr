@@ -178,7 +178,30 @@ def dbsync(request):
     except KeyError:
         pass
     if(sourceSync=='radarr'):
-        RadarrSync(True)
+        RadarrSync(False)
     return Response("OK")
         
+@api_view(['GET', 'POST'])
+def scheduler(request):
+    runType = 'none'
+    response = "Failed"
+    try:
+        runType = request.POST.get("runType")
+        if runType=='enable':
+            sett = Settings.objects.all()[:1].get()
+            sett.scheduler_enabled = 1
+            sett.save()
+            response = "OK"
+        elif runType=='disable':
+            sett = Settings.objects.all()[:1].get()
+            sett.scheduler_enabled = 0
+            sett.save()
+            response = "OK"
+        elif runType=='radarr':
+            # run the radarr sync
+            response = "OK"
+    except KeyError:
+        pass
+    return Response(response)
+
 

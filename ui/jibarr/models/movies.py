@@ -48,7 +48,7 @@ class RadarrMedia(models.Model):
     size = models.IntegerField()
     file_name = models.CharField(max_length=200)
     last_updt = models.CharField(max_length=200)
-    rating = models.IntegerField()
+    rating = models.CharField(max_length=10)
     tmdbid = models.CharField(max_length=200)
     imdbid = models.CharField(max_length=200)
     youtube = models.CharField(max_length=200)

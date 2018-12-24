@@ -15,5 +15,6 @@ urlpatterns = [
     url(r'^runsync/', views.runsync, name='runsync'),
     url(r'^logs/', views.logs, name='logs'),
     url(r'^about/', views.about, name='about'),
-    url(r'^updates/', views.updates, name='updates')
+    url(r'^updates/', views.updates, name='updates'),
+    url(r'systemsettings/', views.systemsettings, name='systemsettings')
 ]

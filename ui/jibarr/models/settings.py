@@ -23,6 +23,7 @@ class Settings(models.Model):
     lidarr_apikey = models.TextField(db_column='LIDARR_APIKey')
     lidarr_last_sync = models.TextField(db_column='LIDARR_Last_Sync')
     jibarr_version = models.TextField(db_column='Jibarr_Version')
+    scheduler_enabled = models.IntegerField(db_column='Scheduler_Enabled')
 
     objects = models.Manager()
 
