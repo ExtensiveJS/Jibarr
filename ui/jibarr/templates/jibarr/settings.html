@@ -1,13 +1,7 @@
 {% extends "./base.html" %}
 {% load static %}
 {% block title %}Settings{% endblock title %}
-{% block javascript%}
-<style>
-    .subSetting {font-size:smaller;}
-    .subSettingHelp {font-size:small;cursor:pointer;padding-left:4px;color:dodgerblue;}
-    .subSettingLabel {float:left;width:200px;text-align:right;padding-right:5px;font-family:monospace;}
-    .subSettingTextbox {font-size:small;width:250px;}
-</style>
+{% block javascript %}
 {% endblock javascript %}
 {% block content %}
 
@@ -29,7 +23,8 @@
                 <div>Last Synced:</div>
                 <div>
                     {{ system_settings.radarr_last_sync }}
-                    <i class="glyphicon glyphicon-refresh ADDBUTTON" style="margin-left:20px;" onclick="runSync();"></i>
+                    <i class="glyphicon glyphicon-refresh ADDBUTTON" style="margin-left:20px;" onclick="runSync('radarr');" title="Update Movies."></i>
+                    <i class="glyphicon glyphicon-save ADDBUTTON" style="margin-left:20px;" onclick="runSync('radarr_force');" title="Rebuild Movies."></i>
                 </div>
                 <div style="text-align:right;">
                     <div id="divRadarrTestConnectionText">&nbsp;</div>
@@ -127,14 +122,14 @@
             }
         });
     }
-    function runSync(){
-        if(confirm('are you sure?')){
+    function runSync(s){
+        if(confirm('Are you sure you want to initiate a refresh or rebuild?')){
             $("#spanWaiting").show();
             $.ajax({
                 url : '/api/dbsync/',
                 type : 'POST',
                 data: {
-                    sourceSync: 'radarr'
+                    sourceSync: s
                 },
                 success: function(data)
                 {

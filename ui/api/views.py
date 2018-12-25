@@ -179,6 +179,8 @@ def dbsync(request):
         pass
     if(sourceSync=='radarr'):
         RadarrSync(False)
+    if(sourceSync=='radarr_force'):
+        RadarrSync(True)
     return Response("OK")
         
 @api_view(['GET', 'POST'])

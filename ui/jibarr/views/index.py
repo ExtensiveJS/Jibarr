@@ -5,6 +5,8 @@ import time, math
 from time import mktime
 from datetime import datetime
 from django.template import loader
+from urllib.request import urlopen
+import json
 
 def index(request):
     prof_id = 1
@@ -21,6 +23,16 @@ def index(request):
     
     radarr_list = radarrMovieList()
     radarr_list.movielist = rdml[:5]
+
+    isConnected = False
+    try:
+        data = urlopen(system_settings.radarr_path + "/api/system/status/?apikey=" + system_settings.radarr_apikey).read()
+        output = json.loads(data)
+        isConnected = True
+    except:
+        pass
+
+    system_settings.isConnected = isConnected
 
     context = {
         'system_settings': system_settings,

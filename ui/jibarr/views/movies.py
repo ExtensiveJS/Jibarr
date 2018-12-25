@@ -6,6 +6,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.core.paginator import Paginator
 import math
+from urllib.request import urlopen
+import json
 
 def movies(request):
     global cnt
@@ -18,6 +20,17 @@ def movies(request):
     except KeyError:
         pass
     system_settings = Settings.objects.all()[:1].get()
+
+    isConnected = False
+    try:
+        data = urlopen(system_settings.radarr_path + "/api/system/status/?apikey=" + system_settings.radarr_apikey).read()
+        output = json.loads(data)
+        isConnected = True
+    except:
+        pass
+
+    system_settings.isConnected = isConnected
+
     prof_list = Profile.objects.all()
     prof = Profile.objects.get(id=prof_id)
     

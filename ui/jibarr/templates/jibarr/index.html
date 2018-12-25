@@ -3,7 +3,7 @@
 {% block title %}Movie List{% endblock title %}
 {% block javascript%}
 <style>
-    .movieContainer {float:left;max-width:200px;width:18%;height:390px;margin-right:20px;margin-bottom:30px;border-radius:3px;box-shadow: 5px 5px lightgrey;padding:10px;border:1px solid lightgrey;}
+    .movieContainer {float:left;max-width:200px;width:18%;height:395px;margin-right:20px;margin-bottom:30px;border-radius:3px;box-shadow: 5px 5px lightgrey;padding:10px;border:1px solid lightgrey;}
     .siteContainer {cursor:pointer;background-color:#337ab7;color:white;font-size:x-small;margin-top:3px;text-align:center;border-radius:3px;padding-top:2px;}
     .qualityContainer {background-color:goldenrod;color:white;font-size:x-small;margin-top:3px;text-align:center;border-radius:3px; }
 </style>
@@ -17,7 +17,12 @@
         {% for val in radarr_list.movielist %}
             <div class="movieContainer">
                 <div>
+                    {% if system_settings.isConnected %}
                     <img src="{{ system_settings.radarr_path }}/MediaCover/{{ val.r_id }}/poster.jpg" style="cursor:pointer;width:100%" />
+                    {% else %}
+                    <img src="{% static 'jibarr/images/no_image.png' %}" style="width:89%;" />
+                    <div style="font-family:fantasy;font-size:larger;position:relative;top:40%;text-align:center;;z-index: 99 !important;">{{ val.title }}</div>
+                    {% endif %}
                 </div>
                 <div class="qualityContainer">{{ val.quality }}</div>
                 {% if val.tmdbid %}
