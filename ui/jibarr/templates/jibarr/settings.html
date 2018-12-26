@@ -125,6 +125,12 @@
     function runSync(s){
         if(confirm('Are you sure you want to initiate a refresh or rebuild?')){
             $("#spanWaiting").show();
+            var myToast = $().toastmessage('showToast', {
+                text     : 'Running db sync/rebuild.',
+                sticky   : true,
+                position : 'bottom-right',
+                type     : 'notice'
+            });
             $.ajax({
                 url : '/api/dbsync/',
                 type : 'POST',
@@ -136,9 +142,13 @@
                     $("#spanWaiting").hide();
                     location.reload(true);
                 },
+                error:function (xhr, ajaxOptions, thrownError){
+                    $("#spanWaiting").hide();
+                    myToast.text("Rebuild error: " + xhr.status);
+                },
                 fail: function(xhr, textStatus, errorThrown){
                     $("#spanWaiting").hide();
-                    alert('request failed');
+                    myToast.text("Rebuild failed: " + xhr.status);
                 }
             });
         }

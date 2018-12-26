@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^GetFolders/', views.GetFolders),
     url(r'dbsync', views.dbsync),
     url(r'scheduler',views.scheduler),
+    url(r'marksynced', views.marksynced),
     url(r'^', include(router.urls)),
 ]

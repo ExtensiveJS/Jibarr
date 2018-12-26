@@ -206,4 +206,23 @@ def scheduler(request):
         pass
     return Response(response)
 
+@api_view(['GET', 'POST'])
+def marksynced(request):
+    try:
+        # call to update everything with today's date.
+        try:
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Bulk override of Sync Date initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+        prlist = ProfileRadarr.objects.all()
+        for pr in prlist:
+            pr.lastRun = datetime.now().strftime("%b %d %Y %H:%M:%S")
+            pr.save()
+        try:
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Bulk override of Sync Date completed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+    except:
+        pass
 
+    return Response("OK")
