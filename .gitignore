@@ -1,4 +1,6 @@
 ui/ui/__pycache__
 ui/Jibarr/__pycache__
 ui/api/__pycache__
+ui/jibarr/models/__pycache__
+ui/jibarr/views/__pycache__
 MFS.code-workspace
