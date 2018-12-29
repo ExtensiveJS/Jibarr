@@ -24,7 +24,7 @@ def movies(request):
     isConnected = False
     try:
         data = urlopen(system_settings.radarr_path + "/api/system/status/?apikey=" + system_settings.radarr_apikey).read()
-        output = json.loads(data)
+        json.loads(data)
         isConnected = True
     except:
         pass
