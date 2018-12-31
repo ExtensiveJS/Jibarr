@@ -31,45 +31,53 @@ def RadarrSync(forceload):
                 rm.radarr_id = var['id']
                 rm.title = var['title']
                 rm.title_slug = var['titleSlug']
+
+                rm.release_date = ""
                 try:
                     rm.release_date = var['inCinemas'][:10]
                 except:
-                    rm.release_date = ""
-
+                    pass
+                    
+                rm.folder_name = ""
+                rm.size = ""
+                rm.file_name = ""
+                rm.last_updt = ""
                 if var['hasFile']:    
                     rm.folder_name = var["folderName"]
                     rm.size = var["movieFile"]["size"]
                     rm.file_name = var["movieFile"]["relativePath"]
                     rm.last_updt = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
+                    
                 rm.rating = rm.rating = var["ratings"]["value"]
+
+                rm.tmdbid = ""
                 try:
                     rm.tmdbid = var["tmdbId"]
                 except:
-                    rm.tmdbid = ""
                     pass
                 
+                rm.imdbid = ""
                 try:
                     rm.imdbid = var["imdbId"]
                 except:
-                    rm.imdbid = ""
                     pass
                 
+                rm.youtube = ""
                 try:
                     rm.youtube = var["youTubeTrailerId"]
                 except:
-                    rm.youtube = ""
                     pass
                 
+                rm.website = ""
                 try:
                     rm.website = var["website"]
                 except:
-                    rm.website = ""
                     pass
                 
+                rm.quality = ""
                 try:
                     rm.quality = var["movieFile"]["quality"]["quality"]["name"]
                 except:
-                    rm.quality = ""
                     pass
                 
                 RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality)
@@ -87,6 +95,7 @@ def RadarrSync(forceload):
                 wasUpdated = False
                 ## if exist - Update
                 if rm.id:
+
                     if rm.radarr_id != var['id']:
                         wasUpdated = True
                         rm.radarr_id = var['id']
@@ -103,6 +112,10 @@ def RadarrSync(forceload):
                     except:
                         rm.release_date = ""
 
+                    rm.folder_name = ""
+                    rm.size = ""
+                    rm.file_name = ""
+                    rm.last_updt = ""
                     if var['hasFile']:    
                         if rm.folder_name != var['folderName']:
                             wasUpdated = True
@@ -115,48 +128,49 @@ def RadarrSync(forceload):
                             rm.file_name = var["movieFile"]["relativePath"]
                         if rm.last_updt != var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]:
                             wasUpdated = True
-                            rm.last_updt = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]
+                            rm.last_updt = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]  
                     if str(rm.rating) != str(var["ratings"]["value"]):
                         wasUpdated = True
                         rm.rating = str(var["ratings"]["value"])
+                    
+                    rm.tmdbid = ""
                     try:
                         if str(rm.tmdbid) != str(var['tmdbId']):
                             wasUpdated = True
                             rm.tmdbid = str(var["tmdbId"])
                     except:
-                        rm.tmdbid = ""
                         pass
-                    
+
+                    rm.imdbid = ""
                     try:
                         if rm.imdbid != var['imdbId']:
                             wasUpdated = True
                             rm.imdbid = var["imdbId"]
                     except:
-                        rm.imdbid = ""
                         pass
                     
+                    rm.youtube = ""
                     try:
                         if rm.youtube != var['youTubeTrailerId']:
                             wasUpdated = True
                             rm.youtube = var["youTubeTrailerId"]
                     except:
-                        rm.youtube = ""
                         pass
                     
+                    rm.website = ""
                     try:
                         if rm.website != var['website']:
                             wasUpdated = True
                             rm.website = var["website"]
                     except:
-                        rm.website = ""
                         pass
                     
+                    rm.quality = ""
                     try:
                         if rm.quality != var["movieFile"]["quality"]["quality"]["name"]:
                             wasUpdated = True
                             rm.quality = var["movieFile"]["quality"]["quality"]["name"]
                     except:
-                        rm.quality = ""
                         pass
                     
                     #RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality)

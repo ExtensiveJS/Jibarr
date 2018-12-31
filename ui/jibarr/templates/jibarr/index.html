@@ -3,26 +3,92 @@
 {% block title %}Movie List{% endblock title %}
 {% block javascript%}
 <style>
-    .movieContainer {float:left;max-width:200px;width:18%;height:395px;margin-right:20px;margin-bottom:30px;border-radius:3px;box-shadow: 5px 5px lightgrey;padding:10px;border:1px solid lightgrey;}
+    .movieContainer {position:relative;float:left;max-width:200px;width:18%;height:395px;margin-right:20px;margin-bottom:30px;border-radius:3px;box-shadow: 5px 5px lightgrey;padding:10px;border:1px solid lightgrey;}
     .siteContainer {cursor:pointer;background-color:#337ab7;color:white;font-size:x-small;margin-top:3px;text-align:center;border-radius:3px;padding-top:2px;}
     .qualityContainer {background-color:goldenrod;color:white;font-size:x-small;margin-top:3px;text-align:center;border-radius:3px; }
+    .movieImageContainer {position:relative;}
+    .overlayTop {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        width: 100%;
+        height:0;
+        transition: .5s ease;
+        opacity: 0.3;
+        }
+    .overlayBottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        width: 100%;
+        height:0;
+        transition: .5s ease;
+        opacity: 0.3;
+        }
+    .movieImageContainer:hover .overlayTop {
+        top: 0;
+        left: 0px;
+        height: 30px;
+        opacity: 0.75;
+        background-color: whitesmoke;
+    }
+    .movieImageContainer:hover .overlayBottom {
+        bottom: 0px;
+        left: 0px;
+        height: 45px;
+        opacity: 0.75;
+        background-color: whitesmoke;
+    }
+    .overlayTopText {
+        color: black;
+        font-weight:bold;
+        font-size:x-large;
+        padding-right:5px;
+        padding-top:2px;
+    }
+    .overlayBottomText {
+        color: black;
+        font-size:small;
+        padding-right:5px;
+        padding-top:2px;
+        text-align:center;
+    }
 </style>
 {% endblock javascript %}
 {% block content %}
 <div class='CONTAINER'>
     {% if system_settings.radarr_enabled == 1 %}
-        <div style="width:250px;background-color:aqua;text-align:center;font-size:larger;border-radius:3px;margin-bottom:7px;">
-            Latest additions - Movies
+        <div style="width:300px;background-color:aqua;text-align:center;font-size:larger;border-radius:3px;margin-bottom:7px;">
+            Latest Additions/Updates - Movies
         </div>
+        <div>
         {% for val in radarr_list.movielist %}
             <div class="movieContainer">
-                <div>
+                <div class="movieImageContainer">
+                    <div class="overlayTop">
+                        <div class="overlayTopText">
+                            {% if val.isMonitored %}
+                            <i class="glyphicon glyphicon-star" style="float:right;cursor:pointer;" onclick="delMonitor({{ val.media_id }},'Some Title');"" ></i>
+                            {% else %}
+                            <i class="glyphicon glyphicon-star-empty" style="float:right;cursor:pointer;" onclick="addMonitor({{ val.r_id }},'Some Title');"></i>
+                            {% endif %}
+                        </div>
+                    </div>
                     {% if system_settings.isConnected %}
                     <img src="{{ system_settings.radarr_path }}/MediaCover/{{ val.r_id }}/poster.jpg" style="cursor:pointer;width:100%" />
                     {% else %}
                     <img src="{% static 'jibarr/images/no_image.png' %}" style="width:89%;" />
                     <div style="font-family:fantasy;font-size:larger;position:relative;top:40%;text-align:center;;z-index: 99 !important;">{{ val.title }}</div>
                     {% endif %}
+                    <div class="overlayBottom">
+                        <div class="overlayBottomText">
+                            {{ val.title }}
+                        </div>
+                    </div>
                 </div>
                 <div class="qualityContainer">{{ val.quality }}</div>
                 {% if val.tmdbid %}
@@ -42,6 +108,7 @@
                 {% endif %}
             </div>
         {% endfor %}
+        </div>
     {% endif %}
     {% if system_settings.sonarr_enabled == 1 %}
         <br />
@@ -56,5 +123,50 @@
 <script>
     $(function () {
     });
+    function addMonitor(rid,title) {
+        $.ajax({
+            url : '/api/profileradarr/add/',
+            type : 'POST',
+            data: { 
+                profile_id: {{ prof_id }},
+                radarr_id: rid,
+                radarr_title: title
+            },
+            success: function(data)
+            {
+                location.reload();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+    function delMonitor(id,title) {
+        if(confirm('are you sure?')){
+            $.ajax({
+                url : '/api/profileradarr/delete/',
+                type : 'POST',
+                data: { 
+                    prid: id,
+                    profile_id: {{ prof_id }},
+                    radarr_title: title
+                },
+                success: function(data)
+                {
+                    if(data == "DelOK"){
+                        location.reload();
+                    } else {
+                        alert("Data not DelOK = " + data);
+                    };
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('request error' + xhr.status)
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+               }
+            });
+        }
+    }
 </script>
 {% endblock postbody %}

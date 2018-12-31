@@ -17,12 +17,12 @@ def index(request):
     system_settings = Settings.objects.all()[:1].get()
     prof_list = Profile.objects.all()
     
-    rdl = get_movie_info(system_settings)
+    rdl = get_movie_info(system_settings,prof_id)
     rdml = rdl.movielist
     rdml.sort(key=lambda x: x.lastUpdt.lower(), reverse=True)
     
     radarr_list = radarrMovieList()
-    radarr_list.movielist = rdml[:5]
+    radarr_list.movielist = rdml[:10]
 
     isConnected = False
     try:
@@ -43,11 +43,13 @@ def index(request):
     template = loader.get_template("jibarr/index.html")
     return HttpResponse(template.render(context, request))
 
-def get_movie_info(system_settings):
+def get_movie_info(system_settings,prof_id):
     
     results = radarrMovieList()
     results.movielist.clear
     
+    prList = ProfileRadarr.objects.filter(profile_id=prof_id)
+
     for var in RadarrMedia.objects.all():
 
         rm = radarrMovie()
@@ -66,6 +68,11 @@ def get_movie_info(system_settings):
         rm.website = var.website
         rm.quality = var.quality
         
+        for pr in prList:
+            if pr.radarr_id == var.radarr_id:
+                rm.media_id = pr.id
+                rm.isMonitored = True
+
         results.movielist.append(rm)
 
     return results
