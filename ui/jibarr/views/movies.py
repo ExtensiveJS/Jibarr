@@ -1,13 +1,11 @@
 from jibarr.models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, PageStuff, RadarrMedia
 from time import mktime
 from datetime import datetime
-import time
+import time, math, json, re
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.core.paginator import Paginator
-import math
 from urllib.request import urlopen
-import json
 
 def movies(request):
     global cnt
@@ -49,11 +47,20 @@ def movies(request):
     rdml.movielist = [x for x in rdml.movielist if x.quality]
     rdml.movielist.sort(key=lambda x: x.title.lower(), reverse=False)
 
+    searchCriteria = ""
+    try:
+        if(request.GET.get("search")):
+            searchCriteria = request.GET.get("search")
+    except:
+        pass
+    if(searchCriteria):
+        rdml.movielist = [x for x in rdml.movielist if bool(re.search(re.compile(searchCriteria, re.IGNORECASE),x.title))]
+
     filterCriteria = "all"
     try:
         if(request.GET.get("filter")):
             filterCriteria = request.GET.get("filter")
-    except KeyError:
+    except:
         pass
 
     if(filterCriteria=='monitored'):
@@ -62,6 +69,7 @@ def movies(request):
     if(filterCriteria=='unmonitored'):
         rdml.movielist = [x for x in rdml.movielist if x.isMonitored == False]
     
+
     rdml.filterCriteria = filterCriteria
     paginator = Paginator(rdml.movielist, 25)
     if(int(pageNum) > paginator.num_pages):

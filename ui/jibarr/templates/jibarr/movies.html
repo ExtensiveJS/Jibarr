@@ -12,11 +12,14 @@
 {% block content %}
 
 <div class='CONTAINER'>
-    <div style='float:left;width:30px;display:none;' id='divWaiting'>..waiting..</div>
     <div style="margin:5px 5px 20px auto;float:right;border:1px dotted silver;height:25px;padding:3px;border-radius:5px;background-color:lightblue;">
         <a href="?filter=all"><i style="padding-left:3px;padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-record' title='Show All' onclick="filterResults('all');"></i></a>
         <a href="?filter=unmonitored"><i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star-empty' title='Show Unmonitored' onclick="filterResults('unmon');"></i></a>
         <a href="?filter=monitored"><i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star' title='Show Monitored' onclick="filterResults('mon');"></i></a>
+    </div>
+    <div style="float:right;margin:5px 45px 20px auto;">
+        <input type="text" id="txtSearchText" style="width:250px;height:25px;" onkeyup="startSearch(event);" />
+        <button id="btnSearch" class="btn btn-primary btn-sm" onclick="filterResults();">Search</button>
     </div>
 
     <div style="margin-top:45px;">
@@ -164,6 +167,21 @@
             });
         }
     }
-
+    function filterResults(){
+        if($("#txtSearchText").val().length > 3){
+            var url=window.location.href,
+                separator = (url.indexOf("?")===-1)?"?":"&",
+                newParam=separator + "search=" + $("#txtSearchText").val();
+            newUrl=url.replace(newParam,"");
+            newUrl+=newParam;
+            window.location.href=newUrl;
+            //alert(newUrl);
+        }
+    }
+    function startSearch(event) {
+        if(event.keyCode==13){
+            filterResults();
+        }
+    }
 </script>
 {% endblock postbody %}
