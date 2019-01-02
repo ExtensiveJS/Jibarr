@@ -3,6 +3,8 @@
 
 Utility to allow you to track files that need to be synced to secondary drives. 
 
+# Version 1.0 is now offically out.
+
 ## Key features to be included:
 * a list of all available media from the source
 * a "last updated" date tracked, per user/device, to allow for syncing "new" items
