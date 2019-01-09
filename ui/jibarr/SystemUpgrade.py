@@ -108,6 +108,7 @@ def upgradeCode():
         pass
 
     try:
+        subprocess.call("git --git-dir=d:\\Temp\\gitTest\\Jibarr\\.git update-index --assume-unchanged ui/db.sqlite3")
         ret = subprocess.check_output("git --git-dir=d:\\Temp\\gitTest\\Jibarr\\.git pull origin master", shell=True)
         print(ret)
     except subprocess.CalledProcessError:
