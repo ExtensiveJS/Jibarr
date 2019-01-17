@@ -8,7 +8,7 @@
 <div class='CONTAINER' style="font-size:larger;">
 
     <ul class="nav nav-tabs" style="margin-top:10px;">
-        <li class="active"><a href="/jibarr/settings">Media</a></li>
+        <li class="active"><a href="/jibarr/sitesettings">Media</a></li>
         <li><a href="/jibarr/profiles">Profiles</a></li>
         <li><a href="/jibarr/systemsettings">System</a></li>
         <li><a href="/jibarr/logs">Logs</a></li>
@@ -99,7 +99,7 @@
         var sonChk = ($("#chkSonarrEnabled").is(':checked') === true) ? 1 : 0;
         var lidChk = ($("#chkLidarrEnabled").is(':checked') === true) ? 1 : 0;
         $.ajax({
-            url : '/api/settings/1/',
+            url : '/api/sitesettings/1/',
             type : 'POST',
             data: { 
                 id: 1, 

@@ -1,6 +1,6 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models  import Settings, Profile
+from jibarr.models  import SiteSettings, Profile
 
 def profiles(request):
     prof_id = 1
@@ -9,7 +9,8 @@ def profiles(request):
     except KeyError:
         #prof_id = 1
         pass
-    system_settings = Settings.objects.all()[:1].get()
+    system_settings = SiteSettings.objects.all()[:1].get()
+    system_settings.newVersion = SiteSettings.checkVersion()
     prof_list = Profile.objects.all()
     profile_list = Profile.objects.all()
     context = {

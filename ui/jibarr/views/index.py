@@ -1,6 +1,6 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models  import Settings, Profile, ProfileRadarr, radarrMovieList, radarrMovie, RadarrMedia
+from jibarr.models  import SiteSettings, Profile, ProfileRadarr, radarrMovieList, radarrMovie, RadarrMedia
 import time, math
 from time import mktime
 from datetime import datetime
@@ -14,7 +14,8 @@ def index(request):
         prof_id = request.session["prof_id"]
     except KeyError:
         pass
-    system_settings = Settings.objects.all()[:1].get()
+    system_settings = SiteSettings.objects.all()[:1].get()
+    system_settings.newVersion = SiteSettings.checkVersion()
     prof_list = Profile.objects.all()
     
     rdl = get_movie_info(system_settings,prof_id)

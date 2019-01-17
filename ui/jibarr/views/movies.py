@@ -1,4 +1,4 @@
-from jibarr.models import Settings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, PageStuff, RadarrMedia
+from jibarr.models import SiteSettings, radarrMovie, radarrMovieList, Profile, ProfileRadarr, PageStuff, RadarrMedia
 from time import mktime
 from datetime import datetime
 import time, math, json, re
@@ -17,8 +17,8 @@ def movies(request):
         prof_id = request.session["prof_id"]
     except KeyError:
         pass
-    system_settings = Settings.objects.all()[:1].get()
-
+    system_settings = SiteSettings.objects.all()[:1].get()
+    system_settings.newVersion = SiteSettings.checkVersion()
     isConnected = False
     try:
         data = urlopen(system_settings.radarr_path + "/api/system/status/?apikey=" + system_settings.radarr_apikey).read()

@@ -1,6 +1,6 @@
 from .index import *
 from .profiles import *
-from .settings import *
+from .sitesettings import *
 from .donate import *
 from .movies import *
 from .shows import *
@@ -10,3 +10,4 @@ from .logs import *
 from .about import *
 from .updates import *
 from .systemsettings import *
+from .upgrade import *

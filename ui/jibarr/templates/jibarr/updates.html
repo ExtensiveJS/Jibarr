@@ -2,17 +2,13 @@
 {% load static %}
 {% block title %}Updates{% endblock title %}
 {% block javascript%}
-<style>
-    .newTag {border-radius:3px;background-color:mediumseagreen;padding:2px 4px 2px 4px;color:white;font-size:x-small;}
-    .updateTag {border-radius:3px;background-color:lightskyblue;padding:2px 4px 2px 4px;color:white;font-size:x-small;}
-</style>
 {% endblock javascript %}
 {% block content %}
 
 <div class='CONTAINER' style="font-size:larger;">
 
     <ul class="nav nav-tabs" style="margin-top:10px;">
-        <li><a href="/jibarr/settings">Media</a></li>
+        <li><a href="/jibarr/sitesettings">Media</a></li>
         <li><a href="/jibarr/profiles">Profiles</a></li>
         <li><a href="/jibarr/systemsettings">System</a></li>
         <li><a href="/jibarr/logs">Logs</a></li>
@@ -22,10 +18,17 @@
 
     <div style="font-size:small;padding:10px;font-family:Verdana, Geneva, Tahoma, sans-serif;">
         <div style="padding-bottom:20px;">
-            <h4 style="border-bottom:1px solid lightgrey;">1.0.0 - Jan 1 2019</h4>
-            <div>
-                <span class="newTag">NEW</span>
-                Initial Release for the Jibarr application.
+            <div style="padding-bottom:10px;">
+                <h4 style="border-bottom:1px solid lightgrey;">1.0.1 - MMM DD 2019</h4>
+                <div><span class="newTag">NEW</span><span class="systemTag">System</span>Added framework for version checker and system Upgrades.</div>
+                <div><span class="updateTag">FIXED</span><span class="systemTag">System</span>Changed the Settings page & classes to SiteSettings to avoid namespace conflict.</div>
+                <div><span class="updateTag">FIXED</span><span class="systemTag">Radarr</span>DB sync no longer syncs movies without files.</div>
+                <div><span class="updateTag">FIXED</span><span class="systemTag">System</span>Updates to the stylesheets for the site.</div>
+                <div><span class="updateTag">FIXED</span><span class="systemTag">Radarr</span>Additional error handling for the db sync page.</div>
+            </div>
+            <div style="padding-bottom:10px;">
+                <h4 style="border-bottom:1px solid lightgrey;">1.0.0 - Jan 1 2019</h4>
+                <div><span class="newTag">NEW</span><span class="systemTag">System</span>Initial Release for the Jibarr application.</div>
             </div>
         </div>
     </div>

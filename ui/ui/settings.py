@@ -25,8 +25,9 @@ SECRET_KEY = '2qx%&w+oxlr%mnkp4xxo&9wga5mrr1nt$1=!solof%0&k17p^%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# if you wish to limit the host just replce the * with the IP or '.yourdomain.com' instead.
 ALLOWED_HOSTS = [
-    "192.168.0.115",
+    "*",
     "localhost"
 ]
 
@@ -125,3 +126,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 broker_url = 'redis://localhost:6379/0'
+
+CODE_VERSION = "1.0.1"

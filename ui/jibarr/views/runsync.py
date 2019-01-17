@@ -1,6 +1,6 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models import Settings, Profile, ProfileRadarr, radarrMovieList, radarrMovie, RadarrMedia
+from jibarr.models import SiteSettings, Profile, ProfileRadarr, radarrMovieList, radarrMovie, RadarrMedia
 from urllib.request import urlopen
 import json, time, math
 from time import mktime
@@ -13,7 +13,8 @@ def runsync(request):
     except KeyError:
         #prof_id = 1
         pass
-    system_settings = Settings.objects.all()[:1].get()
+    system_settings = SiteSettings.objects.all()[:1].get()
+    system_settings.newVersion = SiteSettings.checkVersion()
     prof_list = Profile.objects.all()
     radarr_list = radarrMovieList()
     

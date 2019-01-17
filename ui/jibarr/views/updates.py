@@ -1,6 +1,6 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models  import Settings, Profile
+from jibarr.models  import SiteSettings, Profile
 
 def updates(request):
     prof_id = 1
@@ -8,7 +8,8 @@ def updates(request):
         prof_id = request.session["prof_id"]
     except KeyError:
         pass
-    system_settings = Settings.objects.all()[:1].get()
+    system_settings = SiteSettings.objects.all()[:1].get()
+    system_settings.newVersion = SiteSettings.checkVersion()
     prof_list = Profile.objects.all()
     profile_list = Profile.objects.all()
     context = {

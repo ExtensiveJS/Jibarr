@@ -1,4 +1,4 @@
-from jibarr.models import Settings, Profile, ProfileSonarr, sonarrShow, sonarrShowList
+from jibarr.models import SiteSettings, Profile, ProfileSonarr, sonarrShow, sonarrShowList
 from urllib.request import urlopen
 import json
 from time import mktime
@@ -16,7 +16,8 @@ def shows(request):
         prof_id = request.session["prof_id"]
     except KeyError:
         pass
-    system_settings = Settings.objects.all()[:1].get()
+    system_settings = SiteSettings.objects.all()[:1].get()
+    system_settings.newVersion = SiteSettings.checkVersion()
     prof_list = Profile.objects.all()
     prof = Profile.objects.get(id=prof_id)
     

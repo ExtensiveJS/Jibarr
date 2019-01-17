@@ -1,6 +1,6 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models  import Settings, Profile
+from jibarr.models  import SiteSettings, Profile
 
 def music(request):
     prof_id = 1
@@ -9,7 +9,8 @@ def music(request):
     except KeyError:
         #prof_id = 1
         pass
-    system_settings = Settings.objects.all()[:1].get()
+    system_settings = SiteSettings.objects.all()[:1].get()
+    system_settings.newVersion = SiteSettings.checkVersion()
     prof_list = Profile.objects.all()
     prof = Profile.objects.get(id=1)
     

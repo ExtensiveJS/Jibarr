@@ -1,9 +1,9 @@
-from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, RadarrMedia
+from jibarr.models import SiteSettings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, RadarrMedia
 from rest_framework import serializers
 
-class SettingsSerializer(serializers.HyperlinkedModelSerializer):
+class SiteSettingsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Settings
+        model = SiteSettings
         fields = ('id', 'radarr_enabled', 'radarr_path', 'radarr_apikey', 'sonarr_enabled', 'sonarr_path', 'sonarr_apikey', 'lidarr_enabled', 'lidarr_path', 'lidarr_apikey')
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):

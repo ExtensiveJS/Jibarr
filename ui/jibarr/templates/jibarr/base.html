@@ -22,8 +22,9 @@
                 {% if system_settings.sonarr_enabled == 1 %}<a href="/jibarr/shows"><div class="HEADERITEM"><i class="glyphicon glyphicon-blackboard" style="font-size:xx-large;"></i><br/>TV Shows</div></a>{% endif %}
                 {% if system_settings.lidarr_enabled == 1 %}<a href="/jibarr/music"><div class="HEADERITEM"><i class="glyphicon glyphicon-music" style="font-size:xx-large;"></i><br/>Music</div></a>{% endif %}
                 <a href="/jibarr/runsync"><div class="HEADERITEM"><i class="glyphicon glyphicon-transfer" style="font-size:xx-large;"></i><br/>Run Sync</div></a>
-                <a href="/jibarr/settings"><div class="HEADERITEM"><i class="glyphicon glyphicon-cog" style="font-size:xx-large;"></i><br/>Settings</div></a>
+                <a href="/jibarr/sitesettings"><div class="HEADERITEM"><i class="glyphicon glyphicon-cog" style="font-size:xx-large;"></i><br/>Settings</div></a>
                 <!-- a href="/jibarr/donate"><div class="HEADERITEM"><i class="glyphicon glyphicon-heart" style="font-size:xx-large;color:red;"></i><br/>Donate</div></a -->
+                {% if system_settings.newVersion %}<a href="/jibarr/upgrade"><div class="HEADERITEM"><i class="glyphicon glyphicon-cloud-download" style="font-size:xx-large;color:yellow;"></i><br/>New Version</div></a>{% endif %}
                 <div style="float:right;width:150px;text-align:right;">
                     <select id="ddlProfiles" onchange="profileChanged();" class="form-control" style="height:30px;font-size:small;">
                         {% for prof in prof_list %}
@@ -38,7 +39,7 @@
             </div>
         </div>
         <span id="spanWaiting" style="position:absolute;top:50%;left:45%;z-index: 99 !important;"><img style="width:100px;" src="{% static 'jibarr/images/spinner.gif' %}"></span>
-        <div style="padding-bottom:65px;padding-top:15px;text-align:center;color:grey;">Jibarr Ver. {{ system_settings.jibarr_version }}</div>
+        <div style="padding-bottom:65px;padding-top:15px;text-align:center;color:grey;">Jibarr Ver. {{ system_settings.code_version }} (Database: {{ system_settings.jibarr_version }})</div>
         <script>
             $(function () {
                 $("#spanWaiting").hide();
@@ -47,7 +48,7 @@
             function profileChanged(){
                 //alert('prof change:' + $("#ddlProfiles").val());
                 $.ajax({
-                    url : '/api/settings/update/',
+                    url : '/api/sitesettings/update/',
                     type : 'POST',
                     data: { 
                         profile_id: $("#ddlProfiles").val()

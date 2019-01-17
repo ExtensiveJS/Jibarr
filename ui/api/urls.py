@@ -3,7 +3,7 @@ from rest_framework import routers
 from api import views
 
 router = routers.DefaultRouter()
-router.register(r'settings', views.SettingsViewSet)
+router.register(r'sitesettings', views.SiteSettingsViewSet)
 router.register(r'profile', views.ProfileViewSet)
 router.register(r'profileradarr', views.ProfileRadarrViewSet)
 router.register(r'profilesonarr', views.ProfileSonarrViewSet)
@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'dbsync', views.dbsync),
     url(r'scheduler',views.scheduler),
     url(r'marksynced', views.marksynced),
+    url(r'runUpgradeProcess/', views.runUpgradeProcess),
     url(r'^', include(router.urls)),
 ]

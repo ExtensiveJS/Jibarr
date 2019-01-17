@@ -1,6 +1,6 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models  import Settings, Profile, Logs
+from jibarr.models  import SiteSettings, Profile, Logs
 
 def logs(request):
     prof_id = 1
@@ -17,7 +17,8 @@ def logs(request):
                 filterCriteria = request.GET.get("filter")
     except KeyError:
         pass
-    system_settings = Settings.objects.all()[:1].get()
+    system_settings = SiteSettings.objects.all()[:1].get()
+    system_settings.newVersion = SiteSettings.checkVersion()
     prof_list = Profile.objects.all()
     if(filterCriteria=='all'):
         log_list = Logs.objects.all().order_by('-log_datetime')

@@ -1,0 +1,104 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block title %}Upgrade{% endblock title %}
+{% block javascript%}
+<style>
+    .versionBlock {
+        border-radius:5px;
+        background-color:lightgreen;
+        margin:5px;
+        vertical-align:middle;
+        width:125px;
+        height:90px;
+        text-align:center;
+        border:1px solid black;
+        float:left;
+    }
+    .versionBlockUpdated {
+        border-radius:5px;
+        background-color:yellow;
+        margin:5px;
+        vertical-align:middle;
+        width:125px;
+        height:90px;
+        text-align:center;
+        border:1px solid black;
+        float:left;
+    }
+</style>
+{% endblock javascript %}
+{% block content %}
+
+<div class='CONTAINER' style="font-size:larger;padding-bottom:20px;">
+    <div style="height: 100px; overflow: hidden;">
+        {% if system_settings.jibarr_version != system_settings.jibarr_database_version %}
+            <div class="versionBlockUpdated" title="Installed version of the database.">
+        {% else %}
+            <div class="versionBlock" title="Installed version of the database.">
+        {% endif %}
+            <div style="font-size:large;">{{ system_settings.jibarr_version }}</div>
+            <div style="font-size:small;margin-top:3px;"><i class="glyphicon glyphicon-tasks" style="font-size:xx-large;"></i><br>Installed</div>
+        </div>
+        <div class="versionBlock" title="Advertised version of the database.">
+            <div style="font-size:large;">{{ system_settings.jibarr_database_version }}</div>
+            <div style="font-size:small;margin-top:3px;"><i class="glyphicon glyphicon-tasks" style="font-size:xx-large;"></i><br>Advertised</div>
+        </div>
+        {% if system_settings.code_version != system_settings.jibarr_code_version %}
+            <div class="versionBlockUpdated" title="Installed version of the application code.">
+        {% else %}
+            <div class="versionBlock" title="Installed version of the application code.">
+        {% endif %}
+            <div style="font-size:large;">{{ system_settings.code_version }}</div>
+            <div style="font-size:small;margin-top:3px;"><i class="glyphicon glyphicon-duplicate" style="font-size:xx-large;"></i><br>Installed</div>
+        </div>
+        <div class="versionBlock" title="Advertised version of the application code.">
+            <div style="font-size:large;">{{ system_settings.jibarr_code_version }}</div>
+            <div style="font-size:small;margin-top:3px;"><i class="glyphicon glyphicon-duplicate" style="font-size:xx-large;"></i><br>Advertised</div>
+        </div>
+    </div>
+    <div style="margin-top:10px;">
+        <button id="btnRunUpgrade" class="btn btn-primary btn-sm" onclick="runUpgrade();">Run Upgrade</button>
+    </div>
+    
+
+</div>
+{% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+        
+    });
+    function runUpgrade(){
+        if(confirm("Are you sure you want to run this? It may take a while.")){
+            $("#spanWaiting").show();
+            var myToast = $().toastmessage('showToast', {
+                text     : 'Running System Upgrade.',
+                sticky   : true,
+                position : 'bottom-right',
+                type     : 'notice'
+            });
+            $.ajax({
+                url : '/api/runUpgradeProcess/',
+                    type : 'POST',
+                    data: { },
+                    success: function(data)
+                    {
+                        $().toastmessage('removeToast', myToast);
+                        $("#spanWaiting").hide();
+                        location.reload();
+                    },
+                    error:function (xhr, ajaxOptions, thrownError){
+                        $().toastmessage('removeToast', myToast);
+                        alert('request error' + xhr.status);
+                        $("#spanWaiting").hide();
+                    },
+                    fail: function(xhr, textStatus, errorThrown){
+                        $().toastmessage('removeToast', myToast);
+                        alert('request failed ' + xhr.status);
+                        $("#spanWaiting").hide();
+                }
+            });
+        }
+    }
+</script>
+{% endblock postbody %}

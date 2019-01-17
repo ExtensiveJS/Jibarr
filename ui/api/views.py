@@ -1,23 +1,24 @@
-from jibarr.models import Settings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie
+from jibarr.models import SiteSettings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
-from .serializers import SettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer, LogsSerializer
+from .serializers import SiteSettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer, LogsSerializer
 from jibarr.copyTheFile import copyTheFile
 from jibarr.RadarrSync import RadarrSync
+from jibarr.SystemUpgrade import SystemUpgrade
 from datetime import datetime
 import os, os.path
 
-class SettingsViewSet(viewsets.ModelViewSet):
-    queryset = Settings.objects.all()
-    serializer_class = SettingsSerializer
+class SiteSettingsViewSet(viewsets.ModelViewSet):
+    queryset = SiteSettings.objects.all()
+    serializer_class = SiteSettingsSerializer
     def post(self, request, pk):
         if pk == 'update':
             request.session["prof_id"] = request.POST.get('profile_id')
             return Response("Ok")
         else:
-            sett = Settings.objects.all()[:1].get()
+            sett = SiteSettings.objects.all()[:1].get()
             sett.radarr_enabled = request.POST.get('radarr_enabled')
             sett.radarr_path = request.POST.get('radarr_path')
             sett.radarr_apikey = request.POST.get('radarr_apikey')
@@ -190,12 +191,12 @@ def scheduler(request):
     try:
         runType = request.POST.get("runType")
         if runType=='enable':
-            sett = Settings.objects.all()[:1].get()
+            sett = SiteSettings.objects.all()[:1].get()
             sett.scheduler_enabled = 1
             sett.save()
             response = "OK"
         elif runType=='disable':
-            sett = Settings.objects.all()[:1].get()
+            sett = SiteSettings.objects.all()[:1].get()
             sett.scheduler_enabled = 0
             sett.save()
             response = "OK"
@@ -226,3 +227,16 @@ def marksynced(request):
         pass
 
     return Response("OK")
+
+@api_view(['GET', 'POST'])
+def runUpgradeProcess(request):
+    isSuccessfull = True
+    try:
+        isSuccessfull = SystemUpgrade()
+    except:
+        pass
+
+    if isSuccessfull:
+        return Response("OK")
+    else:
+        return Response("FAIL")

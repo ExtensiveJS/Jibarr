@@ -1,5 +1,5 @@
 import os, shutil, json
-from jibarr.models import Settings, radarrMovie, ProfileRadarr, Profile, Logs
+from jibarr.models import SiteSettings, radarrMovie, ProfileRadarr, Profile, Logs
 from urllib.request import urlopen
 from celery import task
 from datetime import datetime
@@ -11,7 +11,7 @@ def copyTheFile(idList, destDir, prof_id):
         isSuccessful = True
 
         for var in idList:
-            system_settings = Settings.objects.all()[:1].get()
+            system_settings = SiteSettings.objects.all()[:1].get()
             data = urlopen(system_settings.radarr_path + "/api/movie/" + str(var) + "?apikey=" + system_settings.radarr_apikey).read()
             output = json.loads(data) 
             startPoint = output['path'].rfind('\\')

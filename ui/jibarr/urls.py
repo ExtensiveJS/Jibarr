@@ -7,7 +7,7 @@ from jibarr import views
 urlpatterns = [
     path('', views.index, name='index'),
     url(r'^profiles/', views.profiles, name='profiles'),
-    url(r'^settings/', views.settings, name='settings'),
+    url(r'^sitesettings/', views.sitesettings, name='sitesettings'),
     url(r'^donate/', views.donate, name='donate'),
     url(r'^movies/', views.movies, name='movies'),
     url(r'^shows/', views.shows, name='shows'),
@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^logs/', views.logs, name='logs'),
     url(r'^about/', views.about, name='about'),
     url(r'^updates/', views.updates, name='updates'),
-    url(r'systemsettings/', views.systemsettings, name='systemsettings')
+    url(r'systemsettings/', views.systemsettings, name='systemsettings'),
+    url(r'upgrade/', views.upgrade, name='upgrade')
 ]
