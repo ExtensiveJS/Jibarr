@@ -13,7 +13,7 @@
             "args": [
                 "runserver",
                 "--noreload",
-                "0.0.0.0:8125",
+                "8125",
                 "--nothreading"
             ],
             "django": true
