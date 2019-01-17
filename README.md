@@ -26,4 +26,4 @@ Utility to allow you to track files that need to be synced to secondary drives.
     * PYTHON.EXE \path\to\ui\manage.py runserver 8125
 * Open a web browser to http://localhost:8125/jibarr
 
-123test
+test for 1.0.2
