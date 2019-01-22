@@ -24,7 +24,15 @@
                 <a href="/jibarr/runsync"><div class="HEADERITEM"><i class="glyphicon glyphicon-transfer" style="font-size:xx-large;"></i><br/>Run Sync</div></a>
                 <a href="/jibarr/sitesettings"><div class="HEADERITEM"><i class="glyphicon glyphicon-cog" style="font-size:xx-large;"></i><br/>Settings</div></a>
                 <!-- a href="/jibarr/donate"><div class="HEADERITEM"><i class="glyphicon glyphicon-heart" style="font-size:xx-large;color:red;"></i><br/>Donate</div></a -->
-                {% if system_settings.newVersion %}<a href="/jibarr/upgrade"><div class="HEADERITEM"><i class="glyphicon glyphicon-cloud-download" style="font-size:xx-large;color:yellow;"></i><br/>New Version</div></a>{% endif %}
+                <a href="/jibarr/upgrade">
+                    <div class="HEADERITEM">
+                    {% if system_settings.newVersion %}
+                    <i class="glyphicon glyphicon-cloud-download" style="font-size:xx-large;color:yellow;"></i><br/>Upgrade
+                    {% else %}
+                    <i class="glyphicon glyphicon-cloud-download" style="font-size:xx-large;"></i><br/>Upgrade
+                    {% endif %}
+                    </div>
+                </a>
                 <div style="float:right;width:150px;text-align:right;">
                     <select id="ddlProfiles" onchange="profileChanged();" class="form-control" style="height:30px;font-size:small;">
                         {% for prof in prof_list %}
