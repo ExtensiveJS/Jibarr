@@ -4,6 +4,9 @@ from urllib.request import urlopen
 from datetime import datetime
 from os.path import dirname, abspath
 from distutils.dir_util import copy_tree
+from django.db import connection
+import sqlite3
+from sqlite3 import OperationalError
 
 def SystemUpgrade():
     try:
@@ -22,7 +25,7 @@ def SystemUpgrade():
     # 2) Upgrade DB - only if it needs to be
     if isSuccessful:
         if SiteSettings.checkDBVersion():
-            isSuccessful = upgradeDatabase()
+            isSuccessful = upgradeDatabase('1.0.0','1.1.0')
             time.sleep(1)
         else:
             try:
@@ -87,25 +90,48 @@ def backupDatabase():
 
     return isSuccessful
 
-def upgradeDatabase():
+def upgradeDatabase(curVer,newVer):
     isSuccessful = True
     try:
         Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-    except KeyError:
+    except:
         pass
 
-    
+    # find current version
+    # find new version
+    # load file for version upgrade
+    try:
+        fd = open("./ui/dbupgrades/v" + curVer + "_to_v" + newVer + ".txt","r")
+        sqlFile = fd.read()
+        fd.close()
+        conn = sqlite3.connect('./ui/db.sqlite3')
+        c = conn.cursor()
+        sqlCommands = sqlFile.split(';')
+        for command in sqlCommands:
+            c.execute(command)
+    except OperationalError as msg:
+        isSuccessful = False
+        try:
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade error: ' + msg,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+        pass
+    except:
+        isSuccessful = False
+        pass
+
+    # check again, repeat?
 
     time.sleep(1)
     if isSuccessful:
         try:
             Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade completed successfully.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-        except KeyError:
+        except:
             pass
     else:
         try:
             Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade failed!!!!',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-        except KeyError:
+        except:
             pass
 
     return isSuccessful
@@ -118,7 +144,7 @@ def upgradeCode():
     isSuccessful = True
     try:
         Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-    except KeyError:
+    except:
         pass
 
     try:
@@ -148,6 +174,10 @@ def upgradeCode():
             if os.path.exists(os.path.join(d, "./unzip/jibarr-master/ui/db.sqlite3")):
                 os.remove(os.path.join(d, "./unzip/jibarr-master/ui/db.sqlite3"))
                 time.sleep(1)
+            # remove the .vscode files
+            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/.vscode/")):
+                shutil.rmtree(os.path.join(d, "./unzip/jibarr-master/.vscode/"))
+                time.sleep(1)
             # copy the files from the unzip to the app folder
             if os.path.exists(os.path.join(d, "./unzip/jibarr-master/")):
                 copy_tree(os.path.join(d, "./unzip/jibarr-master/"),"D:\\Temp\\gitTest\\Jibarr") 
@@ -168,12 +198,12 @@ def upgradeCode():
     if isSuccessful:
         try:
             Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade completed successfully.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-        except KeyError:
+        except:
             pass
     else:
         try:
             Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade failed!!!!',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-        except KeyError:
+        except:
             pass
 
     return isSuccessful

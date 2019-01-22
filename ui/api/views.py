@@ -240,3 +240,23 @@ def runUpgradeProcess(request):
         return Response("OK")
     else:
         return Response("FAIL")
+
+@api_view(['GET', 'POST'])
+def upgrades(request):
+    runType = 'none'
+    response = "Failed"
+    try:
+        runType = request.POST.get("runType")
+        if runType=='enable':
+            sett = SiteSettings.objects.all()[:1].get()
+            sett.upgrades_enabled = 1
+            sett.save()
+            response = "OK"
+        elif runType=='disable':
+            sett = SiteSettings.objects.all()[:1].get()
+            sett.upgrades_enabled = 0
+            sett.save()
+            response = "OK"
+    except KeyError:
+        pass
+    return Response(response)

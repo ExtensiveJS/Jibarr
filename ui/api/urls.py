@@ -19,5 +19,6 @@ urlpatterns = [
     url(r'scheduler',views.scheduler),
     url(r'marksynced', views.marksynced),
     url(r'runUpgradeProcess/', views.runUpgradeProcess),
+    url(r'upgrades',views.upgrades),
     url(r'^', include(router.urls)),
 ]

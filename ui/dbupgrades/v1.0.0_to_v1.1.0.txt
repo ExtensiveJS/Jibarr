@@ -1,0 +1,4 @@
+BEGIN TRANSACTION; 
+ALTER TABLE jibarr_settings ADD Upgrades_Enabled NUMERIC DEFAULT 0;
+UPDATE jibarr_settings set jibarr_version = '1.1.0';
+COMMIT;

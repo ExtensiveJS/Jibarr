@@ -18,7 +18,7 @@
     <div style="padding-bottom:10px;">
         <h2>System Settings: </h2>
     </div>
-    <div style="height:160px;">
+    <div style="height:120px;">
         <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Bulk Update</div>
         <div class="subSetting" style="width:49%;float:left;">
             <div style="width:auto;height:30px;">
@@ -29,7 +29,16 @@
             </div>
         </div>
     </div>
-    <div style="height:160px;">
+    <div style="height:120px;">
+        <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Upgrades</div>
+        <div class="subSetting" style="width:49%;float:left;">
+            <div style="width:auto;height:30px;">
+                <div class="subSettingLabel">Upgrades Enabled:</div>
+                <div><input type="checkbox" id="chkUpgradesEnabled" {% if system_settings.upgrades_enabled %} checked {% endif %} /></div>
+            </div>
+        </div>
+    </div>
+    <div style="height:120px;">
         <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Scheduler</div>
         <div class="subSetting" style="width:49%;float:left;">
             <div style="width:auto;height:30px;">
@@ -38,7 +47,7 @@
             </div>
         </div>
     </div>
-    <div style="text-align:right;display:none;" >
+    <div style="text-align:right;" >
         <button type="button" class="btn btn-primary btn-sm" onclick="saveSettings();">Save</button>
     </div>
 </div>
@@ -49,11 +58,18 @@
     });
     function saveSettings() {
         var wasSchChk = {{ system_settings.scheduler_enabled }};
+        var wasUpgChk = {{ system_settings.upgrades_enabled }};
         var schChk = ($("#chkSchedulerEnabled").is(':checked') === true) ? 1 : 0;
-        if(wasSchChk==schChk){
+        var upgChk = ($("#chkUpgradesEnabled").is(':checked') === true) ? 1 : 0;
+        if(wasSchChk==schChk && wasUpgChk==upgChk){
             // do nothing?
         } else {
-            toggleScheduler(schChk);
+            if(wasSchChk != schChk) {
+                toggleScheduler(schChk);
+            }
+            if(wasUpgChk != upgChk) {
+                toggleUpgrades(upgChk);
+            }
         }
     }
     function toggleScheduler(s) {
@@ -90,8 +106,45 @@
                 }
             });
         }
-        
         $("#spanWaiting").hide();
+        location.reload();
+    }
+    function toggleUpgrades(s) {
+        $("#spanWaiting").show();
+        if(s==1){
+            $.ajax({
+                url : '/api/upgrades',
+                type : 'POST',
+                data: {
+                    runType: 'enable'
+                },
+                success: function(data){},
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('Error toggling scheduler: ' + xhr.status);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('Error toggling scheduler: ' + xhr.status);
+                }
+            });
+        }
+        if(s==0) {
+            $.ajax({
+                url : '/api/upgrades',
+                type : 'POST',
+                data: {
+                    runType: 'disable'
+                },
+                success: function(data){},
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('Error toggling scheduler: ' + xhr.status);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('Error toggling scheduler: ' + xhr.status);
+                }
+            });
+        }
+        $("#spanWaiting").hide();
+        location.reload();
     }
     function markSynced() {
         if(confirm('Are you sure? This will mark EVERY monitored item as Synced with today\'s date. This is irreversible!')){
