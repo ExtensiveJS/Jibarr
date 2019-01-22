@@ -180,7 +180,7 @@ def upgradeCode():
                 time.sleep(1)
             # copy the files from the unzip to the app folder
             if os.path.exists(os.path.join(d, "./unzip/jibarr-master/")):
-                copy_tree(os.path.join(d, "./unzip/jibarr-master/"),"D:\\Temp\\gitTest\\Jibarr") 
+                copy_tree(os.path.join(d, "./unzip/jibarr-master/"),"./") 
                 time.sleep(1)
             # remove the unzip files
             if os.path.exists(os.path.join(d, "./unzip/jibarr-master/")):
