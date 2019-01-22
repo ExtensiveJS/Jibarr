@@ -125,6 +125,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-broker_url = 'redis://localhost:6379/0'
-
 CODE_VERSION = "1.1.0"

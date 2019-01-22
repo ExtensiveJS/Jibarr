@@ -1,10 +1,8 @@
 import os, shutil, json
 from jibarr.models import SiteSettings, radarrMovie, ProfileRadarr, Profile, Logs
 from urllib.request import urlopen
-from celery import task
 from datetime import datetime
 
-@task
 def copyTheFile(idList, destDir, prof_id):
     isSuccessful = False
     try:

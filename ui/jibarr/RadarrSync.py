@@ -1,11 +1,8 @@
 import os, shutil, json, time
 from jibarr.models import SiteSettings, radarrMovie, Logs, RadarrMedia
 from urllib.request import urlopen
-from celery import task
 from datetime import datetime
 
-
-@task
 def RadarrSync(forceload):
     try:
         Logs.objects.create(log_type='Sync',log_category='System',log_message='Radarr Database sync started',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
