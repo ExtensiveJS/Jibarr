@@ -3,6 +3,7 @@ ui/jibarr/__pycache__/
 ui/api/__pycache__/
 ui/jibarr/models/__pycache__
 ui/jibarr/views/__pycache__
-MFS.code-workspace
+.vscode/
 ui/backup/*.bak
 ui/unzip/*.zip
+ui/db.sqlite3
