@@ -6,4 +6,4 @@ ui/jibarr/views/__pycache__
 .vscode/
 ui/backup/*.bak
 ui/unzip/*.zip
-ui/db.sqlite3
+*.sqlite3
