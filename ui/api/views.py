@@ -1,4 +1,4 @@
-from jibarr.models import SiteSettings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie
+from jibarr.models import SiteSettings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie, RadarrMedia
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -260,3 +260,48 @@ def upgrades(request):
     except KeyError:
         pass
     return Response(response)
+
+@api_view(['GET', 'POST'])
+def markmoviesmonitored(request):
+    try:
+        prof_id = request.POST.get('prof_id')
+        prof = Profile.objects.get(id=prof_id)
+        rmList = RadarrMedia.objects.all()
+        prList = ProfileRadarr.objects.filter(profile_id=prof_id)
+        
+        try:
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Bulk override, mark all Monitored for Profile (' + prof.profile_name + ') initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+
+        isSuccessfull = False
+        try:
+            for rm in rmList:
+                found = False
+                for pr in prList:
+                    if pr.radarr_id == rm.radarr_id:
+                        found = True
+                        break
+                if found == False:
+                    # add it
+                    pr = ProfileRadarr.objects.create(profile_id=prof_id,radarr_id=rm.radarr_id,lastRun=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                    pr.save()
+            isSuccessfull = True
+        except:
+            isSuccessfull = False
+            pass
+
+        try:
+            if isSuccessfull:
+                prof = Profile.objects.get(id=prof_id)
+                prof.profile_lastRun = datetime.now().strftime("%b %d %Y %H:%M:%S")
+                prof.save()
+                Logs.objects.create(log_type='Sync',log_category='System',log_message='Bulk override, mark all Monitored for Profile (' + prof.profile_name + ') completed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            else:
+                Logs.objects.create(log_type='Sync',log_category='System',log_message='Bulk override, mark all Monitored for Profile (' + prof.profile_name + ') FAILED.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+    except:
+        pass
+
+    return Response("OK")
