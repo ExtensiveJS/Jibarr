@@ -125,4 +125,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-CODE_VERSION = "1.1.0"
+CODE_VERSION = "1.2.0"

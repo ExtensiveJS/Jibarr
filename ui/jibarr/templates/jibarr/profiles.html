@@ -19,14 +19,16 @@
     <h2>Profiles <i class="glyphicon glyphicon-plus ADDBUTTON" onclick="showAdd();" title="Add"></i></h2><br />
     <div>
         <div class="divRow">
-            <div style="width:75%;float:left;font-weight:bold;">Name</div>
+            <div style="width:55%;float:left;font-weight:bold;">Name</div>
             <div style="width:19%;float:left;font-weight:bold;">Last Run</div>
+            <div style="width:20%;float:left;font-weight:bold;">Overrides</div>
             <div style="width:5%;float:left;">&nbsp;</div>
         </div>
         {% for var in profile_list %}
             <div class="divRow">
-                <div style="width:75%;float:left;">{{ var.profile_name }}</div>
+                <div style="width:55%;float:left;">{{ var.profile_name }}</div>
                 <div style="width:19%;float:left;">{{ var.profile_lastRun }}</div>
+                <div style="width:20%;float:left;"><i class="glyphicon glyphicon-saved ADDBUTTON" style="margin-left:20px;" title="Mark All Movies as Monitored" onclick="markmoviesmonitored({{ var.id }});"></i></div>
                 <div style="width:5%;float:left;"><i class="glyphicon glyphicon-remove-circle DELBUTTON" onclick="delData({{ var.id }});"></i></div>
             </div>
         {% endfor %}
@@ -89,5 +91,30 @@
         });
         }
     };
+    function markmoviesmonitored(id) {
+        if(confirm("Are you sure you want to mark ALL movies as Monitored?")){
+            $("#spanWaiting").show();
+            $.ajax({
+            url : '/api/markmoviesmonitored/',
+            type : 'POST',
+            data: { 
+                prof_id: id
+            },
+            success: function(data)
+            {
+                //alert('success');
+                location.reload(true);
+            },
+            error:function (xhr, ajaxOptions, thrownError){
+                alert('request error' + xhr.status);
+                $("#spanWaiting").hide();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                $("#spanWaiting").hide();
+                alert('request failed');
+            }
+        });
+        }
+    }
 </script>
 {% endblock postbody %}
