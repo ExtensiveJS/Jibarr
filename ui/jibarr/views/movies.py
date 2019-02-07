@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.core.paginator import Paginator
 from urllib.request import urlopen
+from django.conf import settings
 
 def movies(request):
     global cnt
@@ -19,14 +20,8 @@ def movies(request):
         pass
     system_settings = SiteSettings.objects.all()[:1].get()
     system_settings.newVersion = SiteSettings.checkVersion()
-    isConnected = False
-    try:
-        data = urlopen(system_settings.radarr_path + "/api/system/status/?apikey=" + system_settings.radarr_apikey).read()
-        json.loads(data)
-        isConnected = True
-    except:
-        pass
-
+    
+    isConnected = settings.isConnected
     system_settings.isConnected = isConnected
 
     prof_list = Profile.objects.all()

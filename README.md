@@ -3,8 +3,6 @@
 
 Utility to allow you to track files that need to be synced to secondary drives. 
 
-# Version 1.0 is now offically out.
-
 ## Key features to be included:
 * a list of all available media from the source
 * a "last updated" date tracked, per user/device, to allow for syncing "new" items
@@ -25,4 +23,3 @@ Utility to allow you to track files that need to be synced to secondary drives.
     * PYTHON.EXE \path\to\ui\manage.py runserver 8125
 * Open a web browser to http://localhost:8125/jibarr
 
-test for 1.0.2

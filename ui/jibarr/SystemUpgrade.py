@@ -1,4 +1,4 @@
-import os, shutil, json, time, subprocess, urllib, zipfile
+import os, shutil, json, time, subprocess, urllib, zipfile, sys
 from jibarr.models import SiteSettings, Logs
 from urllib.request import urlopen
 from datetime import datetime
@@ -147,48 +147,55 @@ def upgradeCode():
     except:
         pass
 
-    try:
-        url = 'https://github.com/ExtensiveJS/Jibarr/archive/master.zip'
-        file_name = os.path.join(d, "./unzip/jibarr-master.zip")
-        with urllib.request.urlopen(url) as response, open(file_name, 'wb') as out_file:
-            data = response.read()
-            out_file.write(data)
-    except:
-        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code Upgrade Error: Error downloading update ZIP file.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-        isSuccessful = False
-        pass
+    #try:
+    #    url = 'https://github.com/ExtensiveJS/Jibarr/archive/master.zip'
+    #    file_name = os.path.join(d, "./unzip/jibarr-master.zip")
+    #    with urllib.request.urlopen(url) as response, open(file_name, 'wb') as out_file:
+    #        data = response.read()
+    #        out_file.write(data)
+    #except:
+    #    Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code Upgrade Error: Error downloading update ZIP file.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+    #    isSuccessful = False
+    #    pass
 
-    if isSuccessful:
-        try:
-            with zipfile.ZipFile(os.path.join(d, "./unzip/jibarr-master.zip"),"r") as zip_ref:
-                zip_ref.extractall(os.path.join(d, "./unzip/jibarr-master/"))
-                time.sleep(1)
-        except:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code Upgrade Error: Error unzipping update file.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-            isSuccessful = False
-            pass
+    #if isSuccessful:
+    #    try:
+    #        with zipfile.ZipFile(os.path.join(d, "./unzip/jibarr-master.zip"),"r") as zip_ref:
+    #            zip_ref.extractall(os.path.join(d, "./unzip/jibarr-master/"))
+    #            time.sleep(1)
+    #    except:
+    #        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code Upgrade Error: Error unzipping update file.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+    #        isSuccessful = False
+    #        pass
 
     if isSuccessful:
         try:
             # remove the db file from the uzip
-            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/ui/db.sqlite3")):
-                os.remove(os.path.join(d, "./unzip/jibarr-master/ui/db.sqlite3"))
+            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/jibarr/ui/db.sqlite3")):
+                os.remove(os.path.join(d, "./unzip/jibarr-master/jibarr/ui/db.sqlite3"))
                 time.sleep(1)
+             
             # remove the .vscode files
-            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/.vscode/")):
-                shutil.rmtree(os.path.join(d, "./unzip/jibarr-master/.vscode/"))
-                time.sleep(1)
+            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/jibarr/.vscode/")):
+                shutil.rmtree(os.path.join(d, "./unzip/jibarr-master/jibarr/.vscode/"))
+                time.sleep(2)
+            
+            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/")):
+                os.rename(os.path.join(d,"./unzip/jibarr-master/jibarr-master"),os.path.join(d,"./unzip/jibarr-master/jibarr"))
             # copy the files from the unzip to the app folder
-            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/")):
-                copy_tree(os.path.join(d, "./unzip/jibarr-master/"),"./") 
-                time.sleep(1)
+            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/jibarr/")):
+                rootpath = os.path.abspath(os.path.join(d,".."))
+                copy_tree(os.path.join(d, "./unzip/jibarr-master/jibarr/"),rootpath) 
+                #Logs.objects.create(log_type='Upgrade',log_category='System',log_message='PATH==' + rootpath,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                time.sleep(1) 
+            #Logs.objects.create(log_type='Upgrade',log_category='System',log_message='4',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
             # remove the unzip files
-            if os.path.exists(os.path.join(d, "./unzip/jibarr-master/")):
-                shutil.rmtree(os.path.join(d, "./unzip/jibarr-master/"))
-                time.sleep(1)
+            #if os.path.exists(os.path.join(d, "./unzip/jibarr-master/")):
+            #    shutil.rmtree(os.path.join(d, "./unzip/jibarr-master/"))
+            #    time.sleep(1)
             # remove the zip file
-            if os.path.exists(os.path.join(d, "./unzip/jibarr-master.zip")):
-                os.remove(os.path.join(d, "./unzip/jibarr-master.zip"))
+            #if os.path.exists(os.path.join(d, "./unzip/jibarr-master.zip")):
+            #    os.remove(os.path.join(d, "./unzip/jibarr-master.zip"))
         except:
             Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code Upgrade Error: Error replacing updated files.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
             isSuccessful = False
