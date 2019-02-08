@@ -28,7 +28,10 @@
             <div class="divRow">
                 <div style="width:55%;float:left;">{{ var.profile_name }}</div>
                 <div style="width:19%;float:left;">{{ var.profile_lastRun }}</div>
-                <div style="width:20%;float:left;"><i class="glyphicon glyphicon-saved ADDBUTTON" style="margin-left:20px;" title="Mark All Movies as Monitored" onclick="markmoviesmonitored({{ var.id }});"></i></div>
+                <div style="width:20%;float:left;">
+                    <i class="glyphicon glyphicon-saved ADDBUTTON" style="margin-left:20px;" title="Mark All Movies as Monitored" onclick="markmoviesmonitored({{ var.id }});"></i>
+                    <i class="glyphicon glyphicon-saved ADDBUTTON" style="margin-left:20px;" onclick="markSynced({{ var.id }});" title="Mark all MONITORED to SYNCED."></i>
+                </div>
                 <div style="width:5%;float:left;"><i class="glyphicon glyphicon-remove-circle DELBUTTON" onclick="delData({{ var.id }});"></i></div>
             </div>
         {% endfor %}
@@ -114,6 +117,30 @@
                 alert('request failed');
             }
         });
+        }
+    }
+    function markSynced(id) {
+        if(confirm('Are you sure? This will mark EVERY monitored item as Synced with today\'s date. This is irreversible!')){
+            $("#spanWaiting").show();
+            $.ajax({
+                url : '/api/marksynced',
+                type : 'POST',
+                data: { 
+                    prof_id: id
+                },
+                success: function(data){
+                    $("#spanWaiting").hide();
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('Error marking sync status: ' + xhr.status);
+                    $("#spanWaiting").hide();
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('Failed marking sync status: ' + xhr.status);
+                    $("#spanWaiting").hide();
+                }
+            });
+            
         }
     }
 </script>

@@ -215,7 +215,9 @@ def marksynced(request):
             Logs.objects.create(log_type='Sync',log_category='System',log_message='Bulk override of Sync Date initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
-        prlist = ProfileRadarr.objects.all()
+        prof_id = request.POST.get('prof_id')
+        #prof = Profile.objects.get(id=prof_id)
+        prlist = ProfileRadarr.objects.filter(profile_id=prof_id)
         for pr in prlist:
             pr.lastRun = datetime.now().strftime("%b %d %Y %H:%M:%S")
             pr.save()
@@ -284,7 +286,7 @@ def markmoviesmonitored(request):
                         break
                 if found == False:
                     # add it
-                    pr = ProfileRadarr.objects.create(profile_id=prof_id,radarr_id=rm.radarr_id,lastRun=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                    pr = ProfileRadarr.objects.create(profile_id=prof_id,radarr_id=rm.radarr_id,lastRun="Jan 01 1970 23:59:59")
                     pr.save()
             isSuccessfull = True
         except:
