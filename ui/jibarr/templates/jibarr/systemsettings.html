@@ -19,17 +19,6 @@
         <h2>System Settings: </h2>
     </div>
     <div style="height:120px;">
-        <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Bulk Update</div>
-        <div class="subSetting" style="width:49%;float:left;">
-            <div style="width:auto;height:30px;">
-                <div class="subSettingLabel">Set Monitored to Synced:</div>
-                <div>
-                    <i class="glyphicon glyphicon-saved ADDBUTTON" style="margin-left:20px;" onclick="markSynced();" title="Mark all MONITORED to SYNCED."></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div style="height:120px;">
         <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Upgrades</div>
         <div class="subSetting" style="width:49%;float:left;">
             <div style="width:auto;height:30px;">
@@ -146,23 +135,6 @@
         $("#spanWaiting").hide();
         location.reload();
     }
-    function markSynced() {
-        if(confirm('Are you sure? This will mark EVERY monitored item as Synced with today\'s date. This is irreversible!')){
-            $("#spanWaiting").show();
-            $.ajax({
-                url : '/api/marksynced',
-                type : 'POST',
-                data: {},
-                success: function(data){},
-                error:function (xhr, ajaxOptions, thrownError){
-                    alert('Error marking sync status: ' + xhr.status);
-                },
-                fail: function(xhr, textStatus, errorThrown){
-                    alert('Failed marking sync status: ' + xhr.status);
-                }
-            });
-            $("#spanWaiting").hide();
-        }
-    }
+    
 </script>
 {% endblock postbody %}

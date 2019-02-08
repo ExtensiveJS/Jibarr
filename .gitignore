@@ -7,3 +7,4 @@ ui/jibarr/views/__pycache__
 ui/backup/*.bak
 ui/unzip/*.zip
 *.sqlite3
+ui/db.sqlite3

@@ -33,6 +33,7 @@ def runsync(request):
         rm.prid = pr.id
         rm.id = rmed.radarr_id # output['id']
         rm.title = rmed.title # output['title']
+        rm.lastUpdt = rmed.last_updt
         try:
             rm.releaseDate = rmed.release_date # output['inCinemas'][:4]
         except KeyError:
@@ -48,11 +49,12 @@ def runsync(request):
         #    rmlu = datetime.fromtimestamp(mktime(time.strptime(plu, "%Y-%m-%d %H:%M")))
         #    rm.fileSize = convert_size(output['sizeOnDisk'])
         rm.fileSize = convert_size(rmed.size)
-            
-        #if rmlu > prLr:
-        #    radarr_list.movielist.append(rm)
-        radarr_list.movielist.append(rm)
-        totalFileSize = totalFileSize + rmed.size
+        
+        rmlu = datetime.fromtimestamp(mktime(time.strptime(rmed.last_updt, "%Y-%m-%d %H:%M")))
+        if rmlu > prLr:
+            radarr_list.movielist.append(rm)
+            #radarr_list.movielist.append(rm)
+            totalFileSize = totalFileSize + rmed.size
         
     radarr_list.totalSize = convert_size(totalFileSize)
 
