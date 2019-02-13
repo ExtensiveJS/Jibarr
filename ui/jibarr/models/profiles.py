@@ -14,4 +14,5 @@ class Profile(models.Model):
     profile_lastRun = models.CharField(max_length=200)
     profile_lastPath = models.CharField(max_length=512)
     #radarr_lastRun = models.CharField(max_length=200)
+    radarr_monitor = models.IntegerField(null=False)
     objects = models.Manager()

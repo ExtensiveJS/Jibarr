@@ -90,19 +90,19 @@
             <div style="float:left;">
                 {% if testitem.movielist.has_other_pages %}
                 <ul class="pagination">
-                    <li><a href="?page=1&filterCriteria={{ testitem.filterCriteria }}">First</a></li>
+                    <li><a href="?page=1&filter={{ testitem.filterCriteria }}">First</a></li>
                     {% if testitem.movielist.has_previous %}
-                    <li><a href="?page={{ testitem.movielist.previous_page_number }}&filterCriteria={{ testitem.filterCriteria }}">&laquo;</a></li>
+                    <li><a href="?page={{ testitem.movielist.previous_page_number }}&filter={{ testitem.filterCriteria }}">&laquo;</a></li>
                     {% else %}
                     <li class="disabled"><span>&laquo;</span></li>
                     {% endif %}
                     <li class="disabled"><span>{{ testitem.movielist.number }}</span></li>
                     {% if testitem.movielist.has_next %}
-                    <li><a href="?page={{ testitem.movielist.next_page_number }}&filterCriteria={{ testitem.filterCriteria }}">&raquo;</a></li>
+                    <li><a href="?page={{ testitem.movielist.next_page_number }}&filter={{ testitem.filterCriteria }}">&raquo;</a></li>
                     {% else %}
                     <li class="disabled"><span>&raquo;</span></li>
                     {% endif %}
-                    <li><a href="?page={{ testitem.movielist.paginator.num_pages }}&filterCriteria={{ testitem.filterCriteria }}">Last</a></li>
+                    <li><a href="?page={{ testitem.movielist.paginator.num_pages }}&filter={{ testitem.filterCriteria }}">Last</a></li>
                 </ul>
                 {% endif %}
             </div>

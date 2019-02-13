@@ -307,3 +307,27 @@ def markmoviesmonitored(request):
         pass
 
     return Response("OK")
+
+@api_view(['GET', 'POST'])
+def automonitor(request):
+    runType = 'none'
+    response = "Failed"
+    try:
+        runType = request.POST.get("runType")
+        if runType=='enable':
+            prof_id = request.POST.get('prof_id')
+            prof = Profile.objects.get(id=prof_id)
+            prof.radarr_monitor = 1
+            prof.save()
+            response = "OK"
+            Logs.objects.create(log_type='System',log_category='System',log_message='Automonitor new movies for Profile (' + prof.profile_name + ') enabled.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        elif runType=='disable':
+            prof_id = request.POST.get('prof_id')
+            prof = Profile.objects.get(id=prof_id)
+            prof.radarr_monitor = 0
+            prof.save()
+            response = "OK"
+            Logs.objects.create(log_type='System',log_category='System',log_message='Automonitor new movies for Profile (' + prof.profile_name + ') disabled.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+    except KeyError:
+        pass
+    return Response(response)
