@@ -19,18 +19,22 @@
     <h2>Profiles <i class="glyphicon glyphicon-plus ADDBUTTON" onclick="showAdd();" title="Add"></i></h2><br />
     <div>
         <div class="divRow">
-            <div style="width:55%;float:left;font-weight:bold;">Name</div>
+            <div style="width:35%;float:left;font-weight:bold;">Name</div>
             <div style="width:19%;float:left;font-weight:bold;">Last Run</div>
+            <div style="width:20%;float:left;font-weight:bold;">Options</div>
             <div style="width:20%;float:left;font-weight:bold;">Overrides</div>
-            <div style="width:5%;float:left;">&nbsp;</div>
+            <div style="width:5%;float:left;font-weight:bold;">Del</div>
         </div>
         {% for var in profile_list %}
-            <div class="divRow">
-                <div style="width:55%;float:left;">{{ var.profile_name }}</div>
+            <div class="divRow" style="height:60px;">
+                <div style="width:35%;float:left;">{{ var.profile_name }}</div>
                 <div style="width:19%;float:left;">{{ var.profile_lastRun }}</div>
                 <div style="width:20%;float:left;">
-                    <i class="glyphicon glyphicon-saved ADDBUTTON" style="margin-left:20px;" title="Mark All Movies as Monitored" onclick="markmoviesmonitored({{ var.id }});"></i>
-                    <i class="glyphicon glyphicon-saved ADDBUTTON" style="margin-left:20px;" onclick="markSynced({{ var.id }});" title="Mark all MONITORED to SYNCED."></i>
+                    <input type="checkbox" id="chkMonitorAll" {% if var.radarr_monitor %} checked {% endif %} onchange="toggleautomonitor({{ var.id }},{{ var.radarr_monitor }});"/> Automonitor New Movies
+                </div>
+                <div style="width:20%;float:left;">
+                    <i class="glyphicon glyphicon-saved ADDBUTTON" onclick="markmoviesmonitored({{ var.id }});" title="Mark All Movies as Monitored"></i> Mark Monitored<br />
+                    <i class="glyphicon glyphicon-saved ADDBUTTON" onclick="markSynced({{ var.id }});" title="Mark all MONITORED to SYNCED."></i> Mark Synced<br />
                 </div>
                 <div style="width:5%;float:left;"><i class="glyphicon glyphicon-remove-circle DELBUTTON" onclick="delData({{ var.id }});"></i></div>
             </div>
@@ -142,6 +146,52 @@
             });
             
         }
+    }
+    function toggleautomonitor(id,status) {
+        $("#spanWaiting").show();
+        if(status==1){
+            $.ajax({
+                url : '/api/automonitor',
+                type : 'POST',
+                data: {
+                    runType: 'disable',
+                    prof_id: id
+                },
+                success: function(data){
+                    location.reload();
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    $("#spanWaiting").hide();
+                    alert('Error toggling automonitor: ' + xhr.status);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    $("#spanWaiting").hide();
+                    alert('Failure toggling automonitor: ' + xhr.status);
+                }
+            });
+        }
+        if(status==0){
+            $.ajax({
+                url : '/api/automonitor',
+                type : 'POST',
+                data: {
+                    runType: 'enable',
+                    prof_id: id
+                },
+                success: function(data){
+                    location.reload();
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    $("#spanWaiting").hide();
+                    alert('Error toggling automonitor: ' + xhr.status);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    $("#spanWaiting").hide();
+                    alert('Failure toggling automonitor: ' + xhr.status);
+                }
+            });
+        }
+
     }
 </script>
 {% endblock postbody %}

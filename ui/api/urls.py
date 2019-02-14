@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'marksynced', views.marksynced),
     url(r'runUpgradeProcess/', views.runUpgradeProcess),
     url(r'upgrades',views.upgrades),
+    url(r'automonitor',views.automonitor),
     url(r'markmoviesmonitored/',views.markmoviesmonitored),
     url(r'^', include(router.urls)),
 ]

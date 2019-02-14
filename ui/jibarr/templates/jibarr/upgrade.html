@@ -31,29 +31,17 @@
 
 <div class='CONTAINER' style="font-size:larger;padding-bottom:20px;">
     <div style="height: 100px; overflow: hidden;">
-        {% if system_settings.jibarr_version != system_settings.jibarr_database_version %}
-            <div class="versionBlockUpdated" title="Installed version of the database.">
+        {% if system_settings.jibarr_version != system_settings.jibarr_advertised_version %}
+            <div class="versionBlockUpdated" title="Installed version of Jibarr.">
         {% else %}
-            <div class="versionBlock" title="Installed version of the database.">
+            <div class="versionBlock" title="Installed version of Jibarr.">
         {% endif %}
             <div style="font-size:large;">{{ system_settings.jibarr_version }}</div>
             <div style="font-size:small;margin-top:3px;"><i class="glyphicon glyphicon-tasks" style="font-size:xx-large;"></i><br>Installed</div>
         </div>
-        <div class="versionBlock" title="Advertised version of the database.">
-            <div style="font-size:large;">{{ system_settings.jibarr_database_version }}</div>
+        <div class="versionBlock" title="Advertised version of Jibarr.">
+            <div style="font-size:large;">{{ system_settings.jibarr_advertised_version }}</div>
             <div style="font-size:small;margin-top:3px;"><i class="glyphicon glyphicon-tasks" style="font-size:xx-large;"></i><br>Advertised</div>
-        </div>
-        {% if system_settings.code_version != system_settings.jibarr_code_version %}
-            <div class="versionBlockUpdated" title="Installed version of the application code.">
-        {% else %}
-            <div class="versionBlock" title="Installed version of the application code.">
-        {% endif %}
-            <div style="font-size:large;">{{ system_settings.code_version }}</div>
-            <div style="font-size:small;margin-top:3px;"><i class="glyphicon glyphicon-duplicate" style="font-size:xx-large;"></i><br>Installed</div>
-        </div>
-        <div class="versionBlock" title="Advertised version of the application code.">
-            <div style="font-size:large;">{{ system_settings.jibarr_code_version }}</div>
-            <div style="font-size:small;margin-top:3px;"><i class="glyphicon glyphicon-duplicate" style="font-size:xx-large;"></i><br>Advertised</div>
         </div>
     </div>
     <div style="margin-top:10px;">
@@ -80,7 +68,9 @@
             $.ajax({
                 url : '/api/runUpgradeProcess/',
                     type : 'POST',
-                    data: { },
+                    data: { 
+                        toVer: "{{ system_settings.jibarr_advertised_version }}"
+                    },
                     success: function(data)
                     {
                         $().toastmessage('removeToast', myToast);

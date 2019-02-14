@@ -1,4 +1,8 @@
 BEGIN TRANSACTION;
 ALTER TABLE jibarr_profile ADD radarr_lastRun TEXT DEFAULT 'Jan 01 1970 11:59:59';
 UPDATE jibarr_profile set radarr_lastRun = 'Jan 01 1970 11:59:59';
+ALTER TABLE jibarr_profile ADD radarr_monitor INTEGER DEFAULT 0;
+UPDATE jibarr_profile set radarr_monitor = 0;
+
+UPDATE jibarr_settings set jibarr_version = '1.3.0';
 COMMIT;

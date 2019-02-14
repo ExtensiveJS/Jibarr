@@ -29,7 +29,6 @@ class SiteSettings(models.Model):
     jibarr_version = models.TextField(db_column='Jibarr_Version')
     scheduler_enabled = models.IntegerField(db_column='Scheduler_Enabled')
     upgrades_enabled = models.IntegerField(db_column="Upgrades_Enabled")
-    code_version = settings.CODE_VERSION
     objects = models.Manager()
     
     
@@ -46,8 +45,7 @@ class SiteSettings(models.Model):
                 newVersion = cache.get(CACHE_KEY_NEWVERSION)
             else:
                 
-                jcv = sett.code_version
-                jdv = sett.jibarr_version
+                jv = sett.jibarr_version
                 # https://github.com/ExtensiveJS/Jibarr/wiki/Current-Versions
                 try:
                     resp = urllib.request.urlopen('https://github.com/ExtensiveJS/Jibarr/wiki/Current-Versions')
@@ -55,66 +53,21 @@ class SiteSettings(models.Model):
                     htmlstr = html.decode('utf8')
                     htmlSplit = htmlstr.split("\n")
                     for line in htmlSplit:
-                        if line.find('Jibarr_Code') > -1:
-                            jcv = line.replace("<p>","").replace("Jibarr_Code: ", "").replace("<br>","")
-                        if line.find('Jibarr_Database') > -1:
-                            jdv = line.replace("</p>","").replace("Jibarr_Database: ", "").replace("<br>","")
+                        if line.find('Jibarr_Version') > -1:
+                            jv = line.replace("</p>","").replace("<p>","").replace("Jibarr_Code: ", "").replace("<br>","")
                     resp.close()
                 except:
                     pass
                 
                 
-                if(jcv != sett.code_version):
-                    newVersion = True
-                if(jdv != sett.jibarr_version):
+                if(jv != sett.jibarr_version):
                     newVersion = True
                 cache.set(CACHE_KEY_NEWVERSION,newVersion)
         else:
             newVersion = False
         return newVersion
 
-    def checkDBVersion():
-        "This does a DB version check against GitHub and the local system."
-        newVersion = False
-        sett = SiteSettings.objects.all()[:1].get()
-        jdv = sett.jibarr_version
-        # https://github.com/ExtensiveJS/Jibarr/wiki/Current-Versions
-        try:
-            resp = urllib.request.urlopen('https://github.com/ExtensiveJS/Jibarr/wiki/Current-Versions')
-            html = resp.read()
-            htmlstr = html.decode('utf8')
-            htmlSplit = htmlstr.split("\n")
-            for line in htmlSplit:
-                if line.find('Jibarr_Database') > -1:
-                    jdv = line.replace("</p>","").replace("Jibarr_Database: ", "").replace("<br>","")
-            resp.close()
-        except:
-            pass
-        if(jdv != sett.jibarr_version):
-            newVersion = True
-        return newVersion
-
-    def checkCodeVersion():
-        "This does a CODE ONLY version check against GitHub and the local system."
-        newVersion = False
-        sett = SiteSettings.objects.all()[:1].get()
-        jcv = sett.code_version
-        # https://github.com/ExtensiveJS/Jibarr/wiki/Current-Versions
-        try:
-            resp = urllib.request.urlopen('https://github.com/ExtensiveJS/Jibarr/wiki/Current-Versions')
-            html = resp.read()
-            htmlstr = html.decode('utf8')
-            htmlSplit = htmlstr.split("\n")
-            for line in htmlSplit:
-                if line.find('Jibarr_Code') > -1:
-                    jcv = line.replace("<p>","").replace("Jibarr_Code: ", "").replace("<br>","")
-            resp.close()
-        except:
-            pass
-        if(jcv != sett.code_version):
-            newVersion = True
-        return newVersion
-
+    
     class Meta:
         managed = False
         db_table = 'Jibarr_settings' 

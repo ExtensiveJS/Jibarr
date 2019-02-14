@@ -1,5 +1,5 @@
 import os, shutil, json, time
-from jibarr.models import SiteSettings, radarrMovie, Logs, RadarrMedia
+from jibarr.models import SiteSettings, radarrMovie, Logs, RadarrMedia, Profile, ProfileRadarr
 from urllib.request import urlopen
 from datetime import datetime
 
@@ -14,6 +14,11 @@ def RadarrSync(forceload):
     # call to RADARR and read JSON
     data = urlopen(system_settings.radarr_path + "/api/movie?apikey=" + system_settings.radarr_apikey).read()
     output = json.loads(data)
+
+    # get a list of profile IDs that have the Auto-Monitor setting turned on.
+    aaProfId = []
+    for prof in Profile.objects.filter(radarr_monitor=1):
+        aaProfId.append(prof.id)
 
     if forceload:
         # PURGE THE DATABASE
@@ -76,7 +81,10 @@ def RadarrSync(forceload):
                     RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality)
                     #rm.save()
                     isSuccessful = True
-
+                    
+                    # TODO - Run the insert for all profiles with auto-add
+                    for profId in aaProfId:
+                        ProfileRadarr.objects.create(profile_id=profId,radarr_id=var['id'],lastRun="Jan 01 1970 23:59:59")
             else:
                 # check ID against DB
                 try:
@@ -121,10 +129,10 @@ def RadarrSync(forceload):
                             wasUpdated = True
                             rm.last_updt = var['movieFile']['dateAdded'][:10] + " " + var['movieFile']['dateAdded'][11:16]  
                         if str(rm.rating) != str(var["ratings"]["value"]):
-                            wasUpdated = True
+                            #wasUpdated = True
                             rm.rating = str(var["ratings"]["value"])
                         
-                        rm.tmdbid = ""
+                        #rm.tmdbid = ""
                         try:
                             if str(rm.tmdbid) != str(var['tmdbId']):
                                 wasUpdated = True
@@ -132,7 +140,7 @@ def RadarrSync(forceload):
                         except:
                             pass
 
-                        rm.imdbid = ""
+                        #rm.imdbid = ""
                         try:
                             if rm.imdbid != var['imdbId']:
                                 wasUpdated = True
@@ -140,7 +148,7 @@ def RadarrSync(forceload):
                         except:
                             pass
                         
-                        rm.youtube = ""
+                        #rm.youtube = ""
                         try:
                             if rm.youtube != var['youTubeTrailerId']:
                                 wasUpdated = True
@@ -148,7 +156,7 @@ def RadarrSync(forceload):
                         except:
                             pass
                         
-                        rm.website = ""
+                        #rm.website = ""
                         try:
                             if rm.website != var['website']:
                                 wasUpdated = True
@@ -156,7 +164,7 @@ def RadarrSync(forceload):
                         except:
                             pass
                         
-                        rm.quality = ""
+                        #rm.quality = ""
                         try:
                             if rm.quality != var["movieFile"]["quality"]["quality"]["name"]:
                                 wasUpdated = True
@@ -226,6 +234,11 @@ def RadarrSync(forceload):
                         except:
                             pass
                         isSuccessful = True
+
+                        # TODO - Run the insert for all profiles with auto-add
+                        for profId in aaProfId:
+                            ProfileRadarr.objects.create(profile_id=profId,radarr_id=var['id'],lastRun="Jan 01 1970 23:59:59")
+            
         except:
             pass
 

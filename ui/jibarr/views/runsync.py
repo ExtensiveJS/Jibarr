@@ -55,7 +55,8 @@ def runsync(request):
             radarr_list.movielist.append(rm)
             #radarr_list.movielist.append(rm)
             totalFileSize = totalFileSize + rmed.size
-        
+    
+    radarr_list.movielist.sort(key=lambda x: x.title.lower(), reverse=False)    
     radarr_list.totalSize = convert_size(totalFileSize)
 
     context = {
