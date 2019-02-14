@@ -234,7 +234,8 @@ def marksynced(request):
 def runUpgradeProcess(request):
     isSuccessfull = True
     try:
-        isSuccessfull = SystemUpgrade()
+        toVer = request.POST.get("toVer")
+        isSuccessfull = SystemUpgrade(toVer)
     except:
         pass
 
