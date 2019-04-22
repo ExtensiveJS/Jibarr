@@ -4,6 +4,7 @@ from .sitesettings import *
 from .donate import *
 from .movies import *
 from .shows import *
+from .showdetails import *
 from .music import *
 from .runsync import *
 from .logs import *
@@ -11,3 +12,4 @@ from .about import *
 from .updates import *
 from .systemsettings import *
 from .upgrade import *
+from .runsyncshows import *

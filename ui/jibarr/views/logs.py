@@ -21,9 +21,9 @@ def logs(request):
     system_settings.newVersion = SiteSettings.checkVersion()
     prof_list = Profile.objects.all()
     if(filterCriteria=='all'):
-        log_list = Logs.objects.all().order_by('-log_datetime')
+        log_list = Logs.objects.all().order_by('-id')
     else:
-        log_list = Logs.objects.all().order_by('-log_datetime').filter(log_category = filterCriteria)
+        log_list = Logs.objects.all().order_by('-id').filter(log_category = filterCriteria)
 
 
     context = {

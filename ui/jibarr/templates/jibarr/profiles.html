@@ -26,15 +26,16 @@
             <div style="width:5%;float:left;font-weight:bold;">Del</div>
         </div>
         {% for var in profile_list %}
-            <div class="divRow" style="height:60px;">
+            <div class="divRow" style="height:83px;padding-top:5px;padding-bottom:5px;">
                 <div style="width:35%;float:left;">{{ var.profile_name }}</div>
                 <div style="width:19%;float:left;">{{ var.profile_lastRun }}</div>
                 <div style="width:20%;float:left;">
                     <input type="checkbox" id="chkMonitorAll" {% if var.radarr_monitor %} checked {% endif %} onchange="toggleautomonitor({{ var.id }},{{ var.radarr_monitor }});"/> Automonitor New Movies
                 </div>
-                <div style="width:20%;float:left;">
-                    <i class="glyphicon glyphicon-saved ADDBUTTON" onclick="markmoviesmonitored({{ var.id }});" title="Mark All Movies as Monitored"></i> Mark Monitored<br />
-                    <i class="glyphicon glyphicon-saved ADDBUTTON" onclick="markSynced({{ var.id }});" title="Mark all MONITORED to SYNCED."></i> Mark Synced<br />
+                <div style="width:20%;float:left;font-size:small;">
+                    <i class="glyphicon glyphicon-saved ADDBUTTON" style="font-size:x-small;" onclick="markmoviesmonitored({{ var.id }});" title="Mark All Movies as Monitored"></i> Mark Movies Monitored<br />
+                    <i class="glyphicon glyphicon-saved ADDBUTTON" style="font-size:x-small;" onclick="markSynced({{ var.id }});" title="Mark all Monitored Movies to SYNCED."></i> Mark Movies Synced<br />
+                    <i class="glyphicon glyphicon-saved ADDBUTTON" style="font-size:x-small;" onclick="markShowsSynced({{ var.id }});" title="Mark all Monitored Shows to SYNCED."></i> Mark Shows Synced<br />
                 </div>
                 <div style="width:5%;float:left;"><i class="glyphicon glyphicon-remove-circle DELBUTTON" onclick="delData({{ var.id }});"></i></div>
             </div>
@@ -42,10 +43,10 @@
     </div>
 
 </div>
-<div id="divDialog" title="Create new profile" style="width:360px;">
+<div id="divDialog" title="Create new profile." style="border-radius:5px;">
     <div style="float:left;width:100px;text-align:right;padding-right:5px;height:35px;">Profile Name:</div>
-    <div style="float:left;width:150px;height:35px;"><input type="text" id="txtNewProfileName" /></div>
-    <div style="margin-top:15px;"><button type="button" class="btn btn-primary btn-sm" onclick="saveNew();" style="float:right;">Save</button></div>
+    <div style="float:left;width:150px;height:35px;"><input type="text" id="txtNewProfileName" style="width:220px;" /></div>
+    <div style="margin-top:30px;"><button type="button" class="btn btn-primary btn-sm" onclick="saveNew();" style="float:right;">Save</button></div>
 </div>
 {% endblock content %}
 {% block postbody %}
@@ -53,7 +54,9 @@
     $(function () {
         $("#divDialog").dialog({
             autoOpen: false,
-            modal: true
+            height: 130,
+            width: 350,
+            resizable: false
         })
     });
     function showAdd() {
@@ -192,6 +195,30 @@
             });
         }
 
+    }
+    function markShowsSynced(id) {
+        if(confirm('Are you sure? This will mark EVERY monitored show as Synced with today\'s date. This is irreversible!')){
+            $("#spanWaiting").show();
+            $.ajax({
+                url : '/api/markshowssynced',
+                type : 'POST',
+                data: { 
+                    prof_id: id
+                },
+                success: function(data){
+                    $("#spanWaiting").hide();
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('Error marking sync status: ' + xhr.status);
+                    $("#spanWaiting").hide();
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('Failed marking sync status: ' + xhr.status);
+                    $("#spanWaiting").hide();
+                }
+            });
+            
+        }
     }
 </script>
 {% endblock postbody %}

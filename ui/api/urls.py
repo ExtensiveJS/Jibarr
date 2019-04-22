@@ -14,13 +14,18 @@ router.register(r'logs', views.LogsViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^runsync/', views.RunSync),
+    url(r'^runsyncshows/', views.RunSyncShows),
     url(r'^GetFolders/', views.GetFolders),
     url(r'dbsync', views.dbsync),
     url(r'scheduler',views.scheduler),
     url(r'marksynced', views.marksynced),
+    url(r'markshowssynced', views.markshowssynced),
     url(r'runUpgradeProcess/', views.runUpgradeProcess),
     url(r'upgrades',views.upgrades),
     url(r'automonitor',views.automonitor),
     url(r'markmoviesmonitored/',views.markmoviesmonitored),
-    url(r'^', include(router.urls)),
+    url(r'changeRadarrStatus/',views.changeRadarrStatus),
+    url(r'changeSonarrStatus/',views.changeSonarrStatus),
+    url(r'skipEpisode/',views.skipEpisode),
+    url(r'^', include(router.urls))
 ]

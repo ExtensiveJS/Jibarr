@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     {% if system_settings.isConnected %}
-                    <img src="{{ system_settings.radarr_path }}/MediaCover/{{ val.r_id }}/poster.jpg" style="cursor:pointer;width:100%" />
+                    <img src="{{ system_settings.radarr_path }}/MediaCover/{{ val.r_id }}/poster.jpg" style="width:100%" />
                     {% else %}
                     <img src="{% static 'jibarr/images/no_image.png' %}" style="width:89%;" />
                     <div style="font-family:fantasy;font-size:larger;position:relative;top:40%;text-align:center;;z-index: 99 !important;">{{ val.title }}</div>
@@ -54,14 +54,67 @@
         {% endfor %}
         </div>
     {% endif %}
-    {% if system_settings.sonarr_enabled == 1 %}
-        <br />
+</div>
+
+
+{% if system_settings.sonarr_enabled == 1 %}
+    <div class="container" style="margin-top:10px;">
+        <div style="width:300px;background-color:aqua;text-align:center;font-size:larger;border-radius:3px;margin-bottom:7px;">
+            Latest Additions/Updates - TV Shows
+        </div>
+        <div>
+            {% for val in sonarr_list.showlist %}
+            <div class="showContainer">
+                <div class="movieImageContainer">
+                    <div class="overlayTop">
+                        <div class="overlayTopText">
+                            {% if val.isMonitored %}
+                            <i class="glyphicon glyphicon-star" style="float:right;cursor:pointer;" onclick="delSonarrMonitor({{ val.sonarr_id }},'{{ val.title }}');"" ></i>
+                            {% else %}
+                            <i class="glyphicon glyphicon-star-empty" style="float:right;cursor:pointer;" onclick="addSonarrMonitor({{ val.sonarr_id }},'{{ val.title }}');"></i>
+                            {% endif %}
+                            <i class="glyphicon glyphicon-search" style="float:right;cursor:pointer;margin-right:3px;" onclick="location.replace('/jibarr/showdetails?id={{ val.sonarr_id }}');"></i>
+                        </div>
+                    </div>
+                    {% if system_settings.isSonarrConnected %}
+                    <img src="{{ system_settings.sonarr_path }}/MediaCover/{{ val.sonarr_id }}/poster.jpg" style="width:100%" />
+                    {% else %}
+                    <img src="{% static 'jibarr/images/no_image.png' %}" style="width:89%;" />
+                    <div style="font-family:fantasy;font-size:larger;position:relative;top:40%;text-align:center;;z-index: 99 !important;">{{ val.title }}</div>
+                    {% endif %}
+                    <div class="overlayBottom">
+                        <div class="overlayBottomText">
+                            {{ val.title }}
+                        </div>
+                    </div>
+                </div>
+                <div class="progress" style="height:15px;font-size:smaller;margin-bottom:4px;margin-top:4px;" title="{{ val.episodeFileCount }} of {{ val.episodeCount }} episodes available.">
+                    {% if val.episodePercentage < 50 %}
+                    <div class="progress-bar" role="progressbar" style="color:black;width: {{ val.episodePercentage }}%;" aria-valuenow="{{ val.episodeFileCount }}" aria-valuemin="0" aria-valuemax="{{ val.episodeCount }}"></div>{{ val.episodeFileCount }}/{{ val.episodeCount }} episodes
+                    {% else %}
+                    <div class="progress-bar" role="progressbar" style="width: {{ val.episodePercentage }}%;" aria-valuenow="{{ val.episodeFileCount }}" aria-valuemin="0" aria-valuemax="{{ val.episodeCount }}">{{ val.episodeFileCount }}/{{ val.episodeCount }} episodes</div>
+                    {% endif %}
+                </div>
+                {% if val.tvdbId %}
+                <div class="siteContainer" onclick="window.open('http://www.thetvdb.com/?tab=series&id={{ val.tvdbId }}');">The TVDB</div>
+                <div class="siteContainer" onclick="window.open('http://trakt.tv/search/tvdb/{{ val.tvdbId }}?id_type=show');">Trakt</div>
+                {% endif %}    
+                {% if val.tvMazeId %}
+                <div class="siteContainer" onclick="window.open('http://www.tvmaze.com/shows/{{ val.tvMazeId }}/_');">TV Maze</div>
+                {% endif %}
+                {% if val.imdbId %}
+                <div class="siteContainer" onclick="window.open('http://imdb.com/title/{{ val.imdbId }}');">IMDB</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
     {% endif %}
+</div>    
     {% if system_settings.lidarr_enabled == 1 %}
         <br />
     {% endif %}
 
-</div>
+
 {% endblock content %}
 {% block postbody %}
 <script>
@@ -94,6 +147,53 @@
                     prid: id,
                     profile_id: {{ prof_id }},
                     radarr_title: title
+                },
+                success: function(data)
+                {
+                    if(data == "DelOK"){
+                        location.reload();
+                    } else {
+                        alert("Data not DelOK = " + data);
+                    };
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('request error' + xhr.status)
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+               }
+            });
+        }
+    }
+
+
+    function addSonarrMonitor(sid,title) {
+        $.ajax({
+            url : '/api/profilesonarr/add/',
+            type : 'POST',
+            data: { 
+                profile_id: {{ prof_id }},
+                sonarr_id: sid,
+                sonarr_title: title
+            },
+            success: function(data)
+            {
+                location.reload();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+    function delSonarrMonitor(sid,title) {
+        if(confirm('are you sure?')){
+            $.ajax({
+                url : '/api/profilesonarr/delete/',
+                type : 'POST',
+                data: { 
+                    sonarr_id: sid,
+                    profile_id: {{ prof_id }},
+                    sonarr_title: title
                 },
                 success: function(data)
                 {

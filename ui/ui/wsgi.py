@@ -19,11 +19,20 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ui.settings')
 application = get_wsgi_application()
 
 settings.isConnected = False
+settings.isSonarrConnected = False
+system_settings = SiteSettings.objects.all()[:1].get()
+    
 try:
-    system_settings = SiteSettings.objects.all()[:1].get()
     data = urlopen(system_settings.radarr_path + "/api/system/status/?apikey=" + system_settings.radarr_apikey).read()
     json.loads(data)
     settings.isConnected = True
+except:
+    pass
+
+try:
+    data2 = urlopen(system_settings.sonarr_path + "/api/system/status/?apikey=" + system_settings.sonarr_apikey).read()
+    json.loads(data2)
+    settings.isSonarrConnected = True
 except:
     pass
 

@@ -107,6 +107,7 @@ def get_movie_info(system_settings, prof):
         rm.r_id = var.radarr_id
         rm.titleSlug = var.title_slug
         rm.releaseDate = var.release_date
+        rm.releaseYear = var.release_date[:4]
         rm.folderName = var.folder_name
         rm.fileName =  var.file_name
         rm.size = var.size

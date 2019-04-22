@@ -1,0 +1,176 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block title %}{{ show.title }} {% endblock title %}
+{% block javascript%}
+    {% if system_settings.isSonarrConnected %}
+        <style>
+            BODY {
+                background: url('{{ system_settings.sonarr_path }}/MediaCover/{{ show.sonarr_id }}/fanart.jpg') no-repeat center center fixed;
+                background-size: cover;
+            }     
+        </style>
+    {% endif %}
+{% endblock javascript %}
+{% block content %}
+
+<div class='CONTAINER' style="background-color:#1F1E1E;color:whitesmoke;padding-left:20px;min-height:150px;">
+    <div style="float:left;margin:20px 10px 10px 10px;">
+        {% if system_settings.isSonarrConnected %}
+        <img src="{{ system_settings.sonarr_path }}/MediaCover/{{ show.sonarr_id }}/poster.jpg" style="width:130px;" />
+        {% else %}
+        <img src="{% static 'jibarr/images/no_image.png' %}" style="width:50px;cursor:pointer;" />
+        {% endif %}
+    </div>
+    <div>
+        <div style="float:right;">
+            {% if show.isMonitored %}
+            <i class="glyphicon glyphicon-star" style='cursor:pointer;font-size:x-large;' title="Monitored" onclick="delMonitor({{ show.sonarr_id }});" ></i>
+            {% else %}
+            <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;font-size:x-large;' title="Un-Monitored" onclick="addMonitor({{ show.sonarr_id }});"></i>
+            {% endif %}
+        </div>
+        <h2>{{ show.title }}</h2>
+    </div>
+    <p style="margin-bottom:20px;">{{ show.description }}</p>
+    <div>
+        {% if show.tvdbId %}
+        <span class="siteCallout"><a href='http://www.thetvdb.com/?tab=series&id={{ show.tvdbId }}' target="_new">The TVDB</a></span>
+        <span class="siteCallout"><a href='http://trakt.tv/search/tvdb/{{ show.tvdbId }}?id_type=show' target="_new">Trakt</a></span>
+        {% endif %}    
+        {% if show.tvMazeId %}
+        <span class="siteCallout"><a href='http://www.tvmaze.com/shows/{{ show.tvMazeId }}/_' target="_new">TV Maze</a></span>
+        {% endif %}
+        {% if show.imdbId %}
+        <span class="siteCallout"><a href='http://imdb.com/title/{{ show.imdbId }}' target="_new">IMDB</a></span>
+        {% endif %}
+    </div>
+</div>
+
+{% for seas in show.seasons %}
+    <div class='CONTAINER' style="margin-top:30px;padding-left:20px;min-height:50px;box-shadow: 0 0 10px 1px #aaa;">
+    <h3>{{ seas.title }}</h3>
+    {% if seas.episodes %}
+    <div style="display:flex;flex-direction: row;flex-wrap:nowrap;border-bottom:2px solid lightgrey;">
+        <div style="min-width:25px;font-weight:bold;">#</div>
+        <div style="flex: auto;font-weight:bold;">Title/Description.</div>
+        <div style="min-width:100px;flex: none;font-weight:bold;">Air Date</div>
+        <div style="min-width:100px;font-weight:bold;">Quality</div>
+        <div style="min-width:35px;font-weight:bold;">&nbsp;</div>
+    </div>
+    {% endif %}
+    {% for ep in seas.episodes %}
+        
+        <div style="display:flex;flex-direction: row;flex-wrap:nowrap;padding-top:5px;padding-bottom:5px;border-bottom:1px solid lightgray;">
+            <div style="min-width:25px;">{{ ep.episodeNumber }}</div>
+            <div style="flex: auto;padding-right:13px;"><strong>{{ ep.title }}</strong><br>{{ ep.description }}</div>
+            <div style="min-width:100px;flex: none;">{{ ep.airDate }}</div>
+            <div style="min-width:100px;"><span class="qualityCallout">{{ ep.quality }}</span></div>
+            <div style="min-width:35px;">
+                {% if ep.isMonitored %}
+                    {% if ep.isNewer %}
+                    <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+                    <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Override" onclick='markSkipped({{ ep.sonarr_id }},"skip");'></i>
+                    {% else %}
+                    <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
+                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Force Sync" onclick='markSkipped({{ ep.sonarr_id }},"unskip");'></i>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    
+    {% endfor %}
+    </div>
+{% endfor %}
+
+
+{% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+    });
+    function markSkipped(e,t){
+        var ret;
+        if(t=="skip"){
+            ret = confirm("Are you sure you want to SKIP this episde?");
+        }else{
+            ret = confirm("Are you sure you want to UN-SKIP this episde?");
+        }
+
+        if(ret){
+            //alert("mark t=" + t + ", e=" + e + ", p={{ system_profile.id }}");
+            // prof_id:
+            // runType: 
+            // episodeId: 
+            $.ajax({
+                url : '/api/skipEpisode/',
+                type : 'POST',
+                data: { 
+                    episodeId: e,
+                    prof_id: {{ system_profile.id }},
+                    runType: t
+                },
+                success: function(data)
+                {
+                    //alert('success');
+                    location.reload(true);
+                    //if(data == "DelOK"){
+                    //    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + rid +");' ></i>")
+                    //} else {
+                    //    alert("Data not DelOK = " + data);
+                    //};
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+               }
+            });
+        }
+    }
+    function addMonitor(s) {
+        $.ajax({
+            url : '/api/profilesonarr/add/',
+            type : 'POST',
+            data: { 
+                profile_id: {{ system_profile.id }},
+                sonarr_id: s
+            },
+            success: function(data)
+            {
+                //alert('success');
+                location.reload(true);
+                //var reg = new RegExp('^[0-9]+$');
+                //if(reg.test(data)){
+                //    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + "," + rid + ");' ></i>")
+                //};
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+    function delMonitor(s) {
+        if(confirm('are you sure?')){
+            $.ajax({
+                url : '/api/profilesonarr/delete/',
+                type : 'POST',
+                data: { 
+                    sonarr_id: s,
+                    profile_id: {{ system_profile.id }}
+                },
+                success: function(data)
+                {
+                    //alert('success');
+                    location.reload(true);
+                    //if(data == "DelOK"){
+                    //    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + rid +");' ></i>")
+                    //} else {
+                    //    alert("Data not DelOK = " + data);
+                    //};
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+               }
+            });
+        }
+    }
+</script>
+{% endblock postbody %}
