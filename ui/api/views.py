@@ -97,14 +97,14 @@ class ProfileSonarrViewSet(viewsets.ModelViewSet):
     def post(self, request, pk):
         pid = request.POST.get('profile_id')
         sid = request.POST.get('sonarr_id')
-        st = request.POST.get('sonarr_title')
+        ss = SonarrShowMedia.objects.get(sonarr_id=sid)
         
         if pk == 'add':
             ps = ProfileSonarr.objects.create(profile_id=pid,sonarr_id=sid,lastRun='Jan 01 1970 23:59:59')
             ps.save()
             ret = ps.pk
             try:
-                Logs.objects.create(log_type='Add',log_category='Sonarr',log_message='Sonarr entry added ' + st + ' to ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                Logs.objects.create(log_type='Add',log_category='Sonarr',log_message='Sonarr entry added ' + ss.title + ' to ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
             except KeyError:
                 pass
         if pk == 'delete':
@@ -112,7 +112,7 @@ class ProfileSonarrViewSet(viewsets.ModelViewSet):
             ps.delete()
             ret = "DelOK"
             try:
-                Logs.objects.create(log_type='Delete',log_category='Sonarr',log_message='Sonarr entry deleted ' + st + ' from ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                Logs.objects.create(log_type='Delete',log_category='Sonarr',log_message='Sonarr entry deleted ' + ss.title + ' from ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
             except KeyError:
                 pass
         return Response(ret)
