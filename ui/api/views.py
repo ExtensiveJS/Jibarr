@@ -1,14 +1,17 @@
-from jibarr.models import SiteSettings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie, RadarrMedia
+from jibarr.models import SiteSettings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie, RadarrMedia, sonarrShow, SonarrShowMedia, SonarrEpisodeMedia, ProfileSonarrEpisode
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from .serializers import SiteSettingsSerializer, ProfileSerializer, ProfileRadarrSerializer, ProfileSonarrSerializer, ProfileLidarrSerializer, LogsSerializer
 from jibarr.copyTheFile import copyTheFile
+from jibarr.copyTheShow import copyTheShow
 from jibarr.RadarrSync import RadarrSync
+from jibarr.SonarrSync import SonarrSync
 from jibarr.SystemUpgrade import SystemUpgrade
 from datetime import datetime
 import os, os.path
+from django.conf import settings
 
 class SiteSettingsViewSet(viewsets.ModelViewSet):
     queryset = SiteSettings.objects.all()
@@ -90,24 +93,37 @@ class ProfileRadarrViewSet(viewsets.ModelViewSet):
 class ProfileSonarrViewSet(viewsets.ModelViewSet):
     queryset = ProfileSonarr.objects.all()
     serializer_class = ProfileSonarrSerializer
+    ret = ""
     def post(self, request, pk):
+        pid = request.POST.get('profile_id')
+        sid = request.POST.get('sonarr_id')
+        ss = SonarrShowMedia.objects.get(sonarr_id=sid)
+        
         if pk == 'add':
-            pid = request.POST.get('profile_id')
-            sid = request.POST.get('sonarr_id')
             ps = ProfileSonarr.objects.create(profile_id=pid,sonarr_id=sid,lastRun='Jan 01 1970 23:59:59')
+            ps.save()
+            ret = ps.pk
             try:
-                Logs.objects.create(log_type='Add',log_category='Sonarr',log_message='Sonarr entry added',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                Logs.objects.create(log_type='Add',log_category='Sonarr',log_message='Sonarr entry added ' + ss.title + ' to ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
             except KeyError:
                 pass
         if pk == 'delete':
-            psid = int(request.POST.get('psid'))
-            ps = ProfileSonarr.objects.get(id=psid)
+            ps = ProfileSonarr.objects.filter(sonarr_id=sid,profile_id=pid)
             ps.delete()
+
+            semList = SonarrEpisodeMedia.objects.filter(seriesId=sid)
+            pseList = ProfileSonarrEpisode.objects.filter(profile_id=pid)
+            for sem in semList:
+                for pse in pseList:
+                    if pse.sonarr_id == sem.sonarr_id:
+                        pse.delete()
+
+            ret = "DelOK"
             try:
-                Logs.objects.create(log_type='Delete',log_category='Sonarr',log_message='Sonarr entry deleted',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                Logs.objects.create(log_type='Delete',log_category='Sonarr',log_message='Sonarr entry deleted ' + ss.title + ' from ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
             except KeyError:
                 pass
-        return Response("Ok")
+        return Response(ret)
 
 class ProfileLidarrViewSet(viewsets.ModelViewSet):
     queryset = ProfileLidarr.objects.all()
@@ -182,6 +198,10 @@ def dbsync(request):
         RadarrSync(False)
     if(sourceSync=='radarr_force'):
         RadarrSync(True)
+    if(sourceSync=='sonarr'):
+        SonarrSync(False)
+    if(sourceSync=='sonarr_force'):
+        SonarrSync(True)
     return Response("OK")
         
 @api_view(['GET', 'POST'])
@@ -203,7 +223,7 @@ def scheduler(request):
         elif runType=='radarr':
             # run the radarr sync
             response = "OK"
-    except KeyError:
+    except:
         pass
     return Response(response)
 
@@ -260,7 +280,7 @@ def upgrades(request):
             sett.upgrades_enabled = 0
             sett.save()
             response = "OK"
-    except KeyError:
+    except:
         pass
     return Response(response)
 
@@ -329,6 +349,147 @@ def automonitor(request):
             prof.save()
             response = "OK"
             Logs.objects.create(log_type='System',log_category='System',log_message='Automonitor new movies for Profile (' + prof.profile_name + ') disabled.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-    except KeyError:
+    except:
         pass
     return Response(response)
+
+@api_view(['GET', 'POST'])
+def changeRadarrStatus(request):
+    runType = 'none'
+    response = "Failed"
+    try:
+        runType = request.POST.get("runType")
+        if runType=='enable':
+            settings.isConnected = True
+            response = "OK"
+            Logs.objects.create(log_type='System',log_category='Radarr',log_message='Radarr Connection Status changed - Connected.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        elif runType=='disable':
+            settings.isConnected = False
+            response = "OK"
+            Logs.objects.create(log_type='System',log_category='Radarr',log_message='Radarr Connection Status changed - Disconnected.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+    except:
+        pass
+    return Response(response)
+
+@api_view(['GET', 'POST'])
+def changeSonarrStatus(request):
+    runType = 'none'
+    response = "Failed"
+    try:
+        runType = request.POST.get("runType")
+        if runType=='enable':
+            settings.isSonarrConnected = True
+            response = "OK"
+            Logs.objects.create(log_type='System',log_category='Sonarr',log_message='Sonarr Connection Status changed - Connected.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        elif runType=='disable':
+            settings.isSonarrConnected = False
+            response = "OK"
+            Logs.objects.create(log_type='System',log_category='Sonarr',log_message='Sonarr Connection Status changed - Disconnected.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+    except:
+        pass
+    return Response(response)
+
+@api_view(['GET', 'POST'])
+def skipEpisode(request):
+    runType = 'none'
+    response = "Failed"
+
+    try:
+        prof_id = request.POST.get('prof_id')
+        prof = Profile.objects.get(id=prof_id)
+        sid = request.POST.get('episodeId')
+        sem = SonarrEpisodeMedia.objects.get(sonarr_id=sid)
+        ser = SonarrShowMedia.objects.get(sonarr_id=sem.seriesId)
+        runType = request.POST.get("runType")
+        if runType=='skip':
+            # check if it's already in the PSE table
+            if ProfileSonarrEpisode.objects.filter(profile_id=prof_id,sonarr_id=sid).count() == 1:
+                pse = ProfileSonarrEpisode.objects.get(profile_id=prof_id,sonarr_id=sid)
+                #if pse:
+                # if yes, update runDate to 2099
+                pse.lastRun = "Dec 31 2099 23:59:59"
+                pse.save()
+            else:
+                # if no, insert it with 2099
+                ProfileSonarrEpisode.objects.create(profile_id=prof_id,sonarr_id=sid,lastRun="Dec 31 2099 23:59:59")
+            response = "OK"
+            try:
+                Logs.objects.create(log_type='Add',log_category='Sonarr',log_message='Sonarr ' + ser.title + '[' + str(sem.episodeNumber) + ']' + sem.title + ' skipped for ' + prof.profile_name + '.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            except:
+                pass
+        elif runType=='unskip':
+            # get the PSE and change last run date to 1970
+            pse = ProfileSonarrEpisode.objects.get(profile_id=prof_id,sonarr_id=sid)
+            pse.lastRun = "Jan 01 1970 23:59:59"
+            pse.save()
+            response = "OK"
+            try:
+                Logs.objects.create(log_type='Add',log_category='Sonarr',log_message='Sonarr ' + ser.title + '[' + sem.episodeNumber + ']' + sem.title + ' un-skipped for profile ' + prof.profile_name + '.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            except:
+                pass
+    except Exception as e:
+        try:
+            Logs.objects.create(log_type='ERROR',log_category='Sonarr',log_message='Sonarr skipEpisode error [' + e + '.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+        pass
+    return Response(response)
+
+@api_view(['GET', 'POST'])
+def RunSyncShows(request):
+    idList = request.POST.getlist('idlist[]')
+    destDir = request.POST.get('destDir')
+    prof_id = request.POST.get('prof_id')
+    prof = Profile.objects.get(id=prof_id)
+    create_show_fldr = request.POST.get("create_show_fldr")
+    create_season_fldr = request.POST.get("create_season_fldr")
+    
+    try:
+        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Sync initiated for Profile ' + prof.profile_name,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+    except KeyError:
+        pass
+    copyTheShow(idList, destDir, prof_id, create_show_fldr, create_season_fldr)
+    try:
+        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Sync completed for Profile ' + prof.profile_name,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+    except KeyError:
+        pass
+    try:
+        prof.profile_lastPath = destDir
+        prof.save()
+    except KeyError:
+        pass
+    return Response("OK")
+
+@api_view(['GET', 'POST'])
+def markshowssynced(request):
+    try:
+        # call to update everything with today's date.
+        try:
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Bulk override of Sync Date initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+        prof_id = request.POST.get('prof_id')
+
+        profile_sonarr_show_list = ProfileSonarr.objects.filter(profile_id=prof_id)
+        for pss in profile_sonarr_show_list:
+            sel = SonarrEpisodeMedia.objects.filter(seriesId=pss.sonarr_id)
+            for se in sel:
+                # check if the episode is monitored
+                if ProfileSonarrEpisode.objects.filter(profile_id=prof_id,sonarr_id=se.sonarr_id).count() == 1:
+                    pse = ProfileSonarrEpisode.objects.get(profile_id=prof_id,sonarr_id=se.sonarr_id)
+                    if pse:
+                        pse.lastRun = datetime.now().strftime("%b %d %Y %H:%M:%S")
+                        pse.save()
+                else:
+                    # not in PSE, add it to sync list
+                    pse = ProfileSonarrEpisode.objects.create(profile_id=prof_id,sonarr_id=se.sonarr_id,lastRun=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+
+        try:
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Bulk override of Sync Date completed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+    except:
+        pass
+
+    return Response("OK")
+

@@ -50,18 +50,32 @@
 
     <div>
         <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">TV Shows</div>
+        <div class="subSetting" style="width:49%;float:right;">
+            <div style="width:auto;height:25px;">
+                <div>Last Synced:</div>
+                <div>
+                    {{ system_settings.sonarr_last_sync }}
+                    <i class="glyphicon glyphicon-refresh ADDBUTTON" style="margin-left:20px;" onclick="runSync('sonarr');" title="Update Shows."></i>
+                    <i class="glyphicon glyphicon-save ADDBUTTON" style="margin-left:20px;" onclick="runSync('sonarr_force');" title="Rebuild Shows."></i>
+                </div>
+                <div style="text-align:right;">
+                    <div id="divSonarrTestConnectionText">&nbsp;</div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="testSonarrConnection();">Test Connection</button>
+                </div>
+            </div>
+        </div>
         <div class="subSetting">
             <div style="width:auto;height:30px;">
                 <div class="subSettingLabel">SONARR Enabled:</div>
-                <div><input type="checkbox" id="chkSonarrEnabled" {% if system_settings.sonarr_enabled %} checked {% endif %} disabled /></div>
+                <div><input type="checkbox" id="chkSonarrEnabled" {% if system_settings.sonarr_enabled %} checked {% endif %} /></div>
             </div>
             <div style="width:auto;height:30px;">
                 <div class="subSettingLabel">SONARR Path:</div>
-                <div><input class="subSettingTextbox" type="text" id="txtSonarrPath" value="{{ system_settings.sonarr_path }}" disabled /><i class="glyphicon glyphicon-info-sign subSettingHelp" title="The URL to the root of your Sonarr site, typically http://localhost:8989"></i></div>
+                <div><input class="subSettingTextbox" type="text" id="txtSonarrPath" value="{{ system_settings.sonarr_path }}" /><i class="glyphicon glyphicon-info-sign subSettingHelp" title="The URL to the root of your Sonarr site, typically http://localhost:8989"></i></div>
             </div>
             <div style="width:auto;height:30px;">
                 <div class="subSettingLabel">SONARR APIKey:</div>
-                <div><input class="subSettingTextbox" type="text" id="txtSonarrAPIKey" value="{{ system_settings.sonarr_apikey }}" disabled /><i class="glyphicon glyphicon-info-sign subSettingHelp" title="The API key provided by Sonarr to access the site."></i></div>
+                <div><input class="subSettingTextbox" type="text" id="txtSonarrAPIKey" value="{{ system_settings.sonarr_apikey }}" /><i class="glyphicon glyphicon-info-sign subSettingHelp" title="The API key provided by Sonarr to access the site."></i></div>
             </div>
         </div>
     </div>
@@ -156,13 +170,16 @@
     function testRadarrConnection(){
         $("#spanWaiting").show();
         $("#divRadarrTestConnectionText").html("...checking connection...");
+        var radarrURL = $("#txtRadarrPath").val() + '/api/system/status/?apikey=' + $("#txtRadarrAPIKey").val();
+        
         $.ajax({
-            url : '{{ system_settings.radarr_path }}/api/system/status/?apikey={{ system_settings.radarr_apikey }}',
+            url : radarrURL,
             type : 'GET',
             data: {},
             success: function(data)
             {
                 $("#divRadarrTestConnectionText").html("Connection Successful");
+                updateRadarrStatus();
             },
             error:function (xhr, ajaxOptions, thrownError){
                 if(xhr.status==404) {
@@ -170,13 +187,84 @@
                 } else {
                     $("#divRadarrTestConnectionText").html("Connection Failed");
                 }
+                $("#spanWaiting").hide();
             },
             fail: function(xhr, textStatus, errorThrown){
                 $("#divRadarrTestConnectionText").html("Connection Failed");
+                $("#spanWaiting").hide();
             }
         });
-        $("#spanWaiting").hide();
     }
-    
+    function testSonarrConnection(){
+        $("#spanWaiting").show();
+        $("#divSonarrTestConnectionText").html("...checking connection...");
+        var sonarrURL = $("#txtSonarrPath").val() + '/api/system/status/?apikey=' + $("#txtSonarrAPIKey").val();
+        $.ajax({
+            url : sonarrURL,
+            type : 'GET',
+            data: {},
+            success: function(data)
+            {
+                $("#divSonarrTestConnectionText").html("Connection Successful");
+                updateSonarrStatus();
+            },
+            error:function (xhr, ajaxOptions, thrownError){
+                if(xhr.status==404) {
+                    $("#divSonarrTestConnectionText").html("Connection Failed 404");
+                } else {
+                    $("#divSonarrTestConnectionText").html("Connection Failed");
+                }
+                $("#spanWaiting").hide();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                $("#divSonarrTestConnectionText").html("Connection Failed");
+                $("#spanWaiting").hide();
+            }
+        });
+    }
+    function updateRadarrStatus(){
+        $.ajax({
+            url : '/api/changeRadarrStatus/',
+            type : 'POST',
+            data: {
+                runType: 'enable'
+            },
+            success: function(data)
+            {
+                $("#spanWaiting").hide();
+            },
+            error:function (xhr, ajaxOptions, thrownError){
+                //if(xhr.status==404) {
+                //    $("#divRadarrTestConnectionText").html("Connection Failed 404");
+                //} else {
+                //    $("#divRadarrTestConnectionText").html("Connection Failed");
+                //}
+                $("#spanWaiting").hide();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                //$("#divRadarrTestConnectionText").html("Connection Failed");
+                $("#spanWaiting").hide();
+            }
+        });
+    }
+    function updateSonarrStatus(){
+        $.ajax({
+            url : '/api/changeSonarrStatus/',
+            type : 'POST',
+            data: {
+                runType: 'enable'
+            },
+            success: function(data)
+            {
+                $("#spanWaiting").hide();
+            },
+            error:function (xhr, ajaxOptions, thrownError){
+                $("#spanWaiting").hide();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                $("#spanWaiting").hide();
+            }
+        });
+    }
 </script>
 {% endblock postbody %}

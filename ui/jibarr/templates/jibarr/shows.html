@@ -6,102 +6,172 @@
 {% block content %}
 
 <div class='CONTAINER'>
-        <div style='float:left;width:30px;display:none;' id='divWaiting'>..waiting..</div>
-        <div style="margin:5px 5px 20px auto;float:right;border:1px dotted silver;height:25px;padding:3px;border-radius:5px;background-color:lightblue;">
-            <i style="padding-left:3px;padding-right:3px;" class='glyphicon glyphicon-record' title='Show All'></i>
-            <i style="padding-right:3px;" class='glyphicon glyphicon-star-empty' title='Show Unmonitored'></i>
-            <i style="padding-right:3px;" class='glyphicon glyphicon-star' title='Show Monitored'></i>
-            <i style="padding-right:3px;" class='glyphicon glyphicon-save' title='Show Sync Needed'></i>
-            <i style="padding-right:3px;" class='glyphicon glyphicon-saved' title='Show Synced'></i>
-        </div>
-        <table id="tblMovies" class="" style='width:100%;'>
-            <thead>
-                <tr>
-                    <th>id</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>Title</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>Rating</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>Released</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>Seasons</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>Episodes</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>lastUpd</th>
-                    <th style='border-bottom:2px solid gray;text-align:left;'>&nbsp;</th>
-                </tr>
-            </thead>
-            <tbody> 
-                    {% for val in show_list.showlist %}
-                    <tr>
-                        <td>{{ val.media_id }}</td>
-                        <td style="border-bottom:1px solid gray;"><a href="http://thetvdb.com/dereferrer/series/{{ val.tvdbId }}" target="_new">{{ val.title }}</a></td>
-                        <td style="border-bottom:1px solid gray;">{{ val.rating }}</td>
-                        <td style="border-bottom:1px solid gray;">{{ val.year }}</td>
-                        <td style="border-bottom:1px solid gray;">{{ val.seasonCount }}</td>
-                        <td style="border-bottom:1px solid gray;">{{ val.episodeCount }}</td>
-                        <td style="border-bottom:1px solid gray;">&nbsp;</td>
-                        <td style="border-bottom:1px solid gray;">
-                            {% if val.isMonitored %}
-                            <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Monitored" onclick='delMonitor({{ val.media_id }});' ></i>
-                            {% if val.isNewer %}
-                            <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+    <div style="margin:5px 5px 20px auto;float:right;border:1px dotted silver;height:25px;padding:3px;border-radius:5px;background-color:lightblue;">
+        <a href="?filter=all"><i style="padding-left:3px;padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-record' title='Show All' onclick="filterResults('all');"></i></a>
+        <a href="?filter=unmonitored"><i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star-empty' title='Show Unmonitored' onclick="filterResults('unmon');"></i></a>
+        <a href="?filter=monitored"><i style="padding-right:3px;cursor:pointer;" class='glyphicon glyphicon-star' title='Show Monitored' onclick="filterResults('mon');"></i></a>
+    </div>
+    <div style="float:right;margin:5px 45px 20px auto;">
+        <input type="text" id="txtSearchText" style="width:250px;height:25px;" onkeyup="startSearch(event);" />
+        <button id="btnSearch" class="btn btn-primary btn-sm" onclick="filterResults();">Search</button>
+    </div>
+
+    <div  style="margin-top:55px;border-top:1px dotted silver;">
+        {% for val in show_list.showlist %}
+        <div class="divRow" style="margin-top:5px;padding-top:5px;height:100px;">
+            <div style="float:left;">
+                <a href="/jibarr/showdetails?id={{ val.sonarr_id }}">
+                {% if system_settings.isSonarrConnected %}
+                <img src="{{ system_settings.sonarr_path }}/MediaCover/{{ val.sonarr_id }}/poster.jpg" style="width:65px;cursor:pointer;" />
+                {% else %}
+                <img src="{% static 'jibarr/images/no_image.png' %}" style="width:50px;cursor:pointer;" />
+                {% endif %}
+                </a>
+            </div>
+            <div style="height:100px;padding-left:75px;">
+                <div style="height:60px;padding-top:3px;margin-bottom:10px;">
+                    <div>
+                        <div style="font-size:larger;margin-right:125px;"><a href="/jibarr/showdetails?id={{ val.sonarr_id }}">{{ val.title }}</a></div>
+                        <div style=font-size:smaller;margin-right:125px;>
+                            {{ val.description }}
+                        </div>
+                    </div>
+                    <div style="float:right;width:100px;margin-right:5px;margin-top:-50px;">
+                        <div style="margin-bottom:10px;text-align:right;height:22px;">
+                            <div id="divAction_{{ val.sonarr_id }}" style="float:right;margin-right:0px;text-align:center;font-size:large;">
+                                {% if val.isMonitored %}
+                                <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Monitored" onclick='delMonitor({{ val.sonarr_id }});' ></i>
+                                {% else %}
+                                <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.sonarr_id }});'></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div style="margin-top:5px;">
+                            {% if val.seasonCount != 1 %}
+                            <div class="seasonCallout" style="width:100px;">{{ val.seasonCount }} Seasons</div>
                             {% else %}
-                            <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
+                            <div class="seasonCallout" style="width:100px;">{{ val.seasonCount }} Season</div>
                             {% endif %}
+                        </div>
+                        <div class="progress" style="font-size:smaller;" title="{{ val.episodeFileCount }} of {{ val.episodeCount }} episodes available.">
+                            {% if val.episodePercentage < 50 %}
+                            <div class="progress-bar" role="progressbar" style="color:black;width: {{ val.episodePercentage }}%;" aria-valuenow="{{ val.episodeFileCount }}" aria-valuemin="0" aria-valuemax="{{ val.episodeCount }}"></div>{{ val.episodeFileCount }}/{{ val.episodeCount }}
                             {% else %}
-                            <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Un-Monitored" onclick='addMonitor({{ val.s_id }},{{ system_profile.id }});'></i>
-                            {% endif %}    
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-        </table>
+                            <div class="progress-bar" role="progressbar" style="width: {{ val.episodePercentage }}%;" aria-valuenow="{{ val.episodeFileCount }}" aria-valuemin="0" aria-valuemax="{{ val.episodeCount }}">{{ val.episodeFileCount }}/{{ val.episodeCount }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    {% if val.tvdbId %}
+                    <span class="siteCallout"><a href='http://www.thetvdb.com/?tab=series&id={{ val.tvdbId }}' target="_new">The TVDB</a></span>
+                    <span class="siteCallout"><a href='http://trakt.tv/search/tvdb/{{ val.tvdbId }}?id_type=show' target="_new">Trakt</a></span>
+                    {% endif %}    
+                    {% if val.tvMazeId %}
+                    <span class="siteCallout"><a href='http://www.tvmaze.com/shows/{{ val.tvMazeId }}/_' target="_new">TV Maze</a></span>
+                    {% endif %}
+                    {% if val.imdbId %}
+                    <span class="siteCallout"><a href='http://imdb.com/title/{{ val.imdbId }}' target="_new">IMDB</a></span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div>
         <div style="margin-top:20px;margin-bottom:5px;border-top:1px dotted silver;padding-top:5px;">
-            <div style="float:left;width:15%;">total series: {{ show_list.count }}</div>
-            <div style="float:left;width:15%;">total episodes: {{ show_list.episodeCount}}</div>
-            <div style="float:left;width:20%;">total series monitored: {{ show_list.monitoredCount }}</div>
-            <div style="float:left;width:23%;">total episodes synced: 0000</div>
-            <div style="float:left;width:23%;">total episodes not synced: 0000</div>
+            <div style="float:left;width:33%;">total series: {{ show_list.count }}</div>
+            <div style="float:left;width:33%;text-align:center;">total episodes: {{ show_list.episodeCount}}</div>
+            <div style="float:left;width:33%;text-align:right;">total series monitored: {{ show_list.monitoredCount }}</div>
+        </div>
+        <div style="float:left;">
+            {% if show_list.showlist.has_other_pages %}
+            <ul class="pagination">
+                <li><a href="?page=1&filter={{ show_list.filterCriteria }}">First</a></li>
+                {% if show_list.showlist.has_previous %}
+                <li><a href="?page={{ show_list.showlist.previous_page_number }}&filter={{ show_list.filterCriteria }}">&laquo;</a></li>
+                {% else %}
+                <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                <li class="disabled"><span>{{ show_list.showlist.number }}</span></li>
+                {% if show_list.showlist.has_next %}
+                <li><a href="?page={{ show_list.showlist.next_page_number }}&filter={{ show_list.filterCriteria }}">&raquo;</a></li>
+                {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+                <li><a href="?page={{ testitem.movielist.paginator.num_pages }}&filter={{ show_list.filterCriteria }}">Last</a></li>
+            </ul>
+            {% endif %}
         </div>
     </div>
+</div>
 
 {% endblock content %}
 {% block postbody %}
 <script>
     $(function () {
     });
-    function addMonitor(rid,pid) {
+    function addMonitor(s) {
         $.ajax({
             url : '/api/profilesonarr/add/',
             type : 'POST',
             data: { 
-                profile_id: pid,
-                sonarr_id: rid
+                profile_id: {{ system_profile.id }},
+                sonarr_id: s
             },
             success: function(data)
             {
                 //alert('success');
                 location.reload(true);
+                //var reg = new RegExp('^[0-9]+$');
+                //if(reg.test(data)){
+                //    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + "," + rid + ");' ></i>")
+                //};
             },
             fail: function(xhr, textStatus, errorThrown){
                 alert('request failed');
             }
         });
     }
-    function delMonitor(id) {
+    function delMonitor(s) {
         if(confirm('are you sure?')){
             $.ajax({
                 url : '/api/profilesonarr/delete/',
                 type : 'POST',
                 data: { 
-                    psid: id
+                    sonarr_id: s,
+                    profile_id: {{ system_profile.id }}
                 },
                 success: function(data)
                 {
                     //alert('success');
                     location.reload(true);
+                    //if(data == "DelOK"){
+                    //    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + rid +");' ></i>")
+                    //} else {
+                    //    alert("Data not DelOK = " + data);
+                    //};
                 },
                 fail: function(xhr, textStatus, errorThrown){
                     alert('request failed');
                }
             });
+        }
+    }
+    function filterResults(){
+        if($("#txtSearchText").val().length > 3){
+            var url=window.location.href,
+                separator = (url.indexOf("?")===-1)?"?":"&",
+                newParam=separator + "search=" + $("#txtSearchText").val();
+            newUrl=url.replace(newParam,"");
+            newUrl+=newParam;
+            window.location.href=newUrl;
+            //alert(newUrl);
+        }
+    }
+    function startSearch(event) {
+        if(event.keyCode==13){
+            filterResults();
         }
     }
 </script>
