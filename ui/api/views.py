@@ -110,6 +110,14 @@ class ProfileSonarrViewSet(viewsets.ModelViewSet):
         if pk == 'delete':
             ps = ProfileSonarr.objects.filter(sonarr_id=sid,profile_id=pid)
             ps.delete()
+
+            semList = SonarrEpisodeMedia.objects.filter(seriesId=sid)
+            pseList = ProfileSonarrEpisode.objects.filter(profile_id=pid)
+            for sem in semList:
+                for pse in pseList:
+                    if pse.sonarr_id == sem.sonarr_id:
+                        pse.delete()
+
             ret = "DelOK"
             try:
                 Logs.objects.create(log_type='Delete',log_category='Sonarr',log_message='Sonarr entry deleted ' + ss.title + ' from ProfileID ' + pid,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))

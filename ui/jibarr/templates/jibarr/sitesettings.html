@@ -170,8 +170,10 @@
     function testRadarrConnection(){
         $("#spanWaiting").show();
         $("#divRadarrTestConnectionText").html("...checking connection...");
+        var radarrURL = $("#txtRadarrPath").val() + '/api/system/status/?apikey=' + $("#txtRadarrAPIKey").val();
+        
         $.ajax({
-            url : '{{ system_settings.radarr_path }}/api/system/status/?apikey={{ system_settings.radarr_apikey }}',
+            url : radarrURL,
             type : 'GET',
             data: {},
             success: function(data)
@@ -196,8 +198,9 @@
     function testSonarrConnection(){
         $("#spanWaiting").show();
         $("#divSonarrTestConnectionText").html("...checking connection...");
+        var sonarrURL = $("#txtSonarrPath").val() + '/api/system/status/?apikey=' + $("#txtSonarrAPIKey").val();
         $.ajax({
-            url : '{{ system_settings.sonarr_path }}/api/system/status/?apikey={{ system_settings.sonarr_apikey }}',
+            url : sonarrURL,
             type : 'GET',
             data: {},
             success: function(data)
