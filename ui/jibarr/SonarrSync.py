@@ -57,8 +57,8 @@ def SonarrSync(forceload):
                 ssm.seasonCount = var['seasonCount']
                 ssm.episodeCount = var['episodeCount']
                 ssm.episodeFileCount = var['episodeFileCount']
-
-                SonarrShowMedia.objects.create(sonarr_id = ssm.sonarr_id,title = ssm.title,title_slug = ssm.title_slug,year = ssm.year,path = ssm.path,lastInfoSync = ssm.lastInfoSync,rating = ssm.rating,tvdbId = ssm.tvdbId,tvRageId = ssm.tvRageId,tvMazeId = ssm.tvMazeId,imdbId = ssm.imdbId,seasonCount = ssm.seasonCount,episodeCount = ssm.episodeCount, description = ssm.description, episodeFileCount = ssm.episodeFileCount)
+                if ssm.episodeFileCount > 0:
+                    SonarrShowMedia.objects.create(sonarr_id = ssm.sonarr_id,title = ssm.title,title_slug = ssm.title_slug,year = ssm.year,path = ssm.path,lastInfoSync = ssm.lastInfoSync,rating = ssm.rating,tvdbId = ssm.tvdbId,tvRageId = ssm.tvRageId,tvMazeId = ssm.tvMazeId,imdbId = ssm.imdbId,seasonCount = ssm.seasonCount,episodeCount = ssm.episodeCount, description = ssm.description, episodeFileCount = ssm.episodeFileCount)
                 isSuccessful = True
                 
                 ## TODO - Run the insert for all profiles with auto-add
@@ -161,12 +161,12 @@ def SonarrSync(forceload):
                     ssm.seasonCount = var['seasonCount']
                     ssm.episodeCount = var['episodeCount']
                     ssm.episodeFileCount = var['episodeFileCount']
-                    
-                    SonarrShowMedia.objects.create(sonarr_id = ssm.sonarr_id,title = ssm.title,title_slug = ssm.title_slug,year = ssm.year,path = ssm.path,lastInfoSync = ssm.lastInfoSync,rating = ssm.rating,tvdbId = ssm.tvdbId,tvRageId = ssm.tvRageId,tvMazeId = ssm.tvMazeId,imdbId = ssm.imdbId,seasonCount = ssm.seasonCount,episodeCount = ssm.episodeCount, description = ssm.description, episodeFileCount = ssm.episodeFileCount)
-                    try:
-                        Logs.objects.create(log_type='Sync',log_category='System',log_message='Added ' + ssm.title + ' from Sonarr',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-                    except:
-                        pass
+                    if ssm.episodeFileCount > 0:
+                        SonarrShowMedia.objects.create(sonarr_id = ssm.sonarr_id,title = ssm.title,title_slug = ssm.title_slug,year = ssm.year,path = ssm.path,lastInfoSync = ssm.lastInfoSync,rating = ssm.rating,tvdbId = ssm.tvdbId,tvRageId = ssm.tvRageId,tvMazeId = ssm.tvMazeId,imdbId = ssm.imdbId,seasonCount = ssm.seasonCount,episodeCount = ssm.episodeCount, description = ssm.description, episodeFileCount = ssm.episodeFileCount)
+                        try:
+                            Logs.objects.create(log_type='Sync',log_category='System',log_message='Added ' + ssm.title + ' from Sonarr',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                        except:
+                            pass
                     isSuccessful = True
 
                     ## TODO - Run the insert for all profiles with auto-add
@@ -242,7 +242,8 @@ def LoopSeries(forceload):
                             pass
                         sem.airDate = var["airDate"]
                         sem.size = var["episodeFile"]["size"]
-                        SonarrEpisodeMedia.objects.create(sonarr_id=sem.sonarr_id, seriesId = sem.seriesId, seasonNumber = sem.seasonNumber, path = sem.path, dateAdded = sem.dateAdded, episodeNumber = sem.episodeNumber, title = sem.title, quality = sem.quality, description = sem.description, airDate = sem.airDate, size = sem.size)
+                        if sem.size > 0:
+                            SonarrEpisodeMedia.objects.create(sonarr_id=sem.sonarr_id, seriesId = sem.seriesId, seasonNumber = sem.seasonNumber, path = sem.path, dateAdded = sem.dateAdded, episodeNumber = sem.episodeNumber, title = sem.title, quality = sem.quality, description = sem.description, airDate = sem.airDate, size = sem.size)
             else:
                 # update episodes
                 for var in output:
@@ -328,7 +329,8 @@ def LoopSeries(forceload):
                             #airDate = models.CharField(max_length=200)
                             #size = models.IntegerField()
                             # CREATE
-                            sem = SonarrEpisodeMedia.objects.create(sonarr_id=var['id'],seriesId=var['seriesId'],episodeNumber=var['episodeNumber'],title=var['title'],seasonNumber=var['seasonNumber'],path=var['episodeFile']['path'],dateAdded=var['episodeFile']['dateAdded'][:10] + " " + var['episodeFile']['dateAdded'][11:16],quality=var['episodeFile']['quality']['quality']['name'],description=semDescription,airDate=var['airDate'],size=var['episodeFile']['size'])
+                            if var['episodeFile']['size'] > 0:
+                                sem = SonarrEpisodeMedia.objects.create(sonarr_id=var['id'],seriesId=var['seriesId'],episodeNumber=var['episodeNumber'],title=var['title'],seasonNumber=var['seasonNumber'],path=var['episodeFile']['path'],dateAdded=var['episodeFile']['dateAdded'][:10] + " " + var['episodeFile']['dateAdded'][11:16],quality=var['episodeFile']['quality']['quality']['name'],description=semDescription,airDate=var['airDate'],size=var['episodeFile']['size'])
                         
         except Exception as e:
             Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Episode update failed: ' + str(var["id"]) + ' -- ',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
