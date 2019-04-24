@@ -94,7 +94,8 @@ def get_show_info(system_settings, prof):
         ss = sonarrShow()
         ss.id = var.id
         ss.title = var.title
-        ss.description = var.description
+        ssDesc = (var.description[:500] + ' [...]') if len(var.description) > 500 else var.description
+        ss.description = ssDesc
         ss.sonarr_id = var.sonarr_id
         ss.year = var.year
         ss.imdbId = var.imdbId
