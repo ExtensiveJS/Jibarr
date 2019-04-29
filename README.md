@@ -5,6 +5,7 @@ Utility to allow you to track files that need to be synced to secondary drives.
 
 
 ## Getting Started:
+* See the <a href="https://github.com/ExtensiveJS/Jibarr/wiki/Installation">Wiki</a> for detailed instructions.
 
 ## Downloads
 <table>
