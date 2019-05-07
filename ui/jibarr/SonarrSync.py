@@ -5,7 +5,7 @@ from datetime import datetime
 
 def SonarrSync(forceload):
     try:
-        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Database sync started',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Database sync started',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except KeyError:
         pass
     isSuccessful = False
@@ -87,9 +87,9 @@ def SonarrSync(forceload):
                     if ssm.description != var['overview']:
                         wasUpdated = True
                         ssm.description = var['overview']
-                    if ssm.year != var['year']:
+                    if ssm.year != str(var['year']):
                         wasUpdated = True
-                        ssm.year = var['year']
+                        ssm.year = str(var['year'])
                     if ssm.path != var['path']:
                         wasUpdated = True
                         ssm.path = var['path']
@@ -99,15 +99,15 @@ def SonarrSync(forceload):
                     if ssm.rating != var["ratings"]["value"]:
                         #wasUpdated = True
                         ssm.rating = var["ratings"]["value"]
-                    if ssm.tvdbId != var["tvdbId"]:
+                    if ssm.tvdbId != str(var["tvdbId"]):
                         wasUpdated = True
-                        ssm.tvdbId = var["tvdbId"]
-                    if ssm.tvRageId != var["tvRageId"]:
+                        ssm.tvdbId = str(var["tvdbId"])
+                    if ssm.tvRageId != str(var["tvRageId"]):
                         wasUpdated = True
-                        ssm.tvRageId = var["tvRageId"]
-                    if ssm.tvMazeId != var["tvMazeId"]:
+                        ssm.tvRageId = str(var["tvRageId"])
+                    if ssm.tvMazeId != str(var["tvMazeId"]):
                         wasUpdated = True
-                        ssm.tvMazeId = var["tvMazeId"]
+                        ssm.tvMazeId = str(var["tvMazeId"])
                     if ssm.imdbId != var["imdbId"]:
                         wasUpdated = True
                         ssm.imdbId = var["imdbId"]
@@ -122,7 +122,7 @@ def SonarrSync(forceload):
                         ssm.episodeFileCount = var['episodeFileCount']
                     if wasUpdated:
                         try:
-                            Logs.objects.create(log_type='Sync',log_category='System',log_message='Updated ' + ssm.title + ' from Sonarr.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                            Logs.objects.create(log_type='Sync',log_category='System',log_message='Updated ' + ssm.title + ' from Sonarr.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
                         except:
                             pass
                         ssm.save()
@@ -164,7 +164,7 @@ def SonarrSync(forceload):
                     if ssm.episodeFileCount > 0:
                         SonarrShowMedia.objects.create(sonarr_id = ssm.sonarr_id,title = ssm.title,title_slug = ssm.title_slug,year = ssm.year,path = ssm.path,lastInfoSync = ssm.lastInfoSync,rating = ssm.rating,tvdbId = ssm.tvdbId,tvRageId = ssm.tvRageId,tvMazeId = ssm.tvMazeId,imdbId = ssm.imdbId,seasonCount = ssm.seasonCount,episodeCount = ssm.episodeCount, description = ssm.description, episodeFileCount = ssm.episodeFileCount)
                         try:
-                            Logs.objects.create(log_type='Sync',log_category='System',log_message='Added ' + ssm.title + ' from Sonarr',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                            Logs.objects.create(log_type='Sync',log_category='System',log_message='Added ' + ssm.title + ' from Sonarr',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
                         except:
                             pass
                     isSuccessful = True
@@ -179,32 +179,28 @@ def SonarrSync(forceload):
     if isSuccessful:
         ############################################### update settings last sync date
         sett = SiteSettings.objects.all()[:1].get()
-        sett.sonarr_last_sync = datetime.now().strftime("%b %d %Y %H:%M:%S")
+        sett.sonarr_last_sync = datetime.utcnow().strftime("%b %d %Y %H:%M:%S")
         sett.save()
         try:
             time.sleep(2)    # pause 2 seconds
-            Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Database sync finished',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Database sync finished',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except KeyError:
             pass
     else:
         try:
             time.sleep(2)    # pause 5.5 seconds
-            Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Database sync failed',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Database sync failed',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except KeyError:
             pass
     # do Series Episode loop
     if isSuccessful:
         isSuccessful = LoopSeries(forceload)
 
-    ## do Episode loop
-    #if isSuccessful:
-    #    isSuccessful = LoopEpisodes()
-
     return isSuccessful
 
 def LoopSeries(forceload):
     try:
-        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Episode sync started',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Episode sync started',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
     isSuccessful = True
@@ -240,7 +236,11 @@ def LoopSeries(forceload):
                             sem.description = var["overview"]
                         except:
                             pass
-                        sem.airDate = var["airDate"]
+                        sem.airDate = ""
+                        try:
+                            sem.airDate = var["airDate"]
+                        except:
+                            pass
                         sem.size = var["episodeFile"]["size"]
                         if sem.size > 0:
                             SonarrEpisodeMedia.objects.create(sonarr_id=sem.sonarr_id, seriesId = sem.seriesId, seasonNumber = sem.seasonNumber, path = sem.path, dateAdded = sem.dateAdded, episodeNumber = sem.episodeNumber, title = sem.title, quality = sem.quality, description = sem.description, airDate = sem.airDate, size = sem.size)
@@ -297,9 +297,13 @@ def LoopSeries(forceload):
                                 sem.description = ''
                                 pass
                             #airDate = models.CharField(max_length=200)
-                            if sem.airDate != var['airDate']:
-                                wasUpdated = True
-                                sem.airDate = var['airDate']
+                            try:
+                                if sem.airDate != var['airDate']:
+                                    wasUpdated = True
+                                    sem.airDate = var['airDate']
+                            except:
+                                sem.airDate = ""
+                                pass
                             #size = models.IntegerField()
                             if sem.size != var['episodeFile']['size']:
                                 wasUpdated = True
@@ -307,63 +311,30 @@ def LoopSeries(forceload):
                             # SAVE
                             if wasUpdated:
                                 try:
-                                    Logs.objects.create(log_type='Sync',log_category='System',log_message='Updated ' + sem.title + '[' + str(sem.seasonNumber) + '/' + str(sem.episodeNumber) + '] from Sonarr.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                                    Logs.objects.create(log_type='Sync',log_category='System',log_message='Updated ' + sem.title + ' [s' + str(sem.seasonNumber) + '/e' + str(sem.episodeNumber) + '] from Sonarr.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
                                 except:
                                     pass
                                 sem.save()
                             isSuccessful = True
                         else:
-                            #seriesId = models.IntegerField()
-                            #episodeNumber = models.IntegerField()
-                            #title = models.CharField(max_length=200)
-                            #seasonNumber = models.IntegerField()
-                            #path = models.CharField(max_length=200)
-                            #dateAdded = models.CharField(max_length=200)
-                            #quality = models.CharField(max_length=200)
-                            #description = models.CharField(max_length=2000)
                             semDescription = ''
                             try:
                                 semDescription = var['overview']
                             except:
                                 pass
-                            #airDate = models.CharField(max_length=200)
-                            #size = models.IntegerField()
+                            
+                            
                             # CREATE
                             if var['episodeFile']['size'] > 0:
                                 sem = SonarrEpisodeMedia.objects.create(sonarr_id=var['id'],seriesId=var['seriesId'],episodeNumber=var['episodeNumber'],title=var['title'],seasonNumber=var['seasonNumber'],path=var['episodeFile']['path'],dateAdded=var['episodeFile']['dateAdded'][:10] + " " + var['episodeFile']['dateAdded'][11:16],quality=var['episodeFile']['quality']['quality']['name'],description=semDescription,airDate=var['airDate'],size=var['episodeFile']['size'])
                         
         except Exception as e:
-            Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Episode update failed: ' + str(var["id"]) + ' -- ',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Episode update failed: ' + str(var["id"]) + ' -- ',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
             pass
     try:
-        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Episode sync ended',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Episode sync ended',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
     return isSuccessful
 
-def LoopEpisodes():
-    system_settings = SiteSettings.objects.all()[:1].get()
-    isSuccessful = True
-    try:
-        for sem in SonarrEpisodeMedia.objects.all():
-            #http://localhost:8989/api/episode/1/?apikey=4477ca27f3b54214b3ec6c26b469d821
-            urlString = system_settings.sonarr_path + "/api/episode/" + str(sem.sonarr_id) + "/?apikey=" + system_settings.sonarr_apikey
-            data = urlopen(urlString).read()
-            output = json.loads(data)
-            sem.episodeNumber = output["episodeNumber"]
-            sem.title = output["title"]
-            #sem.quality = output["episodeFile"]["quality"]["quality"]["name"]
-            try:
-                sem.description = output["overview"]
-            except:
-                pass
-            try:
-                sem.airDate = output["airDate"]
-            except:
-                pass
-            #sem.size = output["episodeFile"]["size"]
-            sem.save()
-    except Exception as e:
-        Logs.objects.create(log_type='Sync',log_category='System',log_message='Sonarr Episode update failed: ' + e,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
-        pass
-    return isSuccessful
+

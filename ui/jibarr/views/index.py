@@ -1,6 +1,6 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models  import sonarrShowList, SonarrShowMedia, sonarrShow, ProfileSonarr, SiteSettings, Profile, ProfileRadarr, radarrMovieList, radarrMovie, RadarrMedia
+from jibarr.models  import sonarrEpisodeList, sonarrEpisode, SonarrEpisodeMedia, sonarrShowList, SonarrShowMedia, sonarrShow, ProfileSonarr, SiteSettings, Profile, ProfileRadarr, radarrMovieList, radarrMovie, RadarrMedia
 import time, math
 from time import mktime
 from datetime import datetime
@@ -26,24 +26,47 @@ def index(request):
     radarr_list = radarrMovieList()
     radarr_list.movielist = rdml[:5]
 
-    sl = get_show_info(system_settings,prof_id)
-    ssl = sl.showlist
-    ssl.sort(key=lambda x:x.lastInfoSync, reverse=True)
+    #sl = get_show_info(system_settings,prof_id)
+    #ssl = sl.showlist
+    #ssl.sort(key=lambda x:x.lastInfoSync, reverse=True)
     sonarr_list = sonarrShowList()
-    sonarr_list.showlist = ssl[:5]
+    #sonarr_list.showlist = ssl[:5]
+
+    sel = get_episode_info(system_settings,prof_id)
+    sell = sel.episodelist
+    sell.sort(key=lambda x:x.dateAdded, reverse=True)
+    for var in sell:
+        ss = SonarrShowMedia.objects.get(sonarr_id=var.seriesId)
+        ss.episodePercentage = round((ss.episodeFileCount / ss.episodeCount) * 100)
+        ss.isMonitored = True
+        ss.isNewer = True
+        sonarr_list.showlist.append(ss)
+    
+    sonarr_list2 = sonarrShowList()
+    for var in sonarr_list.showlist:
+        found = False
+        for var2 in sonarr_list2.showlist:
+            if var.sonarr_id == var2.sonarr_id:
+                found = True
+        if found == False:
+            sonarr_list2.showlist.append(var)
+            if len(sonarr_list2.showlist) >= 5:
+                break
+
+    #sonarr_list2.showlist = sonarr_list.showlist[:10]
 
     isConnected = settings.isConnected
     isSonarrConnected = settings.isSonarrConnected
 
     system_settings.isConnected = isConnected
     system_settings.isSonarrConnected = isSonarrConnected
-
+    
     context = {
         'system_settings': system_settings,
         'prof_list': prof_list,
         'prof_id': prof_id,
         'radarr_list': radarr_list,
-        'sonarr_list': sonarr_list
+        'sonarr_list': sonarr_list2
     }
     template = loader.get_template("jibarr/index.html")
     return HttpResponse(template.render(context, request))
@@ -82,6 +105,35 @@ def get_show_info(system_settings,prof_id):
                 ss.isMonitored = True
 
         results.showlist.append(ss)
+
+    return results
+
+def get_episode_info(system_settings,prof_id):
+    
+    results = sonarrEpisodeList()
+    results.episodelist.clear
+    
+    psList = ProfileSonarr.objects.filter(profile_id=prof_id)
+
+    for ep in SonarrEpisodeMedia.objects.all():
+        se = sonarrEpisode()
+        se.airDate = ep.airDate
+        se.dateAdded = ep.dateAdded
+        se.description = ep.description
+        se.episodeNumber = ep.episodeNumber
+        se.id = ep.id
+        se.path = ep.path
+        se.quality = ep.quality
+        se.seasonNumber = ep.seasonNumber
+        se.seriesId = ep.seriesId
+        se.size = ep.size
+        se.sonarr_id = ep.sonarr_id
+        se.title = ep.title
+        se.isNewer = True
+        for ps in psList:
+            if ps.sonarr_id == se.seriesId:
+                se.isMonitored = True
+        results.episodelist.append(se)
 
     return results
 

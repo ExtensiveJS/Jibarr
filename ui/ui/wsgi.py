@@ -37,6 +37,6 @@ except:
     pass
 
 try:
-    Logs.objects.create(log_type='System',log_category='System',log_message='Jibarr system started.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+    Logs.objects.create(log_type='System',log_category='System',log_message='Jibarr system started.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
 except KeyError:
     pass

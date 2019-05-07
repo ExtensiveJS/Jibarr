@@ -11,7 +11,7 @@ from django.core.cache import cache
 
 def SystemUpgrade(toVer):
     try:
-        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='System Upgrade (' + toVer + ') initiated',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='System Upgrade (' + toVer + ') initiated',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
 
@@ -78,12 +78,12 @@ def SystemUpgrade(toVer):
 
     if isSuccessful:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='System Upgrade completed successfully.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='System Upgrade completed successfully.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except KeyError:
             pass
     else:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='System Upgrade failed!!!!',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='System Upgrade failed!!!!',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except KeyError:
             pass
     
@@ -92,7 +92,7 @@ def SystemUpgrade(toVer):
 def backupDatabase():
     isSuccessful = True
     try:
-        Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup initiated.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except KeyError:
         pass
 
@@ -107,12 +107,12 @@ def backupDatabase():
     time.sleep(1)
     if isSuccessful:
         try:
-            Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup completed successfully.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup completed successfully.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except KeyError:
             pass
     else:
         try:
-            Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup failed!!!!',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup failed!!!!',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except KeyError:
             pass
 
@@ -121,7 +121,7 @@ def backupDatabase():
 def upgradeDatabase(curVer,newVer):
     isSuccessful = True
     try:
-        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade initiated.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
 
@@ -137,7 +137,7 @@ def upgradeDatabase(curVer,newVer):
     except OperationalError as msg:
         isSuccessful = False
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade error: ' + msg,log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade error: ' + msg,log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
         pass
@@ -148,12 +148,12 @@ def upgradeDatabase(curVer,newVer):
     time.sleep(1)
     if isSuccessful:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade completed successfully.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade completed successfully.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
     else:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade failed!!!!',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade failed!!!!',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
 
@@ -166,7 +166,7 @@ def upgradeCode():
         
     isSuccessful = True
     try:
-        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade initiated.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
 
@@ -178,19 +178,19 @@ def upgradeCode():
                 copy_tree(os.path.join(d, "./unzip/jibarr-master/jibarr/"),rootpath) 
                 time.sleep(1) 
         except:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code Upgrade Error: Error replacing updated files.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code Upgrade Error: Error replacing updated files.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
             isSuccessful = False
             pass
 
     time.sleep(1)
     if isSuccessful:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade completed successfully.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade completed successfully.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
     else:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade failed!!!!',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Code upgrade failed!!!!',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
 
@@ -200,7 +200,7 @@ def downloadZipFile():
     isSuccessful = True
     d = dirname(dirname(abspath(__file__)))
     try:
-        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Downloading updated code base initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Downloading updated code base initiated.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
     try:
@@ -215,12 +215,12 @@ def downloadZipFile():
     time.sleep(1)
     if isSuccessful:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Downloading updated code base completed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Downloading updated code base completed.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
     else:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='ERROR: Downloading updated code base failed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='ERROR: Downloading updated code base failed.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
 
@@ -230,7 +230,7 @@ def unzipZipFile():
     isSuccessful = True
     d = dirname(dirname(abspath(__file__)))
     try:
-        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Unzip of updated code base initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Unzip of updated code base initiated.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
     try:
@@ -254,12 +254,12 @@ def unzipZipFile():
     time.sleep(1)
     if isSuccessful:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Unzip of code base completed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Unzip of code base completed.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
     else:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='ERROR: Unzip of code base failed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='ERROR: Unzip of code base failed.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
 
@@ -269,7 +269,7 @@ def cleanupFiles():
     isSuccessful = True
     d = dirname(dirname(abspath(__file__)))
     try:
-        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Cleanup of downloaded code base initiated.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Cleanup of downloaded code base initiated.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
     try:
@@ -282,12 +282,12 @@ def cleanupFiles():
     time.sleep(1)
     if isSuccessful:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Cleanup of downloaded code base completed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Cleanup of downloaded code base completed.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
     else:
         try:
-            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='ERROR: Cleanup of downloaded code base failed.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Upgrade',log_category='System',log_message='ERROR: Cleanup of downloaded code base failed.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:
             pass
 
