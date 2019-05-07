@@ -5,7 +5,7 @@ from datetime import datetime
 
 def RadarrSync(forceload):
     try:
-        Logs.objects.create(log_type='Sync',log_category='System',log_message='Radarr Database sync started',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+        Logs.objects.create(log_type='Sync',log_category='System',log_message='Radarr Database sync started',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except KeyError:
         pass
     isSuccessful = False
@@ -175,7 +175,7 @@ def RadarrSync(forceload):
                         #RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality)
                         if wasUpdated:
                             try:
-                                Logs.objects.create(log_type='Sync',log_category='System',log_message='Updated ' + rm.title + ' from Radarr.',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                                Logs.objects.create(log_type='Sync',log_category='System',log_message='Updated ' + rm.title + ' from Radarr.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
                             except:
                                 pass
                             rm.save()
@@ -230,7 +230,7 @@ def RadarrSync(forceload):
                         
                         RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality)
                         try:
-                            Logs.objects.create(log_type='Sync',log_category='System',log_message='Added ' + rm.title + ' from Radarr',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                            Logs.objects.create(log_type='Sync',log_category='System',log_message='Added ' + rm.title + ' from Radarr',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
                         except:
                             pass
                         isSuccessful = True
@@ -245,17 +245,17 @@ def RadarrSync(forceload):
     if isSuccessful:
         ############################################### update settings last sync date
         sett = SiteSettings.objects.all()[:1].get()
-        sett.radarr_last_sync = datetime.now().strftime("%b %d %Y %H:%M:%S")
+        sett.radarr_last_sync = datetime.utcnow().strftime("%b %d %Y %H:%M:%S")
         sett.save()
         try:
             time.sleep(2)    # pause 2 seconds
-            Logs.objects.create(log_type='Sync',log_category='System',log_message='Radarr Database sync finished',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Radarr Database sync finished',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except KeyError:
             pass
     else:
         try:
             time.sleep(2)    # pause 5.5 seconds
-            Logs.objects.create(log_type='Sync',log_category='System',log_message='Radarr Database sync failed',log_datetime=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+            Logs.objects.create(log_type='Sync',log_category='System',log_message='Radarr Database sync failed',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except KeyError:
             pass
     return isSuccessful

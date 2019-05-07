@@ -47,10 +47,10 @@ def copyTheShow(idList, destDir, prof_id, createShowFolder, createSeasonFolder):
 
             if ProfileSonarrEpisode.objects.filter(profile_id=prof_id,sonarr_id=var).count() == 1:
                 pse = ProfileSonarrEpisode.objects.get(profile_id=prof_id,sonarr_id=var)
-                pse.lastRun = datetime.now().strftime("%b %d %Y %H:%M:%S")
+                pse.lastRun = datetime.utcnow().strftime("%b %d %Y %H:%M:%S")
                 pse.save()
             else:
-                pse = ProfileSonarrEpisode.objects.create(profile_id=prof_id,sonarr_id=var,lastRun=datetime.now().strftime("%b %d %Y %H:%M:%S"))
+                pse = ProfileSonarrEpisode.objects.create(profile_id=prof_id,sonarr_id=var,lastRun=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
                 pse.save()
 
     except:
@@ -60,6 +60,6 @@ def copyTheShow(idList, destDir, prof_id, createShowFolder, createSeasonFolder):
     if isSuccessful:
         # call to update the Profile to the new date/time stamp
         prof = Profile.objects.get(id=prof_id)
-        prof.sonarr_lastRun = datetime.now().strftime("%b %d %Y %H:%M:%S")
+        prof.sonarr_lastRun = datetime.utcnow().strftime("%b %d %Y %H:%M:%S")
         prof.save()
     return isSuccessful
