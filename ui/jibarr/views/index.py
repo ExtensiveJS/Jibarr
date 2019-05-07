@@ -35,10 +35,16 @@ def index(request):
     sel = get_episode_info(system_settings,prof_id)
     sell = sel.episodelist
     sell.sort(key=lambda x:x.dateAdded, reverse=True)
+
     for var in sell:
         ss = SonarrShowMedia.objects.get(sonarr_id=var.seriesId)
         ss.episodePercentage = round((ss.episodeFileCount / ss.episodeCount) * 100)
-        ss.isMonitored = True
+        ss.isMonitored = False
+        try:
+            ProfileSonarr.objects.get(sonarr_id=var.seriesId)
+            ss.isMonitored = True
+        except:
+            pass
         ss.isNewer = True
         sonarr_list.showlist.append(ss)
     
@@ -53,7 +59,7 @@ def index(request):
             if len(sonarr_list2.showlist) >= 5:
                 break
 
-    #sonarr_list2.showlist = sonarr_list.showlist[:10]
+
 
     isConnected = settings.isConnected
     isSonarrConnected = settings.isSonarrConnected
