@@ -18,26 +18,50 @@
     <div style="padding-bottom:10px;">
         <h2>System Settings: </h2>
     </div>
-    <div style="height:120px;">
-        <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Upgrades</div>
-        <div class="subSetting" style="width:49%;float:left;">
-            <div style="width:auto;height:30px;">
-                <div class="subSettingLabel">Upgrades Enabled:</div>
-                <div><input disabled type="checkbox" id="chkUpgradesEnabled" {% if system_settings.upgrades_enabled %} checked {% endif %} /></div>
+
+    <div class="">
+        <div class="row" style="padding-bottom: 20px;">
+            <div class="col-md-2 text-right">Upgrades Enabled</div>
+            <div class="col-md-2">
+                <div class="onoffswitch">
+                    <input disabled type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="chkUpgradesEnabled" {% if system_settings.upgrades_enabled %} checked {% endif %}>
+                    <label class="onoffswitch-label" for="chkUpgradesEnabled">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
             </div>
         </div>
-    </div>
-    <div style="height:120px;">
-        <div style="font-size:larger;margin-left:15px;margin-bottom:10px;padding-top:20px;padding-left:25px;border-bottom:1px solid lightgrey;">Scheduler</div>
-        <div class="subSetting" style="width:49%;float:left;">
-            <div style="width:auto;height:30px;">
-                <div class="subSettingLabel">Scheduler Enabled (24h):</div>
-                <div><input disabled type="checkbox" id="chkSchedulerEnabled" {% if system_settings.scheduler_enabled %} checked {% endif %} /></div>
+        <div class="row" style="padding-bottom: 20px;">
+            <div class="col-md-2 text-right">Scheduler Enabled</div>
+            <div class="col-md-2">
+                <div class="onoffswitch">
+                    <input disabled type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="chkSchedulerEnabled" {% if system_settings.scheduler_enabled %} checked {% endif %}>
+                    <label class="onoffswitch-label" for="chkSchedulerEnabled">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>
     <div style="text-align:right;" >
         <button type="button" class="btn btn-primary btn-sm" onclick="saveSettings();">Save</button>
+    </div>
+    <div><hr></div>
+    <div style="padding-bottom:10px;">
+        <h2>Database Backup: <button type="button" class="btn btn-primary btn-sm" onclick="runBackup();">Run</button></h2>
+    </div>
+    <div>
+        Previous Database Backups: (<i style="font-size:small;">{{ backupLocation }}</i>)<br>
+        <div style="font-size: smaller;">
+        {% for f in backupList %}
+        <div class="col-sm-10 row divRow" style="margin-left:20px;">
+            <div class="">{{ f }}</div>
+        </div>
+        {% endfor %}
+        </div>
+        <div class="col-sm-10 row divRow" style="margin-left:20px;">&nbsp;</div>
     </div>
 </div>
 {% endblock content %}
@@ -135,6 +159,24 @@
         $("#spanWaiting").hide();
         location.reload();
     }
-    
+    function runBackup(){
+        if(confirm("Are you sure you want to initiate a backup?")) {
+            $.ajax({
+                url : '/api/runbackup/',
+                type : 'POST',
+                data: {
+                },
+                success: function(data){
+                    location.reload();
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('Error running backup: ' + xhr.status);
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('Error backup failed: ' + xhr.status);
+                }
+            });
+        }
+    }
 </script>
 {% endblock postbody %}

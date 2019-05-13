@@ -26,38 +26,76 @@ def index(request):
     radarr_list = radarrMovieList()
     radarr_list.movielist = rdml[:5]
 
-    #sl = get_show_info(system_settings,prof_id)
-    #ssl = sl.showlist
-    #ssl.sort(key=lambda x:x.lastInfoSync, reverse=True)
-    sonarr_list = sonarrShowList()
-    #sonarr_list.showlist = ssl[:5]
 
+
+    sonarr_list = sonarrShowList()
+    sonarr_list_ids = []
+    # 1) Get list of Episodes by dateAdded desc
     sel = get_episode_info(system_settings,prof_id)
     sell = sel.episodelist
     sell.sort(key=lambda x:x.dateAdded, reverse=True)
-
+    # 2) Loop episodes for unique shows, exit with 5 shows
     for var in sell:
-        ss = SonarrShowMedia.objects.get(sonarr_id=var.seriesId)
+        if not var.seriesId in sonarr_list_ids:
+            sonarr_list_ids.append(var.seriesId)
+            if len(sonarr_list_ids) >= 5:
+                break
+    # 3) Fill show details (maybe do as part of 2)
+    for var in sonarr_list_ids:
+        ss = SonarrShowMedia.objects.get(sonarr_id=var)
         ss.episodePercentage = round((ss.episodeFileCount / ss.episodeCount) * 100)
         ss.isMonitored = False
         try:
-            ProfileSonarr.objects.get(sonarr_id=var.seriesId)
+            ProfileSonarr.objects.get(sonarr_id=var)
             ss.isMonitored = True
         except:
             pass
         ss.isNewer = True
         sonarr_list.showlist.append(ss)
     
-    sonarr_list2 = sonarrShowList()
-    for var in sonarr_list.showlist:
-        found = False
-        for var2 in sonarr_list2.showlist:
-            if var.sonarr_id == var2.sonarr_id:
-                found = True
-        if found == False:
-            sonarr_list2.showlist.append(var)
-            if len(sonarr_list2.showlist) >= 5:
-                break
+
+
+
+
+
+
+
+
+
+
+    #for var in sell:
+    #    ss = SonarrShowMedia.objects.get(sonarr_id=var.seriesId)
+    #    ss.episodePercentage = round((ss.episodeFileCount / ss.episodeCount) * 100)
+    #    ss.isMonitored = False
+    #    try:
+    #        ProfileSonarr.objects.get(sonarr_id=var.seriesId)
+    #        ss.isMonitored = True
+    #    except:
+    #        pass
+    #    ss.isNewer = True
+    #    sonarr_list.showlist.append(ss)
+    
+    #sonarr_list2 = sonarrShowList()
+    #for var in sonarr_list.showlist:
+    #    found = False
+    #    for var2 in sonarr_list2.showlist:
+    #        if var.sonarr_id == var2.sonarr_id:
+    #            found = True
+    #    if found == False:
+    #        sonarr_list2.showlist.append(var)
+    #        if len(sonarr_list2.showlist) >= 5:
+    #            break
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -72,7 +110,7 @@ def index(request):
         'prof_list': prof_list,
         'prof_id': prof_id,
         'radarr_list': radarr_list,
-        'sonarr_list': sonarr_list2
+        'sonarr_list': sonarr_list
     }
     template = loader.get_template("jibarr/index.html")
     return HttpResponse(template.render(context, request))

@@ -45,6 +45,7 @@ def showdetails(request):
         seas.title = 'Season ' + str(seasCount + 1)
         #seas.episodes.clear()
         seas.episodes = [SonarrEpisodeMedia()] * 0
+        seas.number = str(seasCount + 1)
         
         for seasEp in SonarrEpisodeMedia.objects.filter(seriesId=show.sonarr_id,seasonNumber=seasCount + 1):
             se = sonarrEpisode()
