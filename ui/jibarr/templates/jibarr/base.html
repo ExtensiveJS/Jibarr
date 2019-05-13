@@ -1,13 +1,14 @@
 {% load static %}
 <html lang="en">
     <head>
-        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/styles.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
-        <title>{% block title %}{% endblock %} - Jibarr</title>
         <script src="https://code.jquery.com/jquery-3.3.1.js" %}"></script>
-        <link rel="stylesheet" href="{% static 'jibarr/jquery-ui-1.12.1/jquery-ui.css' %}">
         <script src="{% static 'jibarr/jquery-ui-1.12.1/jquery-ui.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+        <script src="{% static 'jibarr/bootstrap-3.3.7-dist/js/bootstrap.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'jibarr/styles.css' %}">
+        <link rel="stylesheet" href="{% static 'jibarr/jquery-ui-1.12.1/jquery-ui.css' %}">
+        <title>{% block title %}{% endblock %} - Jibarr</title>
         <link rel="shortcut icon" type="image/png" href="{% static 'jibarr/favicon.ico' %}"/>
         <script src="{% static 'jibarr/jquery.toastmessage.js' %}"></script>
         <link rel="stylesheet" type="text/css" href="{% static 'jibarr/jquery.toastmessage.css' %}">

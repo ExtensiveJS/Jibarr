@@ -10,8 +10,11 @@ from jibarr.RadarrSync import RadarrSync
 from jibarr.SonarrSync import SonarrSync
 from jibarr.SystemUpgrade import SystemUpgrade
 from datetime import datetime
-import os, os.path
+import os, os.path, shutil
+from os.path import dirname, abspath
 from django.conf import settings
+import json
+from django.http import JsonResponse
 
 class SiteSettingsViewSet(viewsets.ModelViewSet):
     queryset = SiteSettings.objects.all()
@@ -492,4 +495,43 @@ def markshowssynced(request):
         pass
 
     return Response("OK")
+
+@api_view(['GET', 'POST'])
+def runbackup(request):
+    isSuccessful = True
+    try:
+        Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup initiated.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
+    except KeyError:
+        pass
+
+    try:
+        d = dirname(dirname(abspath(__file__))) + "\\"
+        # mypath = dirname(dirname(abspath(__file__))) + "\\..\\backup\\"
+        ts = str(datetime.now().strftime("%Y%m%d%H%M%S"))
+        shutil.copy2(os.path.join(d, "db.sqlite3"), os.path.join(d, "./backup/db.sqlite3." + ts + ".bak"))
+    except:
+        isSuccessful = False
+        pass
+    if isSuccessful:
+        try:
+            Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup completed successfully.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+    else:
+        try:
+            Logs.objects.create(log_type='Backup',log_category='System',log_message='Database backup failed!!!!',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
+        except:
+            pass
+
+    
+    if isSuccessful:
+        response = JsonResponse({"success": "Backup Successful"})
+        response.status_code = 200 
+        return response
+    else:
+        response = JsonResponse({"error": "backup failed"})
+        response.status_code = 500 
+        return response
+
+    
 

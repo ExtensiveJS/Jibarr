@@ -48,37 +48,49 @@
 
 {% for seas in show.seasons %}
     <div class='CONTAINER' style="margin-top:30px;padding-left:20px;min-height:50px;box-shadow: 0 0 10px 1px #aaa;">
-    <h3>{{ seas.title }}</h3>
-    {% if seas.episodes %}
-    <div style="display:flex;flex-direction: row;flex-wrap:nowrap;border-bottom:2px solid lightgrey;">
-        <div style="min-width:25px;font-weight:bold;">#</div>
-        <div style="flex: auto;font-weight:bold;">Title/Description.</div>
-        <div style="min-width:100px;flex: none;font-weight:bold;">Air Date</div>
-        <div style="min-width:100px;font-weight:bold;">Quality</div>
-        <div style="min-width:35px;font-weight:bold;">&nbsp;</div>
-    </div>
-    {% endif %}
-    {% for ep in seas.episodes %}
-        
-        <div style="display:flex;flex-direction: row;flex-wrap:nowrap;padding-top:5px;padding-bottom:5px;border-bottom:1px solid lightgray;">
-            <div style="min-width:25px;">{{ ep.episodeNumber }}</div>
-            <div style="flex: auto;padding-right:13px;"><strong>{{ ep.title }}</strong><br>{{ ep.description }}</div>
-            <div style="min-width:100px;flex: none;">{{ ep.airDate }}</div>
-            <div style="min-width:100px;"><span class="qualityCallout">{{ ep.quality }}</span></div>
-            <div style="min-width:35px;">
-                {% if ep.isMonitored %}
-                    {% if ep.isNewer %}
-                    <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
-                    <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Override" onclick='markSkipped({{ ep.sonarr_id }},"skip");'></i>
-                    {% else %}
-                    <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
-                    <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Force Sync" onclick='markSkipped({{ ep.sonarr_id }},"unskip");'></i>
-                    {% endif %}
-                {% endif %}
-            </div>
+        <div class="row">
+            <h3 class="pull-left">{{ seas.title }}</h3>
+            {% if seas.episodes %}
+            <span class="pull-right" style="padding-right:20px;">
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#panelseason_{{ seas.number }}">
+                    <i class="glyphicon glyphicon-chevron-down"></i>
+                </button>
+            </span>
+            {% endif %}
         </div>
-    
-    {% endfor %}
+        {% if seas.episodes %}
+        
+        <div class="collapse" id="panelseason_{{ seas.number }}">
+            <div style="display:flex;flex-direction: row;flex-wrap:nowrap;border-bottom:2px solid lightgrey;">
+                <div style="min-width:25px;font-weight:bold;">#</div>
+                <div style="flex: auto;font-weight:bold;">Title/Description.</div>
+                <div style="min-width:100px;flex: none;font-weight:bold;">Air Date</div>
+                <div style="min-width:100px;font-weight:bold;">Quality</div>
+                <div style="min-width:35px;font-weight:bold;">&nbsp;</div>
+            </div>
+        
+            {% for ep in seas.episodes %}
+                <div style="display:flex;flex-direction: row;flex-wrap:nowrap;padding-top:5px;padding-bottom:5px;border-bottom:1px solid lightgray;">
+                    <div style="min-width:25px;">{{ ep.episodeNumber }}</div>
+                    <div style="flex: auto;padding-right:13px;"><strong>{{ ep.title }}</strong><br>{{ ep.description }}</div>
+                    <div style="min-width:100px;flex: none;">{{ ep.airDate }}</div>
+                    <div style="min-width:100px;"><span class="qualityCallout">{{ ep.quality }}</span></div>
+                    <div style="min-width:35px;">
+                        {% if ep.isMonitored %}
+                            {% if ep.isNewer %}
+                            <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+                            <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Override" onclick='markSkipped({{ ep.sonarr_id }},"skip");'></i>
+                            {% else %}
+                            <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
+                            <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Force Sync" onclick='markSkipped({{ ep.sonarr_id }},"unskip");'></i>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
     </div>
 {% endfor %}
 
@@ -172,5 +184,6 @@
             });
         }
     }
+
 </script>
 {% endblock postbody %}
