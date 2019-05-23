@@ -13,6 +13,7 @@ from urllib.request import urlopen
 from django.core.wsgi import get_wsgi_application
 from django.conf import settings
 from datetime import datetime
+from jibarr import SystemUpgrade
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ui.settings')
 
@@ -21,7 +22,24 @@ application = get_wsgi_application()
 settings.isConnected = False
 settings.isSonarrConnected = False
 system_settings = SiteSettings.objects.all()[:1].get()
-    
+
+# get db version
+dbVer = system_settings.jibarr_version
+# get settings version
+appVer = settings.CODE_VERSION
+# compare
+if dbVer != appVer:
+    # backup DB
+    try:
+        SystemUpgrade.backupDatabase()
+    except Exception as e:
+        pass
+    # run update
+    try:
+        SystemUpgrade.upgradeDatabase(dbVer,appVer)
+    except Exception as e:
+        pass
+
 try:
     data = urlopen(system_settings.radarr_path + "/api/system/status/?apikey=" + system_settings.radarr_apikey).read()
     json.loads(data)

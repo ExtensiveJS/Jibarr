@@ -73,6 +73,11 @@
                     {% if val.imdbId %}
                     <span class="siteCallout"><a href='http://imdb.com/title/{{ val.imdbId }}' target="_new">IMDB</a></span>
                     {% endif %}
+                    {% if val.status == 'continuing' %}
+                    <span class="continuingCallout">Continuing</span>
+                    {% else %}
+                    <span class="endedCallout">Ended</span>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -195,7 +195,27 @@ def SonarrSync(forceload):
     # do Series Episode loop
     if isSuccessful:
         isSuccessful = LoopSeries(forceload)
+    if isSuccessful:
+        checkShowStatus()
 
+    return isSuccessful
+
+def checkShowStatus():
+    isSuccessful = True
+    system_settings = SiteSettings.objects.all()[:1].get()
+    for ssm in SonarrShowMedia.objects.all():
+        try:
+            urlString = system_settings.sonarr_path + "/api/series/" + str(ssm.sonarr_id) + "/?apikey=" + system_settings.sonarr_apikey
+            data = urlopen(urlString).read()
+            output = json.loads(data)
+            newStatus = output["status"]
+            oldStatus = ssm.status
+            if oldStatus != newStatus:
+                ssm.status = newStatus
+                ssm.save()
+                Logs.objects.create(log_type='Sync',log_category='Sonarr',log_message='Sonarr show (' + ssm.title + ') changed from (' + oldStatus + ') to (' + newStatus + ')',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
+        except Exception as e:
+            pass
     return isSuccessful
 
 def LoopSeries(forceload):

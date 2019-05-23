@@ -44,6 +44,13 @@
         <span class="siteCallout"><a href='http://imdb.com/title/{{ show.imdbId }}' target="_new">IMDB</a></span>
         {% endif %}
     </div>
+    <div style="padding-top:5px;">
+        {% if show.status == 'continuing' %}
+        <span class="continuingCallout">Continuing</span>
+        {% else %}
+        <span class="endedCallout">Ended</span>
+        {% endif %}
+    </div>
 </div>
 
 {% for seas in show.seasons %}

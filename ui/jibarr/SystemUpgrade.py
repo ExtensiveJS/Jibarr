@@ -126,14 +126,17 @@ def upgradeDatabase(curVer,newVer):
         pass
 
     try:
-        fd = open("./unzip/jibarr-master/jibarr/ui/dbupgrades/v" + curVer + "_to_v" + newVer + ".txt","r")
+        #fd = open("./dbupgrades/v" + curVer + "_to_v" + newVer + ".txt","r")
+        d = dirname(dirname(abspath(__file__)))
+        fd = open(os.path.join(d,"dbupgrades/v2.1.2_to_v2.2.0.txt"),"r")
         sqlFile = fd.read()
         fd.close()
         conn = sqlite3.connect('./ui/db.sqlite3')
         c = conn.cursor()
-        sqlCommands = sqlFile.split(';')
+        sqlCommands = sqlFile.split('\n')
         for command in sqlCommands:
             c.execute(command)
+        conn.commit()
     except OperationalError as msg:
         isSuccessful = False
         try:
@@ -141,7 +144,7 @@ def upgradeDatabase(curVer,newVer):
         except:
             pass
         pass
-    except:
+    except Exception as e:
         isSuccessful = False
         pass
 

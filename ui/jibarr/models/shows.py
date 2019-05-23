@@ -52,6 +52,7 @@ class sonarrShow(object):
     episodeFileCount = 0
     description = ""
     isMonitored = False
+    status = ""
 
     class Meta:
         managed = False
@@ -72,6 +73,7 @@ class SonarrShowMedia(models.Model):
     episodeCount = models.IntegerField()
     episodeFileCount = models.IntegerField()
     description = models.CharField(max_length=1000)
+    status = models.CharField(max_length=20)
 
     objects = models.Manager()
 

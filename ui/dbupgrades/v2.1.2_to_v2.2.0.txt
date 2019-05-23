@@ -1,0 +1,3 @@
+ALTER TABLE jibarr_sonarr_show ADD status TEXT DEFAULT 'ended';
+UPDATE jibarr_sonarr_show set status = 'continuing';
+UPDATE jibarr_settings set jibarr_version = '2.2.0';
