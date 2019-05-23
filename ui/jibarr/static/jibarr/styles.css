@@ -25,12 +25,14 @@ li a { color: green; }
 .movieImageContainer:hover .overlayBottom {bottom: 0px;left: 0px;height: 45px;opacity: 0.75;background-color: whitesmoke;}
 .overlayTopText {color: black;font-weight:bold;font-size:x-large;padding-right:5px;padding-top:2px;}
 .overlayBottomText {color: black;font-size:small;padding-right:5px;padding-top:2px;text-align:center;}
-.siteCallout {color:white;font-size:x-small;background-color:#337ab7;border-radius:5px;padding:2px 5px 2px 5px;cursor:pointer;}
 .qualityCallout {color:white;font-size:x-small;background-color:goldenrod;border-radius:5px;padding:2px 5px 2px 5px;margin:2px;cursor:pointer;}
 .seasonCallout {color:white;font-size:smaller;background-color:steelblue;border-radius:5px;padding:2px 5px 2px 5px;margin:2px;}
 .episodeCallout {color:white;font-size:smaller;background-color:yellowgreen;border-radius:5px;padding:2px 5px 2px 5px;margin:2px;cursor:pointer;}
+.siteCallout {color:white;font-size:x-small;background-color:#337ab7;border-radius:5px;padding:2px 5px 2px 5px;cursor:pointer;}
 .siteCallout A {color:white;}
 .siteCallout A:HOVER {text-decoration: none;}
+.continuingCallout {color:white;font-size:x-small;background-color:#129e0e;border-radius:5px;padding:2px 5px 2px 5px;cursor:pointer;}
+.endedCallout {color:white;font-size:x-small;background-color:#c55413;border-radius:5px;padding:2px 5px 2px 5px;cursor:pointer;}
 /*.ui-dialog-titlebar {display: none;} */
 .ui-widget-overlay {opacity: .50;filter: Alpha(Opacity=30);}
 

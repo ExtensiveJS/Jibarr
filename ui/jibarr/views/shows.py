@@ -111,6 +111,7 @@ def get_show_info(system_settings, prof):
         epCnt = epCnt + var.episodeCount
         ss.isMonitored = False
         ss.isNewer = False
+        ss.status = var.status
 
         #mId = 0
         for ps in psList:
