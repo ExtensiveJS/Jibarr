@@ -10,7 +10,7 @@ Utility to allow you to track files that need to be synced to secondary drives.
 ## Downloads
 <table>
   <tr><th>Release</th><th>Platform</th><th>&nbsp;</th></tr>
-  <tr><td>2.1.2</td><td>Windows</td><td><a href="https://github.com/ExtensiveJS/Jibarr/releases"_blank">Download</a></td></tr>
+  <tr><td>2.2.0</td><td>Windows</td><td><a href="https://github.com/ExtensiveJS/Jibarr/releases"_blank">Download</a></td></tr>
 </table>
 
 ## Support
