@@ -3,6 +3,7 @@ from .profiles import *
 from .sitesettings import *
 from .donate import *
 from .movies import *
+from .moviedetails import *
 from .shows import *
 from .showdetails import *
 from .music import *

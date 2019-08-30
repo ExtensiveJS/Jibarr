@@ -8,3 +8,4 @@ ui/backup/*.bak
 ui/unzip/*.zip
 *.sqlite3
 ui/db.sqlite3
+*.pyc

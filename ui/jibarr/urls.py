@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^sitesettings/', views.sitesettings, name='sitesettings'),
     url(r'^donate/', views.donate, name='donate'),
     url(r'^movies/', views.movies, name='movies'),
+    url(r'^moviedetails/', views.moviedetails, name='moviedetails'),
     url(r'^shows/', views.shows, name='shows'),
     url(r'^showdetails/', views.showdetails, name='showdetails'),
     url(r'^music/', views.music, name='music'),

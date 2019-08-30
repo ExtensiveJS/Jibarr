@@ -1,0 +1,117 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block title %}{{ movie.title }}{% endblock title %}
+{% block javascript%}
+    {% if system_settings.isRadarrConnected %}
+        <style>
+            BODY {
+                background: url('{{ system_settings.radarr_path }}/MediaCover/{{ movie.radarr_id }}/fanart.jpg') no-repeat fixed;
+                background-size: cover;
+            }     
+        </style>
+    {% endif %}
+{% endblock javascript %}
+{% block content %}
+
+<div class='CONTAINER' style="background-color:#1F1E1E;color:whitesmoke;padding-left:20px;min-height:150px;box-shadow: 0 0 10px 1px #aaa;">
+    <div style="float:left;margin:20px 10px 10px 10px;">
+        {% if system_settings.isRadarrConnected %}
+        <img src="{{ system_settings.radarr_path }}/MediaCover/{{ movie.radarr_id }}/poster.jpg" style="width:190px;" />
+        {% else %}
+        <img src="{% static 'jibarr/images/no_image.png' %}" style="width:50px;cursor:pointer;" />
+        {% endif %}
+    </div>
+    <div>
+        <div style="float:right;">
+            {% if movie.isMonitored %}
+            <i class="glyphicon glyphicon-star" style='cursor:pointer;font-size:x-large;' title="Monitored" onclick="delMonitor({{ movie.radarr_id }});" ></i>
+            {% else %}
+            <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;font-size:x-large;' title="Un-Monitored" onclick="addMonitor({{ movie.radarr_id }},'{{ movie.title }}');"></i>
+            {% endif %}
+        </div>
+        <h2>{{ movie.title }} ({{ movie.year }})</h2>
+    </div>
+    <p style="margin-bottom:20px;">Description goes here - Description Goes Here.</p>
+    <div>
+        <span class="detailCallout">{{ movie.studio }}</span>
+        <span class="detailCallout">{{ movie.runtime }} minutes</span>
+        <span class="detailCallout">{{ movie.rating }} /  10</span>
+        <span class="qualityCallout" title="Quality">{{ movie.quality }}</span>
+        <span class="detailCallout">Released {{ movie.release_date }}</span>
+        <br />
+        {% if movie.tmdbid %}
+        <span class="siteCallout"><a href='http://themoviedb.org/movie/{{ movie.tmdbid }}' target="_new">The Movie DB</a></span>  
+        {% endif %}
+        {% if movie.imdbid %}
+        <span class="siteCallout"><a href='http://imdb.com/title/{{ movie.imdbid }}' target="_new">IMDB</a></span>
+        {% endif %}
+        {% if movie.youtube %}
+        <span class="siteCallout"><a href='http://youtube.com/watch?v={{ movie.youtube }}' target="_new">Trailer</a></span>
+        {% endif %}
+        {% if movie.website %}
+        <span class="siteCallout"><a href='http://{{ movie.website }}' target="_new">Homepage</a></span>
+        {% endif %}
+        {% if movie.tmdbid %}
+        <span class="siteCallout"><a href='http://trakt.tv/search/tmdb/{{ movie.tmdbid }}?id_type=movie' target="_new">Trakt</a></span>   
+        {% endif %}
+        {% if system_settings.isRadarrConnected %}
+        <span class="siteCallout"><a href='{{ system_settings.radarr_path }}/movies/{{ movie.title_slug }}' target="_new">RADARR</a></span>
+        {% endif %}
+    </div>
+</div>
+
+<a href="{{ system_settings.radarr_path }}/movies/{{ movie.title_slug }}" target="_new">{{ movie.title }}</a>
+
+{% endblock content %}
+{% block postbody %}
+<script>
+    $(function () {
+    });
+    function addMonitor(rid,title) {
+        $.ajax({
+            url : '/api/profileradarr/add/',
+            type : 'POST',
+            data: { 
+                profile_id: {{ system_profile.id }},
+                radarr_id: rid,
+                radarr_title: title
+            },
+            success: function(data)
+            {
+                location.reload();
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+    function delMonitor(id) {
+        if(confirm('are you sure?')){
+            $.ajax({
+                url : '/api/profileradarr/delete/',
+                type : 'POST',
+                data: { 
+                    prid: id,
+                    profile_id: {{ prof_id }},
+                    radarr_title: 'Some Title'
+                },
+                success: function(data)
+                {
+                    if(data == "DelOK"){
+                        location.reload();
+                    } else {
+                        alert("Data not DelOK = " + data);
+                    };
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert('request error' + xhr.status)
+                },
+                fail: function(xhr, textStatus, errorThrown){
+                    alert('request failed');
+               }
+            });
+        }
+    }
+
+</script>
+{% endblock postbody %}

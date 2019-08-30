@@ -36,6 +36,9 @@ class radarrMovie(object):
     isMonitored = False
     isNewer = False
     rating = 0
+    studio = ""
+    runtime = ""
+    description = ""
     class Meta:
         managed = False
 
@@ -54,6 +57,9 @@ class RadarrMedia(models.Model):
     youtube = models.CharField(max_length=200)
     website = models.CharField(max_length=200)
     quality = models.CharField(max_length=200)
+    studio = models.CharField(max_length=200)
+    runtime = models.CharField(max_length=100)
+    description = models.CharField(max_length=2000)
 
     objects = models.Manager()
     

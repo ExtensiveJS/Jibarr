@@ -78,7 +78,11 @@ def RadarrSync(forceload):
                     except:
                         pass
                     
-                    RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality)
+                    rm.studio = var["studio"]
+                    rm.runtime = var["runtime"]
+                    rm.description = var["overview"]
+
+                    RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality,studio = rm.studio,runtime = rm.runtime,description = rm.description)
                     #rm.save()
                     isSuccessful = True
                     
@@ -172,6 +176,17 @@ def RadarrSync(forceload):
                         except:
                             pass
                         
+                        if rm.studio != var["studio"]:
+                            wasUpdated = True
+                            rm.studio = var["studio"]  
+                        if rm.runtime != var["runtime"]:
+                            wasUpdated = True
+                            rm.runtime = var["runtime"] 
+                        if rm.description != var['overview']:
+                            wasUpdated = True
+                            rm.description = var['overview']
+                        
+
                         #RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality)
                         if wasUpdated:
                             try:
@@ -227,8 +242,12 @@ def RadarrSync(forceload):
                         except:
                             rm.quality = ""
                             pass
-                        
-                        RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality)
+
+                        rm.studio = var["studio"]  
+                        rm.runtime = var["runtime"] 
+                        rm.description = var['overview']
+
+                        RadarrMedia.objects.create(radarr_id = rm.radarr_id,title = rm.title,title_slug = rm.title_slug,release_date = rm.release_date,folder_name = rm.folder_name,size = rm.size,file_name = rm.file_name,last_updt = rm.last_updt,rating = rm.rating,tmdbid = rm.tmdbid,imdbid = rm.imdbid,youtube = rm.youtube,website = rm.website,quality = rm.quality,studio = rm.studio,runtime = rm.runtime,description = rm.description)
                         try:
                             Logs.objects.create(log_type='Sync',log_category='System',log_message='Added ' + rm.title + ' from Radarr',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
                         except:

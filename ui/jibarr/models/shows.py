@@ -120,6 +120,8 @@ class sonarrEpisode(object):
 class sonarrSeason(object):
     title = ''
     episodes = [SonarrEpisodeMedia]
+    # default seasons to isMonitored = True
+    isMonitored = True
 
     class Meta:
         managed = False
@@ -128,3 +130,13 @@ class sonarrEpisodeList(list):
     episodelist = []
     def __init__(self):
         self.episodelist = []
+
+class SonarrSeasonExclusions(models.Model):
+    series_id = models.IntegerField()
+    seasonNumber = models.IntegerField()
+    profile_id = models.IntegerField()
+
+    objects = models.Manager()
+
+    class Meta:
+        db_table = 'Profile_Sonarr_Season_Exclude'

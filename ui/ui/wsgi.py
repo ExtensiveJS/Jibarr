@@ -21,6 +21,7 @@ application = get_wsgi_application()
 
 settings.isConnected = False
 settings.isSonarrConnected = False
+settings.isRadarrConnected = False
 system_settings = SiteSettings.objects.all()[:1].get()
 
 # get db version
@@ -44,6 +45,7 @@ try:
     data = urlopen(system_settings.radarr_path + "/api/system/status/?apikey=" + system_settings.radarr_apikey).read()
     json.loads(data)
     settings.isConnected = True
+    settings.isRadarrConnected = True
 except:
     pass
 
