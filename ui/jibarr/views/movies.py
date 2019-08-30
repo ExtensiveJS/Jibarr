@@ -118,6 +118,9 @@ def get_movie_info(system_settings, prof):
         rm.youtube = var.youtube
         rm.website = var.website
         rm.quality = var.quality
+        rm.studio = var.studio
+        rm.runtime = var.runtime
+        rm.description = var.description
         
         mId = 0
         for pr in prList:

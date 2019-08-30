@@ -1,0 +1,8 @@
+ALTER TABLE jibarr_radarr_media ADD studio TEXT DEFAULT 'unknown';
+UPDATE jibarr_radarr_media set studio = 'unknown';
+ALTER TABLE jibarr_radarr_media ADD runtime TEXT DEFAULT 'unknown';
+UPDATE jibarr_radarr_media set runtime = 'unknown';
+ALTER TABLE jibarr_radarr_media ADD description TEXT DEFAULT '';
+UPDATE jibarr_radarr_media set description = '';
+CREATE TABLE "Profile_Sonarr_Season_Exclude" ('id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,'series_id' INTEGER NOT NULL DEFAULT 0,'profile_id' INTEGER NOT NULL DEFAULT 0,'seasonNumber' INTEGER NOT NULL DEFAULT 0)
+UPDATE jibarr_settings set jibarr_version = '2.3.0';

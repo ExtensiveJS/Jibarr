@@ -57,6 +57,15 @@
     <div class='CONTAINER' style="margin-top:30px;padding-left:20px;min-height:50px;box-shadow: 0 0 10px 1px #aaa;">
         <div class="row">
             <h3 class="pull-left">{{ seas.title }}</h3>
+            <span class="pull-right" style="padding-right:20px;">
+            {% if seas.excluded == False %} 
+                {% if show.isMonitored %}
+                <i class="glyphicon glyphicon-eye-open" style='cursor:pointer;font-size:x-large;' title="Included" onclick="excludeSeason({{ seas.number }});" ></i>
+                {% endif %}
+            {% else %}
+                <i class="glyphicon glyphicon-eye-close" style='cursor:pointer;font-size:x-large;' title="Excluded" onclick="includeSeason({{ seas.number }});" ></i>
+            {% endif %}
+            </span>
             {% if seas.episodes %}
             <span class="pull-right" style="padding-right:20px;">
                 <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#panelseason_{{ seas.number }}">
@@ -83,13 +92,15 @@
                     <div style="min-width:100px;flex: none;">{{ ep.airDate }}</div>
                     <div style="min-width:100px;"><span class="qualityCallout">{{ ep.quality }}</span></div>
                     <div style="min-width:35px;">
-                        {% if ep.isMonitored %}
-                            {% if ep.isNewer %}
-                            <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
-                            <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Override" onclick='markSkipped({{ ep.sonarr_id }},"skip");'></i>
-                            {% else %}
-                            <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
-                            <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Force Sync" onclick='markSkipped({{ ep.sonarr_id }},"unskip");'></i>
+                        {% if seas.excluded == False %}
+                            {% if ep.isMonitored %}
+                                {% if ep.isNewer %}
+                                <i class='glyphicon glyphicon-save' title='Sync Needed'></i>
+                                <i class="glyphicon glyphicon-star" style='cursor:pointer;' title="Override" onclick='markSkipped({{ ep.sonarr_id }},"skip");'></i>
+                                {% else %}
+                                <i class='glyphicon glyphicon-saved' title='Synced' style="color:silver;"></i>
+                                <i class="glyphicon glyphicon-star-empty" style='cursor:pointer;' title="Force Sync" onclick='markSkipped({{ ep.sonarr_id }},"unskip");'></i>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     </div>
@@ -116,10 +127,6 @@
         }
 
         if(ret){
-            //alert("mark t=" + t + ", e=" + e + ", p={{ system_profile.id }}");
-            // prof_id:
-            // runType: 
-            // episodeId: 
             $.ajax({
                 url : '/api/skipEpisode/',
                 type : 'POST',
@@ -130,13 +137,7 @@
                 },
                 success: function(data)
                 {
-                    //alert('success');
                     location.reload(true);
-                    //if(data == "DelOK"){
-                    //    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + rid +");' ></i>")
-                    //} else {
-                    //    alert("Data not DelOK = " + data);
-                    //};
                 },
                 fail: function(xhr, textStatus, errorThrown){
                     alert('request failed');
@@ -154,12 +155,7 @@
             },
             success: function(data)
             {
-                //alert('success');
                 location.reload(true);
-                //var reg = new RegExp('^[0-9]+$');
-                //if(reg.test(data)){
-                //    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star' style='cursor:pointer;' title='Monitored' onclick='delMonitor(" + data + "," + rid + ");' ></i>")
-                //};
             },
             fail: function(xhr, textStatus, errorThrown){
                 alert('request failed');
@@ -177,19 +173,53 @@
                 },
                 success: function(data)
                 {
-                    //alert('success');
                     location.reload(true);
-                    //if(data == "DelOK"){
-                    //    $("#divAction_" + rid).html("<i class='glyphicon glyphicon-star-empty' style='cursor:pointer;' title='Not Monitored' onclick='addMonitor(" + rid +");' ></i>")
-                    //} else {
-                    //    alert("Data not DelOK = " + data);
-                    //};
                 },
                 fail: function(xhr, textStatus, errorThrown){
                     alert('request failed');
                }
             });
         }
+    }
+    function excludeSeason(sNum)
+    {
+        $.ajax({
+            url : '/api/changesSeasonExclude/',
+            type : 'POST',
+            data: { 
+                runType: 'exclude',
+                profile_id: {{ system_profile.id }},
+                series_id: {{ show.sonarr_id }},
+                seasonNumber: sNum
+            },
+            success: function(data)
+            {
+                location.reload(true);
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
+    }
+    function includeSeason(sNum)
+    {
+        $.ajax({
+            url : '/api/changesSeasonExclude/',
+            type : 'POST',
+            data: { 
+                runType: 'include',
+                profile_id: {{ system_profile.id }},
+                series_id: {{ show.sonarr_id }},
+                seasonNumber: sNum
+            },
+            success: function(data)
+            {
+                location.reload(true);
+            },
+            fail: function(xhr, textStatus, errorThrown){
+                alert('request failed');
+            }
+        });
     }
 
 </script>

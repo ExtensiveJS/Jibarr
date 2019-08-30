@@ -1,6 +1,6 @@
 from django.template import loader
 from django.http import HttpResponse
-from jibarr.models import SiteSettings, Profile, ProfileSonarr, ProfileSonarrEpisode, sonarrShowList, sonarrShow, sonarrEpisode, sonarrEpisodeList, SonarrShowMedia, SonarrEpisodeMedia
+from jibarr.models import SiteSettings, Profile, ProfileSonarr, ProfileSonarrEpisode, sonarrShowList, sonarrShow, sonarrEpisode, sonarrEpisodeList, SonarrShowMedia, SonarrEpisodeMedia, SonarrSeasonExclusions
 from urllib.request import urlopen
 import json, time, math
 from time import mktime
@@ -24,27 +24,29 @@ def runsyncshows(request):
     for pss in profile_sonarr_show_list:
         sel = SonarrEpisodeMedia.objects.filter(seriesId=pss.sonarr_id)
         for se in sel:
-            # check if the episode is monitored
-            if ProfileSonarrEpisode.objects.filter(profile_id=prof_id,sonarr_id=se.sonarr_id).count() == 1:
-                pse = ProfileSonarrEpisode.objects.get(profile_id=prof_id,sonarr_id=se.sonarr_id)
-                if pse:
-                    pseLr = datetime.fromtimestamp(mktime(time.strptime(pse.lastRun, "%b %d %Y %H:%M:%S")))
-                    selu = datetime.fromtimestamp(mktime(time.strptime(se.dateAdded, "%Y-%m-%d %H:%M")))
-                    if selu > pseLr:
-                        sem = SonarrEpisodeMedia.objects.get(sonarr_id=se.sonarr_id)
-                        ss = SonarrShowMedia.objects.get(sonarr_id=sem.seriesId)
-                        sem.showName = ss.title
-                        sem.fileSize = convert_size(sem.size)
-                        sonarr_episode_list.episodelist.append(sem)
-                        totalFileSize = totalFileSize + sem.size
-            else:
-                # not in PSE, add it to sync list
-                sem = SonarrEpisodeMedia.objects.get(sonarr_id=se.sonarr_id)
-                ss = SonarrShowMedia.objects.get(sonarr_id=sem.seriesId)
-                sem.showName = ss.title
-                sem.fileSize = convert_size(sem.size)
-                sonarr_episode_list.episodelist.append(sem)
-                totalFileSize = totalFileSize + sem.size
+            # check if the season is excluded
+            if SonarrSeasonExclusions.objects.filter(series_id=pss.sonarr_id,seasonNumber=se.seasonNumber,profile_id=prof_id).count() < 1:
+                # check if the episode is monitored
+                if ProfileSonarrEpisode.objects.filter(profile_id=prof_id,sonarr_id=se.sonarr_id).count() == 1:
+                    pse = ProfileSonarrEpisode.objects.get(profile_id=prof_id,sonarr_id=se.sonarr_id)
+                    if pse:
+                        pseLr = datetime.fromtimestamp(mktime(time.strptime(pse.lastRun, "%b %d %Y %H:%M:%S")))
+                        selu = datetime.fromtimestamp(mktime(time.strptime(se.dateAdded, "%Y-%m-%d %H:%M")))
+                        if selu > pseLr:
+                            sem = SonarrEpisodeMedia.objects.get(sonarr_id=se.sonarr_id)
+                            ss = SonarrShowMedia.objects.get(sonarr_id=sem.seriesId)
+                            sem.showName = ss.title
+                            sem.fileSize = convert_size(sem.size)
+                            sonarr_episode_list.episodelist.append(sem)
+                            totalFileSize = totalFileSize + sem.size
+                else:
+                    # not in PSE, add it to sync list
+                    sem = SonarrEpisodeMedia.objects.get(sonarr_id=se.sonarr_id)
+                    ss = SonarrShowMedia.objects.get(sonarr_id=sem.seriesId)
+                    sem.showName = ss.title
+                    sem.fileSize = convert_size(sem.size)
+                    sonarr_episode_list.episodelist.append(sem)
+                    totalFileSize = totalFileSize + sem.size
 
 
     sonarr_episode_list.episodelist.sort(key=lambda x: x.showName.lower(), reverse=False)    

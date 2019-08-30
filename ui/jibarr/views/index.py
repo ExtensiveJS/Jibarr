@@ -105,6 +105,9 @@ def index(request):
     system_settings.isConnected = isConnected
     system_settings.isSonarrConnected = isSonarrConnected
     
+    isRadarrConnected = settings.isRadarrConnected
+    system_settings.isRadarrConnected = isRadarrConnected
+
     context = {
         'system_settings': system_settings,
         'prof_list': prof_list,

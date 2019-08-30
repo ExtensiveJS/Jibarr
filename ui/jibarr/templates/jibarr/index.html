@@ -21,6 +21,7 @@
                             {% else %}
                             <i class="glyphicon glyphicon-star-empty" style="float:right;cursor:pointer;" onclick="addMonitor({{ val.r_id }},'Some Title');"></i>
                             {% endif %}
+                            <i class="glyphicon glyphicon-search" style="float:right;cursor:pointer;margin-right:3px;" onclick="location.replace('/jibarr/moviedetails?id={{ val.r_id }}');"></i>
                         </div>
                     </div>
                     {% if system_settings.isConnected %}

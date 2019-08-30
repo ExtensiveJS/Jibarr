@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'changeSonarrStatus/',views.changeSonarrStatus),
     url(r'skipEpisode/',views.skipEpisode),
     url(r'runbackup/',views.runbackup),
+    url(r'changesSeasonExclude/',views.changesSeasonExclude),
     url(r'^', include(router.urls))
 ]

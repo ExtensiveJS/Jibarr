@@ -38,7 +38,7 @@
                     {% endif %}
                 </div>
                 <div style="float:left;">
-                    <a href="{{ system_settings.radarr_path }}/movies/{{ val.titleSlug }}" target="_new">{{ val.title }}</a>
+                    <a href="/jibarr/moviedetails?id={{ val.r_id }}">{{ val.title }}</a>
                 </div>
                 <div id="divAction_{{ val.r_id }}" style="width:65px;float:right;margin-right:0px;text-align:center;font-size:medium;">
                     {% if val.isMonitored %}

@@ -1,4 +1,4 @@
-from jibarr.models import SiteSettings, Profile, ProfileSonarr, ProfileSonarrEpisode, sonarrShow, SonarrShowMedia, sonarrShowList, SonarrEpisodeMedia, PageStuff, sonarrSeason, sonarrEpisode
+from jibarr.models import SiteSettings, Profile, ProfileSonarr, ProfileSonarrEpisode, sonarrShow, SonarrShowMedia, sonarrShowList, SonarrEpisodeMedia, PageStuff, sonarrSeason, sonarrEpisode, SonarrSeasonExclusions
 from urllib.request import urlopen
 import json, re
 from time import mktime
@@ -46,7 +46,13 @@ def showdetails(request):
         #seas.episodes.clear()
         seas.episodes = [SonarrEpisodeMedia()] * 0
         seas.number = str(seasCount + 1)
+        # check if the season is EXCLUDED.
         
+        seas.excluded = False
+        seExList = SonarrSeasonExclusions.objects.filter(series_id=show.sonarr_id,seasonNumber=seas.number,profile_id=prof_id)
+        if seExList.count() > 0:
+            seas.excluded = True
+
         for seasEp in SonarrEpisodeMedia.objects.filter(seriesId=show.sonarr_id,seasonNumber=seasCount + 1):
             se = sonarrEpisode()
             se.id = seasEp.id
@@ -60,9 +66,11 @@ def showdetails(request):
             se.quality = seasEp.quality
             se.description = seasEp.description
             se.airDate = seasEp.airDate
-            se.size = seasEp.size
+            se.size = seasEp.size        
 
             se.isMonitored = show.isMonitored
+
+            se.excluded = seas.excluded
 
             se.isNewer = False
 

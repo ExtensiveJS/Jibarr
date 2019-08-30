@@ -124,14 +124,14 @@ def upgradeDatabase(curVer,newVer):
         Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade initiated.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
     except:
         pass
-
+    conn = sqlite3.connect('./ui/db.sqlite3')
     try:
         #fd = open("./dbupgrades/v" + curVer + "_to_v" + newVer + ".txt","r")
         d = dirname(dirname(abspath(__file__)))
-        fd = open(os.path.join(d,"dbupgrades/v2.1.2_to_v2.2.0.txt"),"r")
+        fd = open(os.path.join(d,"dbupgrades/v2.2.0_to_v2.3.0.txt"),"r")
         sqlFile = fd.read()
         fd.close()
-        conn = sqlite3.connect('./ui/db.sqlite3')
+        
         c = conn.cursor()
         sqlCommands = sqlFile.split('\n')
         for command in sqlCommands:
@@ -139,6 +139,7 @@ def upgradeDatabase(curVer,newVer):
         conn.commit()
     except OperationalError as msg:
         isSuccessful = False
+        conn.rollback()
         try:
             Logs.objects.create(log_type='Upgrade',log_category='System',log_message='Database upgrade error: ' + msg,log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
         except:

@@ -1,4 +1,4 @@
-from jibarr.models import SiteSettings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie, RadarrMedia, sonarrShow, SonarrShowMedia, SonarrEpisodeMedia, ProfileSonarrEpisode
+from jibarr.models import SiteSettings, Profile, ProfileRadarr, ProfileSonarr, ProfileLidarr, Logs, radarrMovie, RadarrMedia, sonarrShow, SonarrShowMedia, SonarrEpisodeMedia, ProfileSonarrEpisode, SonarrSeasonExclusions
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -84,7 +84,7 @@ class ProfileRadarrViewSet(viewsets.ModelViewSet):
             prid = int(request.POST.get('prid'))
             pid = request.POST.get('profile_id')
             rt = request.POST.get('radarr_title')
-            pr = ProfileRadarr.objects.get(id=prid)
+            pr = ProfileRadarr.objects.get(radarr_id=prid,profile_id=pid)
             pr.delete()
             ret = "DelOK"
             try:
@@ -533,5 +533,26 @@ def runbackup(request):
         response.status_code = 500 
         return response
 
+@api_view(['GET', 'POST'])
+def changesSeasonExclude(request):
+    runType = 'none'
+    response = "Failed"
+    try:
+        runType = request.POST.get("runType")
+        series_id = request.POST.get("series_id")
+        profile_id = request.POST.get("profile_id")
+        seasonNumber = request.POST.get("seasonNumber")
+        if runType=='exclude':
+            Logs.objects.create(log_type='System',log_category='Sonarr',log_message='Excluding Season ## from profile AAAA.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
+            sse = SonarrSeasonExclusions.objects.create(series_id=series_id,seasonNumber=seasonNumber,profile_id=profile_id)
+            response = "OK"
+        elif runType=='include':
+            Logs.objects.create(log_type='System',log_category='Sonarr',log_message='Including Season ## in profile AAAA.',log_datetime=datetime.utcnow().strftime("%b %d %Y %H:%M:%S"))
+            sse = SonarrSeasonExclusions.objects.get(series_id=series_id,seasonNumber=seasonNumber,profile_id=profile_id)
+            sse.delete()
+            response = "OK"
+    except Exception as e:
+        pass
+    return Response(response)
     
 
